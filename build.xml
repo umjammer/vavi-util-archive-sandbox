@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="Shift_JIS"?>
+
+<!-- ////////////////////////////////////////////////////////////////////// -->
+<!-- Copyright (c) 2003 by Naohide Sano, All rights reserved.               -->
+<!--                                                                        -->
+<!-- Written by Naohide Sano                                                -->
+<!--                                                                        -->
+<!-- rar                                                                    -->
+<!--                                                                        -->
+<!-- @author	Naohide Sano                                                -->
+<!-- @version	0.00	031223	nsano	initial version                     -->
+<!--                                                                        -->
+<!-- ////////////////////////////////////////////////////////////////////// -->
+
+<project default="run" basedir=".">
+
+  <!-- クラスパスの定義 -->
+  <path id="project.class.path">
+    <pathelement location="src" />
+    <pathelement location="../.." />
+    <fileset dir="lib">
+      <include name="*.jar" />
+    </fileset>
+    <fileset dir="${java.home}/lib/ext">
+      <include name="*.jar" />
+    </fileset>
+  </path>
+  
+  <!-- ターゲットの定義 -->
+  
+  <!-- clean -->
+  <target name="clean" description="ビルド環境のクリア">
+    <delete>
+      <fileset dir="src">
+        <include name="**/*.class" />
+      </fileset>
+    </delete>
+  </target>
+  
+  <!-- javac supports -->
+  <target name="compile.supports" description="コンパイル src/**/*.java">
+    <javac debug="on" deprecation="on">
+      <classpath refid="project.class.path" />
+      <include name="**/*.java" />
+      <src path="src" />
+    </javac>
+  </target>
+  
+  <!-- javac -->
+  <target name="compile" depends="compile.supports" description="コンパイル">
+    <javac debug="on" deprecation="on">
+      <classpath refid="project.class.path" />
+      <include name="*.java" />
+      <src path="." />
+    </javac>
+  
+    <native2ascii encoding="Windows-31J"
+                  src="src"
+                  dest="src"
+                  includes="**/*.properties.sjis"
+                  ext="" />
+  </target>
+  
+  <!-- run -->
+  <target name="run" depends="compile" description="Run Program">
+    <java classname="vavi.util.archive.vavi.RarArchive" fork="yes">
+      <classpath refid="project.class.path" />
+    </java>
+  </target>
+  
+  <!-- t1 -->
+  <target name="t1" depends="compile" description="Test UnRAR">
+    <java classname="vavi.util.rar.UnRar" fork="yes">
+      <classpath refid="project.class.path" />
+      <arg value="x" />
+      <arg value="../664/tmp/test.rar" />
+    </java>
+  </target>
+
+  <!-- run -->
+  <target name="t2" depends="compile" description="プログラムの実行">
+    <java classname="vavi.util.archive.vavi.D88" fork="yes">
+      <classpath refid="project.class.path" />
+      <arg value="N88BAS.D88" />
+    </java>
+  </target>
+
+  <!-- t3  -->
+  <target name="t3" depends="compile" description="プログラムの実行">
+    <java classname="vavi.util.archive.vavi.N88DiskBasicFile" fork="yes">
+      <classpath refid="project.class.path" />
+      <arg value="N88BAS.D88" />
+    </java>
+  </target>
+
+
+</project>
+
+<!-- -->
