@@ -10,7 +10,7 @@ import vavi.util.archive.Entry;
 
 
 /**
- * N88 ƒfƒBƒXƒN‚Å‚·D
+ * N88 ãƒ‡ã‚£ã‚¹ã‚¯ã§ã™ï¼
  * 
  * @author <a href="mailto:vavivavi@yahoo.co.jp">Naohide Sano</a> (nsano)
  * @version 0.00 010820 nsano initial version <br>
@@ -62,12 +62,12 @@ System.err.print(name + ":" +
 		 Integer.toHexString(startCluster));
     }
 
-    /** @throws UnsupportedOperationException ‚±‚Ìƒƒ\ƒbƒh‚ÍƒTƒ|[ƒg‚³‚ê‚Ä‚¢‚Ü‚¹‚ñB */
+    /** @throws UnsupportedOperationException ã“ã®ãƒ¡ã‚½ãƒƒãƒ‰ã¯ã‚µãƒãƒ¼ãƒˆã•ã‚Œã¦ã„ã¾ã›ã‚“ã€‚ */
     public String getComment() {
         throw new UnsupportedOperationException("non sense");
     }
 
-    /** @throws UnsupportedOperationException ‚±‚Ìƒƒ\ƒbƒh‚ÍƒTƒ|[ƒg‚³‚ê‚Ä‚¢‚Ü‚¹‚ñB */
+    /** @throws UnsupportedOperationException ã“ã®ãƒ¡ã‚½ãƒƒãƒ‰ã¯ã‚µãƒãƒ¼ãƒˆã•ã‚Œã¦ã„ã¾ã›ã‚“ã€‚ */
     public long getCompressedSize() {
         throw new UnsupportedOperationException("non sense");
     }
@@ -85,7 +85,7 @@ System.err.print(name + ":" +
         return new int[] { attribute, startCluster };
     }
 
-    /** @throws UnsupportedOperationException ‚±‚Ìƒƒ\ƒbƒh‚ÍƒTƒ|[ƒg‚³‚ê‚Ä‚¢‚Ü‚¹‚ñB */
+    /** @throws UnsupportedOperationException ã“ã®ãƒ¡ã‚½ãƒƒãƒ‰ã¯ã‚µãƒãƒ¼ãƒˆã•ã‚Œã¦ã„ã¾ã›ã‚“ã€‚ */
     public int getMethod() {
         throw new UnsupportedOperationException("non sense");
     }
@@ -102,22 +102,22 @@ System.err.print(name + ":" +
         return 0;
     }
 
-    /** @throws UnsupportedOperationException ‚±‚Ìƒƒ\ƒbƒh‚ÍƒTƒ|[ƒg‚³‚ê‚Ä‚¢‚Ü‚¹‚ñB */
+    /** @throws UnsupportedOperationException ã“ã®ãƒ¡ã‚½ãƒƒãƒ‰ã¯ã‚µãƒãƒ¼ãƒˆã•ã‚Œã¦ã„ã¾ã›ã‚“ã€‚ */
     public boolean isDirectory() {
         throw new UnsupportedOperationException("non sense");
     }
 
-    /** @throws UnsupportedOperationException ‚±‚Ìƒƒ\ƒbƒh‚ÍƒTƒ|[ƒg‚³‚ê‚Ä‚¢‚Ü‚¹‚ñB */
+    /** @throws UnsupportedOperationException ã“ã®ãƒ¡ã‚½ãƒƒãƒ‰ã¯ã‚µãƒãƒ¼ãƒˆã•ã‚Œã¦ã„ã¾ã›ã‚“ã€‚ */
     public void setComment(String comment) {
         throw new UnsupportedOperationException("non sense");
     }
 
-    /** @throws UnsupportedOperationException ‚±‚Ìƒƒ\ƒbƒh‚ÍƒTƒ|[ƒg‚³‚ê‚Ä‚¢‚Ü‚¹‚ñB */
+    /** @throws UnsupportedOperationException ã“ã®ãƒ¡ã‚½ãƒƒãƒ‰ã¯ã‚µãƒãƒ¼ãƒˆã•ã‚Œã¦ã„ã¾ã›ã‚“ã€‚ */
     public void setCompressedSize(long csize) {
         throw new UnsupportedOperationException("non sense");
     }
 
-    /** @throws UnsupportedOperationException ‚±‚Ìƒƒ\ƒbƒh‚ÍƒTƒ|[ƒg‚³‚ê‚Ä‚¢‚Ü‚¹‚ñB */
+    /** @throws UnsupportedOperationException ã“ã®ãƒ¡ã‚½ãƒƒãƒ‰ã¯ã‚µãƒãƒ¼ãƒˆã•ã‚Œã¦ã„ã¾ã›ã‚“ã€‚ */
     public void setCrc(long crc) {
         throw new UnsupportedOperationException("non sense");
     }
@@ -130,7 +130,7 @@ System.err.print(name + ":" +
         startCluster = ((int[]) extra)[1];
     }
 
-    /** @throws UnsupportedOperationException ‚±‚Ìƒƒ\ƒbƒh‚ÍƒTƒ|[ƒg‚³‚ê‚Ä‚¢‚Ü‚¹‚ñB */
+    /** @throws UnsupportedOperationException ã“ã®ãƒ¡ã‚½ãƒƒãƒ‰ã¯ã‚µãƒãƒ¼ãƒˆã•ã‚Œã¦ã„ã¾ã›ã‚“ã€‚ */
     public void setMethod(int method) {
         throw new UnsupportedOperationException("non sense");
     }
@@ -145,7 +145,7 @@ System.err.print(name + ":" +
         // TODO Auto-generated method stub
     }
 
-    /** @throws UnsupportedOperationException ‚±‚Ìƒƒ\ƒbƒh‚ÍƒTƒ|[ƒg‚³‚ê‚Ä‚¢‚Ü‚¹‚ñB */
+    /** @throws UnsupportedOperationException ã“ã®ãƒ¡ã‚½ãƒƒãƒ‰ã¯ã‚µãƒãƒ¼ãƒˆã•ã‚Œã¦ã„ã¾ã›ã‚“ã€‚ */
     public Object getWrappedObject() {
         throw new UnsupportedOperationException("non sense");
     }

@@ -22,7 +22,7 @@ import vavi.util.archive.Entry;
 
 
 /**
- * N88DiskBasic ‚Ì {@link java.util.zip.ZipFile} ‚İ‚½‚¢‚È‚à‚Ì‚Å‚·D
+ * N88DiskBasic ã® {@link java.util.zip.ZipFile} ã¿ãŸã„ãªã‚‚ã®ã§ã™ï¼
  * 
  * @author <a href="mailto:vavivavi@yahoo.co.jp">Naohide Sano</a> (nsano)
  * @version 0.00 010820 nsano initial version <br>
@@ -68,11 +68,11 @@ public class N88DiskBasicFile implements Archive {
         this.diskImage = DiskImage.Factory.readFrom(is);
 
 System.err.println("-fname----:aREP   m: SC");
-    	// ƒfƒBƒŒƒNƒgƒŠ
+    	// ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒª
     	//  1D(5inch)	Track 18           Sector 1 - 12
     	//  2D(5inch)	Track 18 Surface 1 Sector 1 - 12
     	//  2D(8inch)	Track 35 Surface 0 Sector 1 - 22
-    	// 2D ‚Ì‚İ TODO ‚»‚Ì‘¼
+    	// 2D ã®ã¿ TODO ãã®ä»–
     	for (int i = 0; i < 12; i++) {
     	    byte[] data = diskImage.readData(18, 1, i + 1);
     	    for (int j = 0; j < 16; j++) {
@@ -101,8 +101,8 @@ System.err.println();
     	// 1D(5inch) Track 18 Sector 13
     	//  2D(5inch)	Track 18 Surface 1 Sector 13
     	//  2D(8inch)	Track 35 Surface 0 Sector 23
-    	// 0x00		ƒfƒBƒXƒN‘S‘Ì‚Ì‘®« @see Entry.attribte
-    	// 0x01		ˆê“x‚É OPEN ‚Å‚«‚éƒtƒ@ƒCƒ‹”
+    	// 0x00		ãƒ‡ã‚£ã‚¹ã‚¯å…¨ä½“ã®å±æ€§ @see Entry.attribte
+    	// 0x01		ä¸€åº¦ã« OPEN ã§ãã‚‹ãƒ•ã‚¡ã‚¤ãƒ«æ•°
     	// 0x02 - 0xff	BASIC Text
     }
 
@@ -129,7 +129,7 @@ System.err.println();
     }
 
     /**
-     * ƒtƒ@ƒCƒ‹’†‚ÌƒGƒ“ƒgƒŠ‚Ì”‚ğ•Ô‚µ‚Ü‚·B
+     * ãƒ•ã‚¡ã‚¤ãƒ«ä¸­ã®ã‚¨ãƒ³ãƒˆãƒªã®æ•°ã‚’è¿”ã—ã¾ã™ã€‚
      */
     public int size() {
         return entries.size();
@@ -164,7 +164,7 @@ System.err.println();
      *			Surface = Cluster % 2
      *			Sector  = 1 [~ 26]
      * </pre>
-     * TODO 2D ‚Ì‚İ
+     * TODO 2D ã®ã¿
      */
     private byte[][] readCluster(int cluster) {
     	int track   = cluster / 4;
@@ -189,7 +189,7 @@ System.err.println();
     	//  1D(5inch)	Track 18           Sector 14, 15, 16 (all same)
     	//  2D(5inch)	Track 18 Surface 1 Sector 14, 15, 16 (all same)
     	//  2D(8inch)	Track 35 Surface 0 Sector 24, 25, 26 (all same)
-    	// TODO 2D ‚Ì‚İ
+    	// TODO 2D ã®ã¿
     	byte[] data = diskImage.readData(18, 1, 14);
     
     	ByteArrayOutputStream os = new ByteArrayOutputStream();
@@ -203,7 +203,7 @@ System.err.println();
 
             byte[][] tmp = readCluster(c);
 
-            // TODO 2D ‚Ì‚İ
+            // TODO 2D ã®ã¿
             int max = (nc < 0xc1) ? 8 : nc & 0x1f;
             for (int i = 0; i < max; i++) {
                 os.write(tmp[i], 0, tmp[i].length);

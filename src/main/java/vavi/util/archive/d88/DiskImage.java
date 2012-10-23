@@ -11,7 +11,7 @@ import java.io.InputStream;
 
 
 /**
- * ƒfƒBƒXƒNƒCƒ[ƒW‚Å‚·D
+ * ãƒ‡ã‚£ã‚¹ã‚¯ã‚¤ãƒ¡ãƒ¼ã‚¸ã§ã™ï¼
  * 
  * @author <a href="mailto:vavivavi@yahoo.co.jp">Naohide Sano</a> (nsano)
  * @version 0.00 010819 nsano initial version <br>
@@ -24,7 +24,7 @@ public interface DiskImage {
     /** */
     static class Factory {
         /**
-         * TODO header ‚ğ“Ç‚ñ‚ÅƒCƒ[ƒWŒ`®‚ğU‚è•ª‚¯‚é
+         * TODO header ã‚’èª­ã‚“ã§ã‚¤ãƒ¡ãƒ¼ã‚¸å½¢å¼ã‚’æŒ¯ã‚Šåˆ†ã‘ã‚‹
          */
         public static DiskImage readFrom(InputStream is) throws IOException {
             return D88.readFrom(is);

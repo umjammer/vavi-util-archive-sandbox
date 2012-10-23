@@ -16,44 +16,44 @@ import vavi.io.LittleEndianDataInputStream;
 
 
 /**
- * D88 Œ`Ž®‚ÌƒfƒBƒXƒNƒCƒ[ƒW‚Å‚·D
+ * D88 å½¢å¼ã®ãƒ‡ã‚£ã‚¹ã‚¯ã‚¤ãƒ¡ãƒ¼ã‚¸ã§ã™ï¼Ž
  * 
  * <pre>
- *  – ƒwƒbƒ_[•”
- * 	ƒgƒ‰ƒbƒN•”(0 TRACK)
- * 	ƒgƒ‰ƒbƒN•”(1 TRACK)
- * 	E
- * 	E
- * 	E
- * 	ƒgƒ‰ƒbƒN•” (83 TRACK)
- *  •¡”ƒfƒBƒXƒN‚Ìê‡A‚±‚ê‚ç‚Ìƒtƒ@ƒCƒ‹‚ð˜AŒ‹‚µ‚Ü‚·B 
+ *  ï¼Š ãƒ˜ãƒƒãƒ€ãƒ¼éƒ¨
+ * 	ãƒˆãƒ©ãƒƒã‚¯éƒ¨(0 TRACK)
+ * 	ãƒˆãƒ©ãƒƒã‚¯éƒ¨(1 TRACK)
+ * 	ãƒ»
+ * 	ãƒ»
+ * 	ãƒ»
+ * 	ãƒˆãƒ©ãƒƒã‚¯éƒ¨ (83 TRACK)
+ *  è¤‡æ•°ãƒ‡ã‚£ã‚¹ã‚¯ã®å ´åˆã€ã“ã‚Œã‚‰ã®ãƒ•ã‚¡ã‚¤ãƒ«ã‚’é€£çµã—ã¾ã™ã€‚ 
  * 
- *  – ƒwƒbƒ_[•” (ƒTƒCƒY 2B0H)
- * 	offset	size(byte)	“à—e
- * 	0000H	17	ƒfƒBƒXƒN‚Ì–¼‘O(ASCIIZ)
- * 	0011H	 9	ƒŠƒU[ƒu (00H)
- * 	001AH	 1	ƒ‰ƒCƒgƒvƒƒeƒNƒgƒtƒ‰ƒO (00H:‚È‚µ, 10H:‚ ‚è)
- * 	001BH	 1	ƒfƒBƒXƒN‚ÌŽí—Þ (00H: 2D, 10H: 2DD, 20H: 2HD)
- * 	001CH	 4	(DWORD) ƒfƒBƒXƒN‚ÌƒTƒCƒY
- * 	0020H	 4	(DWORD) * 164  ƒgƒ‰ƒbƒNƒf[ƒ^ƒe[ƒuƒ‹ (0-163 tracks)
+ *  ï¼Š ãƒ˜ãƒƒãƒ€ãƒ¼éƒ¨ (ã‚µã‚¤ã‚º 2B0H)
+ * 	offset	size(byte)	å†…å®¹
+ * 	0000H	17	ãƒ‡ã‚£ã‚¹ã‚¯ã®åå‰(ASCIIZ)
+ * 	0011H	 9	ãƒªã‚¶ãƒ¼ãƒ– (00H)
+ * 	001AH	 1	ãƒ©ã‚¤ãƒˆãƒ—ãƒ­ãƒ†ã‚¯ãƒˆãƒ•ãƒ©ã‚° (00H:ãªã—, 10H:ã‚ã‚Š)
+ * 	001BH	 1	ãƒ‡ã‚£ã‚¹ã‚¯ã®ç¨®é¡ž (00H: 2D, 10H: 2DD, 20H: 2HD)
+ * 	001CH	 4	(DWORD) ãƒ‡ã‚£ã‚¹ã‚¯ã®ã‚µã‚¤ã‚º
+ * 	0020H	 4	(DWORD) * 164  ãƒˆãƒ©ãƒƒã‚¯ãƒ‡ãƒ¼ã‚¿ãƒ†ãƒ¼ãƒ–ãƒ« (0-163 tracks)
  * 
- * 	– ƒgƒ‰ƒbƒN•” (ƒTƒCƒY:‰Â•Ï)
- * 	ƒZƒNƒ^[•”‚ð•K—v”˜AŒ‹‚µ‚½‚à‚Ì
+ * 	ï¼Š ãƒˆãƒ©ãƒƒã‚¯éƒ¨ (ã‚µã‚¤ã‚º:å¯å¤‰)
+ * 	ã‚»ã‚¯ã‚¿ãƒ¼éƒ¨ã‚’å¿…è¦æ•°é€£çµã—ãŸã‚‚ã®
  *  
- *  – ƒZƒNƒ^[•”(ƒTƒCƒY:‰Â•Ï)
- * 	offset	size(byte)	“à—e
- * 	0000H	1	ID ‚Ì C
- * 	0001H	1	ID ‚Ì H
- * 	0002H	1	ID ‚Ì R
- * 	0003H	1	ID ‚Ì N
- * 	0004H	2	(WORD) ‚±‚Ìƒgƒ‰ƒbƒN‚É‘¶Ý‚·‚éƒZƒNƒ^[‚Ì”
- * 	0006H	1	‹L˜^–§“x (00H: ”{–§“x, 40H: ’P–§“x)
- * 	0007H	1	DELETED DATA (00H:ƒm[ƒ}ƒ‹ 10H:DELETED DATA)
- * 	0008H	1	ƒXƒe[ƒ^ƒX (00H:ƒm[ƒ}ƒ‹ƒGƒ“ƒh,
- * 			            ‚»‚Ì‘¼ƒGƒ‰[[DISK BIOS‚ª•Ô‚·ƒXƒe[ƒ^ƒX])
- * 	0009H	5	ƒŠƒU[ƒu (00H)
- * 	000EH	2	(WORD) ƒZƒNƒ^[‚ÌƒTƒCƒY
- * 	0010H	‰Â•Ï	(000EH)‚ÅŽ¦‚µ‚½ƒTƒCƒY•ª‚Ìƒf[ƒ^
+ *  ï¼Š ã‚»ã‚¯ã‚¿ãƒ¼éƒ¨(ã‚µã‚¤ã‚º:å¯å¤‰)
+ * 	offset	size(byte)	å†…å®¹
+ * 	0000H	1	ID ã® C
+ * 	0001H	1	ID ã® H
+ * 	0002H	1	ID ã® R
+ * 	0003H	1	ID ã® N
+ * 	0004H	2	(WORD) ã“ã®ãƒˆãƒ©ãƒƒã‚¯ã«å­˜åœ¨ã™ã‚‹ã‚»ã‚¯ã‚¿ãƒ¼ã®æ•°
+ * 	0006H	1	è¨˜éŒ²å¯†åº¦ (00H: å€å¯†åº¦, 40H: å˜å¯†åº¦)
+ * 	0007H	1	DELETED DATA (00H:ãƒŽãƒ¼ãƒžãƒ« 10H:DELETED DATA)
+ * 	0008H	1	ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ (00H:ãƒŽãƒ¼ãƒžãƒ«ã‚¨ãƒ³ãƒ‰,
+ * 			            ãã®ä»–ã‚¨ãƒ©ãƒ¼[DISK BIOSãŒè¿”ã™ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹])
+ * 	0009H	5	ãƒªã‚¶ãƒ¼ãƒ– (00H)
+ * 	000EH	2	(WORD) ã‚»ã‚¯ã‚¿ãƒ¼ã®ã‚µã‚¤ã‚º
+ * 	0010H	å¯å¤‰	(000EH)ã§ç¤ºã—ãŸã‚µã‚¤ã‚ºåˆ†ã®ãƒ‡ãƒ¼ã‚¿
  * </pre>
  *
  * @author <a href="mailto:vavivavi@yahoo.co.jp">Naohide Sano</a> (nsano)

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="Shift_JIS"?>
+<?xml version="1.0" encoding="UTF-8"?>
 
 <!-- ////////////////////////////////////////////////////////////////////// -->
 <!-- Copyright (c) 2003 by Naohide Sano, All rights reserved.               -->
@@ -14,7 +14,7 @@
 
 <project default="run" basedir=".">
 
-  <!-- ƒNƒ‰ƒXƒpƒX‚Ì’è‹` -->
+  <!-- ã‚¯ãƒ©ã‚¹ãƒ‘ã‚¹ã®å®šç¾© -->
   <path id="project.class.path">
     <pathelement location="src" />
     <pathelement location="../.." />
@@ -26,10 +26,10 @@
     </fileset>
   </path>
   
-  <!-- ƒ^[ƒQƒbƒg‚Ì’è‹` -->
+  <!-- ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã®å®šç¾© -->
   
   <!-- clean -->
-  <target name="clean" description="ƒrƒ‹ƒhŠÂ‹«‚ÌƒNƒŠƒA">
+  <target name="clean" description="ãƒ“ãƒ«ãƒ‰ç’°å¢ƒã®ã‚¯ãƒªã‚¢">
     <delete>
       <fileset dir="src">
         <include name="**/*.class" />
@@ -38,7 +38,7 @@
   </target>
   
   <!-- javac supports -->
-  <target name="compile.supports" description="ƒRƒ“ƒpƒCƒ‹ src/**/*.java">
+  <target name="compile.supports" description="ã‚³ãƒ³ãƒ‘ã‚¤ãƒ« src/**/*.java">
     <javac debug="on" deprecation="on">
       <classpath refid="project.class.path" />
       <include name="**/*.java" />
@@ -47,7 +47,7 @@
   </target>
   
   <!-- javac -->
-  <target name="compile" depends="compile.supports" description="ƒRƒ“ƒpƒCƒ‹">
+  <target name="compile" depends="compile.supports" description="ã‚³ãƒ³ãƒ‘ã‚¤ãƒ«">
     <javac debug="on" deprecation="on">
       <classpath refid="project.class.path" />
       <include name="*.java" />
@@ -78,7 +78,7 @@
   </target>
 
   <!-- run -->
-  <target name="t2" depends="compile" description="ƒvƒƒOƒ‰ƒ€‚ÌŽÀs">
+  <target name="t2" depends="compile" description="ãƒ—ãƒ­ã‚°ãƒ©ãƒ ã®å®Ÿè¡Œ">
     <java classname="vavi.util.archive.vavi.D88" fork="yes">
       <classpath refid="project.class.path" />
       <arg value="N88BAS.D88" />
@@ -86,7 +86,7 @@
   </target>
 
   <!-- t3  -->
-  <target name="t3" depends="compile" description="ƒvƒƒOƒ‰ƒ€‚ÌŽÀs">
+  <target name="t3" depends="compile" description="ãƒ—ãƒ­ã‚°ãƒ©ãƒ ã®å®Ÿè¡Œ">
     <java classname="vavi.util.archive.vavi.N88DiskBasicFile" fork="yes">
       <classpath refid="project.class.path" />
       <arg value="N88BAS.D88" />
