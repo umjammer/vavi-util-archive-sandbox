@@ -27,7 +27,7 @@ import vavi.util.archive.Entry;
  * @author <a href="mailto:vavivavi@yahoo.co.jp">Naohide Sano</a> (nsano)
  * @version 0.00 010820 nsano initial version <br>
  *          0.01 021123 nsano rename class <br>
- *          0.02 021123 nsano independ of D88 <br>
+ *          0.02 021123 nsano independent of D88 <br>
  */
 public class N88DiskBasicFile implements Archive {
 
@@ -35,7 +35,7 @@ public class N88DiskBasicFile implements Archive {
     private static String encoding = "MS932";
     
     /** */
-    private Map<String,Entry> entries = new HashMap<String,Entry>();
+    private Map<String,Entry> entries = new HashMap<>();
     /** */
     private DiskImage diskImage;
     /** */
@@ -73,8 +73,24 @@ System.err.println("-fname----:aREP   m: SC");
     	//  2D(5inch)	Track 18 Surface 1 Sector 1 - 12
     	//  2D(8inch)	Track 35 Surface 0 Sector 1 - 22
     	// 2D のみ TODO その他
-    	for (int i = 0; i < 12; i++) {
-    	    byte[] data = diskImage.readData(18, 1, i + 1);
+        int t;
+        int s;
+        switch (diskImage.getDensity()) {
+        case _2D:
+        case _2DD:
+        default:
+            t = 18;
+            s = 1;
+            break;
+        case _2HD:
+            t = 35;
+            s = 0;
+            break;
+        }
+
+        for (int i = 0; i < 12; i++) {
+    	    byte[] data = diskImage.readData(t, s, i + 1);
+//System.err.println(StringUtil.getDump(data));
     	    for (int j = 0; j < 16; j++) {
         		switch (data[j * 16]) {
         		case 0x00:
@@ -220,40 +236,6 @@ System.err.println();
 //System.err.println();
 
     	return new ByteArrayInputStream(os.toByteArray());
-    }
-
-    //-------------------------------------------------------------------------
-
-    /**
-     * java N88DiskBasicFile file
-     */
-    public static void main(String[] args) throws Exception {
-
-        N88DiskBasicFile disk = new N88DiskBasicFile(args[0]);
-System.err.println(disk);
-
-//    	Enumeration e = disk.entries();
-//    	while (e.hasMoreElements()) {
-//    	    int n = 0;
-//            N88DiskBasicEntry entry = (N88DiskBasicEntry) e.nextElement();
-//    	    InputStream is = disk.getInputStream(entry);
-////Debug.dump(is);
-//top:	    while (true) {
-//System.err.println("---- " + n++ + " ----");
-//                for (int y = 0; y < 16; y++) {
-//                    for (int x = 0; x < 16; x++) {
-//            			int c = is.read();
-//            			if (c == -1) {
-//            			    break top;
-//                        }
-//            			String s = "0" + Integer.toHexString(c).toUpperCase();
-//            			System.err.print(s.substring(s.length() - 2) + " ");
-//        		    }
-//        		    System.err.println();
-//        		}
-//        		System.err.println();
-//    	    }
-//    	}
     }
 }
 

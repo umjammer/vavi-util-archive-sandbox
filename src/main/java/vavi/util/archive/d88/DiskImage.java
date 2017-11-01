@@ -20,6 +20,15 @@ public interface DiskImage {
 
     /** */
     byte[] readData(int track, int surface, int sector);
+    
+    public enum Density {
+        _2D,
+        _2DD,
+        _2HD,
+        UNKNOWN
+    }
+    
+    Density getDensity();
 
     /** */
     static class Factory {

@@ -6,8 +6,6 @@
 
 package vavi.util.archive.d88;
 
-import java.io.BufferedInputStream;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
@@ -68,7 +66,7 @@ public class D88 implements DiskImage {
     private Track[] tracks = new Track[164];
 
     /** */
-    private static class Header {
+    public static class Header {
         String name;
 
         int[] reserved = new int[9];
@@ -77,11 +75,11 @@ public class D88 implements DiskImage {
 
         int type;
 
-        final int _2D = 0x00;
+        static final int _2D = 0x00;
 
-        final int _2DD = 0x10;
+        static final int _2DD = 0x10;
 
-        final int _2HD = 0x20;
+        static final int _2HD = 0x20;
 
         int size;
 
@@ -119,6 +117,7 @@ public class D88 implements DiskImage {
 
             Header header = new Header();
 
+            @SuppressWarnings("resource")
             LittleEndianDataInputStream ledis = new LittleEndianDataInputStream(in);
 
             byte[] buf = new byte[17];
@@ -144,7 +143,7 @@ public class D88 implements DiskImage {
     }
 
     /** */
-    private static class Track {
+    public static class Track {
         Sector[] sectors;
 
         void print() {
@@ -238,30 +237,29 @@ public class D88 implements DiskImage {
 
             Sector sector = new Sector();
 
+            @SuppressWarnings("resource")
             LittleEndianDataInputStream ledis = new LittleEndianDataInputStream(in);
 
-            sector.C = ledis.read();
-            sector.H = ledis.read();
-            sector.R = ledis.read();
-            sector.N = ledis.read();
-            sector.number = ledis.readShort();
-            sector.density = ledis.read();
-            sector.isDeleted = ledis.read() == 0x10;
-            sector.status = ledis.read();
-            sector.reserved[0] = ledis.read();
-            sector.reserved[1] = ledis.read();
-            sector.reserved[2] = ledis.read();
-            sector.reserved[3] = ledis.read();
-            sector.reserved[4] = ledis.read();
-            sector.size = ledis.readShort();
+            sector.C = ledis.readUnsignedByte();
+            sector.H = ledis.readUnsignedByte();
+            sector.R = ledis.readUnsignedByte();
+            sector.N = ledis.readUnsignedByte();
+            sector.number = ledis.readUnsignedShort();
+            sector.density = ledis.readByte();
+            sector.isDeleted = ledis.readByte() == 0x10;
+            sector.status = ledis.readByte();
+            sector.reserved[0] = ledis.readByte();
+            sector.reserved[1] = ledis.readByte();
+            sector.reserved[2] = ledis.readByte();
+            sector.reserved[3] = ledis.readByte();
+            sector.reserved[4] = ledis.readByte();
+            sector.size = ledis.readUnsignedShort();
 
             sector.data = new byte[sector.size];
 
-            int l = 0;
-            while (l < sector.size) {
-                l += ledis.read(sector.data, l, sector.size - l);
-            }
+            ledis.readFully(sector.data, 0, sector.size);
 
+            //sector.print();
             return sector;
         }
     }
@@ -272,37 +270,52 @@ public class D88 implements DiskImage {
         D88 d88 = new D88();
 
         d88.header = Header.readFrom(in);
-
+        //d88.header.print();
+        
         for (int i = 0; i < 164; i++) {
             if (d88.header.tracks[i] != 0) {
 //                long l = 0; // TODO
 //                while (l < d88.header.tracks[i]) {
 //                    l += in.skip(d88.header.tracks[i] - l);
 //                }
-//                d88.tracks[i] = Track.readFrom(in);
+                d88.tracks[i] = Track.readFrom(in);
             }
         }
 
         return d88;
     }
 
-    /** */
+    /* */
     public byte[] readData(int track, int surface, int sector) {
         return tracks[track * 2 + surface].getSector(sector).data;
     }
-
-    /** */
-    public static void main(String[] args) throws Exception {
-
-        InputStream is = new BufferedInputStream(new FileInputStream(args[0]));
-
-        D88 d88 = D88.readFrom(is);
-        d88.header.print();
-        for (int i = 0; i < 164; i++) {
-            if (d88.tracks[i] != null) {
-                d88.tracks[i].print();
-            }
+    
+    /* */
+    public Density getDensity() {
+        switch (header.type) {
+        case Header._2D:
+            return Density._2D;
+        case Header._2DD:
+            return Density._2DD;
+        case Header._2HD:
+            return Density._2HD;
+        default:
+            return Density.UNKNOWN;
         }
+    }
+
+    /**
+     * @return the header
+     */
+    public Header getHeader() {
+        return header;
+    }
+
+    /**
+     * @return the tracks
+     */
+    public Track[] getTracks() {
+        return tracks;
     }
 }
 
