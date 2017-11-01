@@ -19,10 +19,9 @@
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
         <configuration>
-          <source>6</source>
-          <target>6</target>
-          <encoding>Windows-31J</encoding>
-          <compilerVersion>6</compilerVersion>
+          <source>1.8</source>
+          <target>1.8</target>
+          <encoding>UTF-8</encoding>
         </configuration>
       </plugin>
       <plugin>
@@ -71,26 +70,43 @@
     </pluginManagement>
   </build>
   <repositories>
+    <repository>
+      <id>klab-commons-cli-mvn-repo</id>
+      <url>https://raw.github.com/umjammer/klab-commons-cli/mvn-repo/</url>
+      <snapshots>
+        <enabled>true</enabled>
+        <updatePolicy>always</updatePolicy>
+      </snapshots>
+    </repository>
+    <repository>
+      <id>jitpack.io</id>
+      <url>https://jitpack.io</url>
+    </repository>
   </repositories>
   <dependencies>
-  	<dependency>
-  		<groupId>vavi</groupId>
-  		<artifactId>vavi-commons</artifactId>
-  		<version>1.0.0</version>
-  		<optional>false</optional>
-  	</dependency>
-  	<dependency>
-  		<groupId>vavi</groupId>
-  		<artifactId>vavi-util-archive</artifactId>
-  		<version>1.0.0</version>
-  		<optional>false</optional>
-  	</dependency>
-  	<dependency>
-  		<groupId>junit</groupId>
-  		<artifactId>junit</artifactId>
-  		<version>4.5</version>
-  		<scope>test</scope>
-  		<optional>false</optional>
-  	</dependency>
+    <dependency>
+      <groupId>com.github.umjammer</groupId>
+      <artifactId>vavi-commons</artifactId>
+      <version>1.0.6</version>
+      <optional>false</optional>
+    </dependency>
+    <dependency>
+      <groupId>vavi</groupId>
+      <artifactId>vavi-util-archive</artifactId>
+      <version>1.0.0</version>
+      <optional>false</optional>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.5</version>
+      <scope>test</scope>
+      <optional>false</optional>
+    </dependency>
+    <dependency>
+      <groupId>org.klab</groupId>
+      <artifactId>klab-commons-cli</artifactId>
+      <version>1.2.4</version>
+    </dependency>
   </dependencies>
 </project>
