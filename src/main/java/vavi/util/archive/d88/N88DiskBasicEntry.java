@@ -36,12 +36,10 @@ public class N88DiskBasicEntry implements Entry {
     private int startCluster;
 
     /** */
-    protected N88DiskBasicEntry(String name,
-                				int attribute,
-                				int startCluster) {
-    	this.name         = name;
-    	this.attribute    = attribute;
-    	this.startCluster = startCluster;
+    protected N88DiskBasicEntry(String name, int attribute, int startCluster) {
+        this.name = name;
+        this.attribute = attribute;
+        this.startCluster = startCluster;
     }
 
     /** */
@@ -50,16 +48,16 @@ public class N88DiskBasicEntry implements Entry {
     }
 
     /** */
-    void print() {
-System.err.print(name + ":" +
-		 ((attribute & NOT_ASCII)        != 0 ? "*" : ".") +
-		 ((attribute & READ_AFTER_WRITE) != 0 ? "*" : ".") +
-		 ((attribute & P_OPTION_FILE)    != 0 ? "*" : ".") +
-		 ((attribute & WRITE_PROTECT)    != 0 ? "*" : ".") +
-		 "   " +
-		 ((attribute & MACHINE_LANGUAGE) != 0 ? "*" : ".") +
-		 ": " +
-		 Integer.toHexString(startCluster));
+    public String toString() {
+        return name + ":" +
+                ((attribute & NOT_ASCII)        != 0 ? "*" : ".") +
+                ((attribute & READ_AFTER_WRITE) != 0 ? "*" : ".") +
+                ((attribute & P_OPTION_FILE)    != 0 ? "*" : ".") +
+                ((attribute & WRITE_PROTECT)    != 0 ? "*" : ".") +
+                "   " +
+                ((attribute & MACHINE_LANGUAGE) != 0 ? "*" : ".") +
+                ": " +
+                Integer.toHexString(startCluster);
     }
 
     /** @throws UnsupportedOperationException このメソッドはサポートされていません。 */

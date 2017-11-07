@@ -6,7 +6,11 @@
 
 package vavi.util.archive.d88;
 
+import java.io.InputStream;
+
 import org.junit.Test;
+
+import vavi.util.archive.Entry;
 
 import static org.junit.Assert.fail;
 
@@ -34,28 +38,27 @@ public class N88DiskBasicFileTest {
         N88DiskBasicFile disk = new N88DiskBasicFile(args[0]);
 //System.err.println(disk);
 
-//      Enumeration e = disk.entries();
-//      while (e.hasMoreElements()) {
-//          int n = 0;
-//            N88DiskBasicEntry entry = (N88DiskBasicEntry) e.nextElement();
-//          InputStream is = disk.getInputStream(entry);
-////Debug.dump(is);
-//top:      while (true) {
-//System.err.println("---- " + n++ + " ----");
-//                for (int y = 0; y < 16; y++) {
-//                    for (int x = 0; x < 16; x++) {
-//                      int c = is.read();
-//                      if (c == -1) {
-//                          break top;
-//                        }
-//                      String s = "0" + Integer.toHexString(c).toUpperCase();
-//                      System.err.print(s.substring(s.length() - 2) + " ");
-//                  }
-//                  System.err.println();
-//              }
-//              System.err.println();
-//          }
-//      }
+        for (Entry e : disk.entries()) {
+            int n = 0;
+            N88DiskBasicEntry entry = (N88DiskBasicEntry) e;
+            InputStream is = disk.getInputStream(entry);
+//Debug.dump(is);
+            top: while (true) {
+                System.err.println("---- " + n++ + " ----");
+                for (int y = 0; y < 16; y++) {
+                    for (int x = 0; x < 16; x++) {
+                        int c = is.read();
+                        if (c == -1) {
+                            break top;
+                        }
+                        String s = "0" + Integer.toHexString(c).toUpperCase();
+                        System.err.print(s.substring(s.length() - 2) + " ");
+                    }
+                    System.err.println();
+                }
+                System.err.println();
+            }
+        }
     }
 }
 

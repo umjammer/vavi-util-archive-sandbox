@@ -92,7 +92,7 @@ public class StuffIt {
         /** number of files in archive */
         int numFiles;
         /** length of entire archive incl. */
-        long	arcLength;
+        long    arcLength;
         /**
          * hdr. -- for verification
          * rLau -- for verification
@@ -141,19 +141,19 @@ public class StuffIt {
 
     /*
      * file format is:
-     *	sitArchiveHdr
-     *		file1Hdr
-     *			file1RsrcFork
-     *			file1DataFork
-     *		file2Hdr
-     *			file2RsrcFork
-     *			file2DataFork
-     *		.
-     *		.
-     *		.
-     *		fileNHdr
-     *			fileNRsrcFork
-     *			fileNDataFork
+     *    sitArchiveHdr
+     *        file1Hdr
+     *            file1RsrcFork
+     *            file1DataFork
+     *        file2Hdr
+     *            file2RsrcFork
+     *            file2DataFork
+     *        .
+     *        .
+     *        .
+     *        fileNHdr
+     *            fileNRsrcFork
+     *            fileNDataFork
      */
 
     /* compression methods */
@@ -234,7 +234,7 @@ public class StuffIt {
     private static final int I_MTIMOFF = 95;
 
     /** offset to byte with Inited flag */
-//  private static final int INITED_OFF	= I_FLAGOFF;
+//  private static final int INITED_OFF    = I_FLAGOFF;
     /** mask to '&' with byte to reset it */
 //  private static final int INITED_MASK = ~1;
 
@@ -373,8 +373,8 @@ System.err.println("Can't read file header");
 
     /**
      * Extract all files from the current folder.
-     * @param parent	name of parent folder
-     * @param skip	true to skip all files and folders in this one
+     * @param parent    name of parent folder
+     * @param skip    true to skip all files and folders in this one
      *                  false to extract them
      * @return 1 if came an endFolder record
      *         0 if EOF
@@ -398,46 +398,46 @@ System.err.println("Can't read file header");
 
             if (filehdr.compRMethod == endFolder &&
                 filehdr.compDMethod == endFolder) {
-                status = 1;		// finished with this folder
+                status = 1;        // finished with this folder
                 break;
             } else if (filehdr.compRMethod == startFolder &&
                      filehdr.compDMethod == startFolder) {
                 if (!listonly && rstat == H_WRITE && !flatten) {
                     File file = new File(new String(uname));
-                    if (!file.exists()) {	// directory doesn't exist
+                    if (!file.exists()) {    // directory doesn't exist
                         if (!file.mkdirs()) {
 System.err.println("Can't create subdirectory " + uname);
                             return -1;
                         }
-                    } else {		// something exists with this name
+                    } else {        // something exists with this name
                         if (!file.isDirectory()) {
 System.err.println("Directory name " + uname + " already in use");
                             return -1;
                         }
                     }
-//  	            if (chdir(uname) == -1) {
+//                  if (chdir(uname) == -1) {
 //System.err.println("Can't chdir to " + uname);
 //                      return -1;
-//  	            }
+//                  }
                     name = parent + ":" + new String(uname);
                 }
                 depth++;
                 status = extract(new String(name), skipit);
                 depth--;
                 if (status != 1) {
-                    break;		// problem with folder
+                    break;        // problem with folder
                 }
-                if (depth == 0)	{ // count how many top-level files done
+                if (depth == 0)    { // count how many top-level files done
                     numfiles++;
                 }
-//  	        if (!flatten) {
-//  	            chdir("..");
-//  	        }
+//              if (!flatten) {
+//                  chdir("..");
+//              }
             } else {
                 if ((status = extractFile(filehdr, skipit)) != 1) {
                     break;
                 }
-                if (depth == 0)	{ // count how many top-level files done
+                if (depth == 0)    { // count how many top-level files done
                     numfiles++;
                 }
             }
@@ -465,19 +465,19 @@ System.err.println("Directory name " + uname + " already in use");
         // figure out what file names to use and what to do
         if (!listonly && !skip) {
             switch (mode) {
-            case FULL: 		// do both rsrc and data forks
+            case FULL:         // do both rsrc and data forks
                 f_data = getAsciizString(uname) + ".data";
                 f_rsrc = getAsciizString(uname) + ".rsrc";
                 f_info = getAsciizString(uname) + ".info";
                 break;
-            case RSRC: 		// rsrc fork only
+            case RSRC:         // rsrc fork only
                 f_rsrc = getAsciizString(uname) + ".rsrc";
                 break;
-            case DATA: 		// data fork only
+            case DATA:         // data fork only
             case TEXT:
                 f_data = getAsciizString(uname);
                 break;
-            case DUMP: 		// for debugging, dump data as is
+            case DUMP:         // for debugging, dump data as is
                 f_data = getAsciizString(uname) + ".ddump";
                 f_rsrc = getAsciizString(uname) + ".rdump";
                 fh.compRMethod = fh.compDMethod = noComp;
@@ -585,7 +585,7 @@ System.err.println("Can't read file header");
 
         // read in the next file header, which could be folder start/end record
         n = infp.read(hdr, 0, FILEHDRSIZE);
-        if (n == 0) {			// return 0 on EOF
+        if (n == 0) {            // return 0 on EOF
             return H_EOF;
         } else if (n != FILEHDRSIZE) {
 System.err.println("Can't read file header");
@@ -651,7 +651,7 @@ System.err.println("Header CRC mismatch: got 0x" + StringUtil.toHex4(f.hdrCRC) +
         isfolder = f.compRMethod == startFolder && f.compDMethod == startFolder;
 
         // list the file name if verbose or listonly mode, also if query mode
-        if (skip) {	// skip = 1 if skipping all in this folder
+        if (skip) {    // skip = 1 if skipping all in this folder
             write_it = false;
         } else {
             write_it = true;
@@ -668,7 +668,7 @@ System.err.println("Header CRC mismatch: got 0x" + StringUtil.toHex4(f.hdrCRC) +
                                        ", data=" + f.dataLength +
                                        ", rsrc=" + f.rsrcLength);
                 }
-                if (query) {	// if querying, check with the boss
+                if (query) {    // if querying, check with the boss
                     System.out.println(" ? ");
                     System.in.read(temp, 0, temp.length - 1);
                     tp = 0;
@@ -681,7 +681,7 @@ System.err.println("Header CRC mismatch: got 0x" + StringUtil.toHex4(f.hdrCRC) +
                             tp++;
                         }
                     }
-                } else {		// otherwise, terminate the line
+                } else {        // otherwise, terminate the line
                     System.out.println();
                 }
             }
@@ -719,16 +719,16 @@ System.err.println("Header CRC mismatch: got 0x" + StringUtil.toHex4(f.hdrCRC) +
         OutputStream outf = null;
 
         int crc = INIT_CRC;
-        chkcrc = true;		// usually can check the CRC
+        chkcrc = true;        // usually can check the CRC
 
         if (checkAccess(new String(fname)) == -1) {
-            infp.skip(ibytes);	// SEEK_CUR
-            chkcrc = false;	// inhibit crc check if file not written
+            infp.skip(ibytes);    // SEEK_CUR
+            chkcrc = false;    // inhibit crc check if file not written
             return -1;
         }
 
         switch (type) {
-        case noComp: 		// no compression
+        case noComp:         // no compression
             try {
                 outf = new FileOutputStream(new String(fname));
             } catch (IOException e) {
@@ -747,7 +747,7 @@ System.err.println("Header CRC mismatch: got 0x" + StringUtil.toHex4(f.hdrCRC) +
             }
             outf.close();
             break;
-        case rleComp: 		// run length encoding
+        case rleComp:         // run length encoding
             try {
                 outf = new FileOutputStream(new String(fname));
             } catch (IOException e) {
@@ -757,10 +757,10 @@ System.err.println("Header CRC mismatch: got 0x" + StringUtil.toHex4(f.hdrCRC) +
             while (ibytes > 0) {
                 ch = infp.read();
                 ibytes--;
-                if (ch == 0x90) {	// see if its the repeat marker
-                    n = infp.read();	// get the repeat count
+                if (ch == 0x90) {    // see if its the repeat marker
+                    n = infp.read();    // get the repeat count
                     ibytes--;
-                    if (n == 0) {	// 0x90 was really an 0x90
+                    if (n == 0) {    // 0x90 was really an 0x90
                         iobuf[0] = (byte) 0x90;
                         crc = updateCrc(crc, iobuf, 1);
                         outc(iobuf, 1, outf);
@@ -781,11 +781,11 @@ System.err.println("Header CRC mismatch: got 0x" + StringUtil.toHex4(f.hdrCRC) +
             }
             outf.close();
             break;
-        case lzwComp: 		// LZW compression
+        case lzwComp:         // LZW compression
             String temp = COMPRESS + " -d -c -n -b 14 ";
             if (txtmode) {
                 temp += "| tr \'\\015\' \'\\012\' ";
-                chkcrc = false;		// can't check CRC in this case
+                chkcrc = false;        // can't check CRC in this case
             }
             temp += "> '";
             temp += new String(fname);
@@ -825,7 +825,7 @@ System.err.println("Header CRC mismatch: got 0x" + StringUtil.toHex4(f.hdrCRC) +
                 is.close();
             }
             break;
-        case hufComp: 		// Huffman compression
+        case hufComp:         // Huffman compression
             try {
                 outf = new FileOutputStream(new String(fname));
             } catch (IOException e) {
@@ -833,7 +833,7 @@ System.err.println("Header CRC mismatch: got 0x" + StringUtil.toHex4(f.hdrCRC) +
                 System.exit(1);
             }
             nodeptr = 0;
-            bit = 0;		// put us on a byte boundary
+            bit = 0;        // put us on a byte boundary
             read_tree();
             while (obytes > 0) {
                 n = (obytes > IOBUFSIZ) ? IOBUFSIZ : (int) obytes;
@@ -847,7 +847,7 @@ System.err.println("Header CRC mismatch: got 0x" + StringUtil.toHex4(f.hdrCRC) +
             break;
         default:
 System.err.println("Unknown compression method: " + type);
-            chkcrc = false;	// inhibit crc check if file not written
+            chkcrc = false;    // inhibit crc check if file not written
             return -1;
         }
 
@@ -938,9 +938,9 @@ System.err.println("Unknown compression method: " + type);
             }
             b = np.byte_;
         } else {
-            if (bit == 0) {	// on byte boundary?
+            if (bit == 0) {    // on byte boundary?
                 b = infp.read();
-            } else {		// no, put a byte together
+            } else {        // no, put a byte together
                 b = 0;
                 for (int i = 8; i > 0; i--) {
                     b = (b << 1) + getbit();

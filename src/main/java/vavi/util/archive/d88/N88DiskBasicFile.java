@@ -89,16 +89,16 @@ System.err.println("-fname----:aREP   m: SC");
         }
 
         for (int i = 0; i < 12; i++) {
-    	    byte[] data = diskImage.readData(t, s, i + 1);
+            byte[] data = diskImage.readData(t, s, i + 1);
 //System.err.println(StringUtil.getDump(data));
-    	    for (int j = 0; j < 16; j++) {
-        		switch (data[j * 16]) {
-        		case 0x00:
-System.err.println("killed");
-        		    break;
-        		case (byte) 0xff:
+            for (int j = 0; j < 16; j++) {
+                switch (data[j * 16]) {
+                case 0x00:
+                    System.err.println("killed");
+                    break;
+                case (byte) 0xff:
 //System.err.println("not used");
-        		    break;
+                    break;
                 default:
                     String name = new String(data, j * 16, 6, encoding) + "." +
                                   new String(data, j * 16 + 6, 3, encoding);
@@ -106,20 +106,19 @@ System.err.println("killed");
                                                                     data[j * 16 + 9],
                                                                     data[j * 16 + 10] & 0xff);
                     entries.put(name, entry);
-entry.print();
-System.err.println();
+System.err.println(entry);
                     break;
-        		}
-    	    }
-    	}
+                }
+            }
+        }
 
-    	// ID Sector
-    	// 1D(5inch) Track 18 Sector 13
-    	//  2D(5inch)	Track 18 Surface 1 Sector 13
-    	//  2D(8inch)	Track 35 Surface 0 Sector 23
-    	// 0x00		ディスク全体の属性 @see Entry.attribte
-    	// 0x01		一度に OPEN できるファイル数
-    	// 0x02 - 0xff	BASIC Text
+        // ID Sector
+        // 1D(5inch)  Track 18 Sector 13
+        //  2D(5inch) Track 18 Surface 1 Sector 13
+        //  2D(8inch) Track 35 Surface 0 Sector 23
+        // 0x00 ディスク全体の属性 @see Entry.attribte
+        // 0x01 一度に OPEN できるファイル数
+        // 0x02 - 0xff BASIC Text
     }
 
     /** */
@@ -168,52 +167,52 @@ System.err.println();
     /**
      * Cluster
      * <pre>
-     *  1D (5inch)	Cluster = Track * 2 + Sector / 9
-     *			Track   = Cluster / 2
-     *			Sector  = (Cluster % 2) * 8 + 1 [~ 8]
-     *  2D (5inch)	Cluster = Track * 4 + Surface * 2 + Sector / 9
-     *			Track   = Cluster / 4
-     *			Surface = (Cluster % 4) / 2
-     *			Sector  = (Cluster % 2) * 8 + 1 [~ 8]
-     *  2D (8inch)	Cluster = Track * 2 + Surface
-     *			Track   = Cluster / 2
-     *			Surface = Cluster % 2
-     *			Sector  = 1 [~ 26]
+     *  1D (5inch)  Cluster = Track * 2 + Sector / 9
+     *              Track   = Cluster / 2
+     *              Sector  = (Cluster % 2) * 8 + 1 [~ 8]
+     *  2D (5inch)  Cluster = Track * 4 + Surface * 2 + Sector / 9
+     *              Track   = Cluster / 4
+     *              Surface = (Cluster % 4) / 2
+     *              Sector  = (Cluster % 2) * 8 + 1 [~ 8]
+     *  2D (8inch)  Cluster = Track * 2 + Surface
+     *              Track   = Cluster / 2
+     *              Surface = Cluster % 2
+     *              Sector  = 1 [~ 26]
      * </pre>
      * TODO 2D のみ
      */
     private byte[][] readCluster(int cluster) {
-    	int track   = cluster / 4;
-    	int surface = (cluster % 4) / 2;
-    	int sector  = (cluster % 2) * 8 + 1;
-    
-    	byte[][] data = new byte[8][];
-    
-    	for (int i = 0; i < 8; i++) {
-    	    data[i] = diskImage.readData(track, surface, sector + i);
-//System.err.println(Integer.toHexString(cluster)+": "+track+", "+surface+", "+(sector+i));
-    	}
+        int track = cluster / 4;
+        int surface = (cluster % 4) / 2;
+        int sector = (cluster % 2) * 8 + 1;
 
-    	return data;
+        byte[][] data = new byte[8][];
+
+        for (int i = 0; i < 8; i++) {
+            data[i] = diskImage.readData(track, surface, sector + i);
+//System.err.println(Integer.toHexString(cluster)+": "+track+", "+surface+", "+(sector+i));
+        }
+
+        return data;
     }
 
     /**
      * @param entry
      */
     public InputStream getInputStream(Entry entry) {
-    	// FAT
-    	//  1D(5inch)	Track 18           Sector 14, 15, 16 (all same)
-    	//  2D(5inch)	Track 18 Surface 1 Sector 14, 15, 16 (all same)
-    	//  2D(8inch)	Track 35 Surface 0 Sector 24, 25, 26 (all same)
-    	// TODO 2D のみ
-    	byte[] data = diskImage.readData(18, 1, 14);
-    
-    	ByteArrayOutputStream os = new ByteArrayOutputStream();
-    
-    	int c = ((int[]) entry.getExtra())[1]; // startCluster
+        // FAT
+        //  1D(5inch)	Track 18           Sector 14, 15, 16 (all same)
+        //  2D(5inch)	Track 18 Surface 1 Sector 14, 15, 16 (all same)
+        //  2D(8inch)	Track 35 Surface 0 Sector 24, 25, 26 (all same)
+        // TODO 2D のみ
+        byte[] data = diskImage.readData(18, 1, 14);
+
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+
+        int c = ((int[]) entry.getExtra())[1]; // startCluster
 //System.err.print(" " + Integer.toHexString(nc));
 
-    	while (true) {
+        while (true) {
 
             int nc = data[c] & 0xff;
 
@@ -231,11 +230,11 @@ System.err.println();
                 break;
             }
 
-    	    c = nc;
-    	}
+            c = nc;
+        }
 //System.err.println();
 
-    	return new ByteArrayInputStream(os.toByteArray());
+        return new ByteArrayInputStream(os.toByteArray());
     }
 }
 
