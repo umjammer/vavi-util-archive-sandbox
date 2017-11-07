@@ -68,11 +68,11 @@ public class N88DiskBasicFile implements Archive {
         this.diskImage = DiskImage.Factory.readFrom(is);
 
 System.err.println("-fname----:aREP   m: SC");
-    	// ディレクトリ
-    	//  1D(5inch)	Track 18           Sector 1 - 12
-    	//  2D(5inch)	Track 18 Surface 1 Sector 1 - 12
-    	//  2D(8inch)	Track 35 Surface 0 Sector 1 - 22
-    	// 2D のみ TODO その他
+        // ディレクトリ
+        //  1D(5inch)    Track 18           Sector 1 - 12
+        //  2D(5inch)    Track 18 Surface 1 Sector 1 - 12
+        //  2D(8inch)    Track 35 Surface 0 Sector 1 - 22
+        // 2D のみ TODO その他
         int t;
         int s;
         switch (diskImage.getDensity()) {
@@ -201,9 +201,9 @@ System.err.println(entry);
      */
     public InputStream getInputStream(Entry entry) {
         // FAT
-        //  1D(5inch)	Track 18           Sector 14, 15, 16 (all same)
-        //  2D(5inch)	Track 18 Surface 1 Sector 14, 15, 16 (all same)
-        //  2D(8inch)	Track 35 Surface 0 Sector 24, 25, 26 (all same)
+        //  1D(5inch)    Track 18           Sector 14, 15, 16 (all same)
+        //  2D(5inch)    Track 18 Surface 1 Sector 14, 15, 16 (all same)
+        //  2D(8inch)    Track 35 Surface 0 Sector 24, 25, 26 (all same)
         // TODO 2D のみ
         byte[] data = diskImage.readData(18, 1, 14);
 

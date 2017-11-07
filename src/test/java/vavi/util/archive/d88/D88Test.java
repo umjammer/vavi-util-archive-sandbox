@@ -16,7 +16,7 @@ import static org.junit.Assert.*;
 
 
 /**
- * D88Test. 
+ * D88Test.
  *
  * @author <a href="mailto:umjammer@gmail.com">Naohide Sano</a> (umjammer)
  * @version 0.00 2014/06/08 umjammer initial version <br>

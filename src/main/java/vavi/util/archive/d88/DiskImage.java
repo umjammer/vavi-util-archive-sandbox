@@ -12,7 +12,7 @@ import java.io.InputStream;
 
 /**
  * ディスクイメージです．
- * 
+ *
  * @author <a href="mailto:vavivavi@yahoo.co.jp">Naohide Sano</a> (nsano)
  * @version 0.00 010819 nsano initial version <br>
  */

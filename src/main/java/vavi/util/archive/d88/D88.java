@@ -24,8 +24,8 @@ import vavi.io.LittleEndianDataInputStream;
  *     ・
  *     ・
  *     トラック部 (83 TRACK)
- *  複数ディスクの場合、これらのファイルを連結します。 
- * 
+ *  複数ディスクの場合、これらのファイルを連結します。
+ *
  *  ＊ ヘッダー部 (サイズ 2B0H)
  *     offset    size(byte)    内容
  *     0000H    17    ディスクの名前(ASCIIZ)

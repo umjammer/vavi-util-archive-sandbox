@@ -11,7 +11,7 @@ import vavi.util.archive.Entry;
 
 /**
  * N88 ディスクです．
- * 
+ *
  * @author <a href="mailto:vavivavi@yahoo.co.jp">Naohide Sano</a> (nsano)
  * @version 0.00 010820 nsano initial version <br>
  */
@@ -77,7 +77,7 @@ public class N88DiskBasicEntry implements Entry {
     }
 
     /**
-     * @return Integer[] 0: attribute, 1: startCluster   
+     * @return Integer[] 0: attribute, 1: startCluster
      */
     public Object getExtra() {
         return new int[] { attribute, startCluster };

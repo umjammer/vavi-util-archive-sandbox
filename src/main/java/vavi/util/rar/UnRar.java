@@ -36,9 +36,9 @@ import vavi.util.win32.DateUtil;
 
 /**
  * UnRar.
- * 
+ *
  * TODO 未完成
- * 
+ *
  * @author <a href="mailto:vavivavi@yahoo.co.jp">Naohide Sano</a> (nsano)
  * @version 0.00 021023 nsano initial version <br>
  */
@@ -1313,10 +1313,10 @@ public class UnRar {
         int brokenFile = 0;
         int firstFile;
 
-GET_NEXT_ARCHIVE: 
+GET_NEXT_ARCHIVE:
 
         while (readArcName() != 0) {
-// SKIP_TO_FIRST_VOL: 
+// SKIP_TO_FIRST_VOL:
             totalFileCount = 0;
             allArgsUsed = false;
             firstFile = 1;
@@ -1736,7 +1736,7 @@ GET_NEXT_ARCHIVE:
                             }
 
                             convertDate(newLhd.fileTime);
-                            System.err.printf(" %2.2s-%2.2s-%2.2s %2.2s:%2.2s ", 
+                            System.err.printf(" %2.2s-%2.2s-%2.2s %2.2s:%2.2s ",
                                         dateStr, dateStr + 2, dateStr + 4,
                                         dateStr + 6, dateStr + 8
                             );
@@ -1992,7 +1992,7 @@ Debug.println("mainCommand: " + mainCommand);
 // rdwrfn
 
     /**
-     * @throws IOException 
+     * @throws IOException
      */
     private int unpRead(byte[] addr, int off, int count) throws IOException {
         int retCode = 0;
@@ -2295,7 +2295,7 @@ Debug.println("mainCommand: " + mainCommand);
     /** */
     private int readArcName() {
         arcFileName = nextArgName[argsUsed];
-Debug.println(arcFileName);        
+Debug.println(arcFileName);
         if (arcCount == 0) {
             return 0;
         }
@@ -3005,7 +3005,7 @@ Debug.println(arcFileName);
     }
 
 // unpold
-    
+
     private int flagBuf;
     private int lCount;
     private int flagsCnt;
