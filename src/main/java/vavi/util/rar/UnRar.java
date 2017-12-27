@@ -39,7 +39,7 @@ import vavi.util.win32.DateUtil;
  *
  * TODO 未完成
  *
- * @author <a href="mailto:vavivavi@yahoo.co.jp">Naohide Sano</a> (nsano)
+ * @author <a href="mailto:umjammer@gmail.com">Naohide Sano</a> (nsano)
  * @version 0.00 021023 nsano initial version <br>
  */
 public class UnRar {

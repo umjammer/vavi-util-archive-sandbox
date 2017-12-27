@@ -54,7 +54,7 @@ import vavi.io.LittleEndianDataInputStream;
  *     0010H    可変    (000EH)で示したサイズ分のデータ
  * </pre>
  *
- * @author <a href="mailto:vavivavi@yahoo.co.jp">Naohide Sano</a> (nsano)
+ * @author <a href="mailto:umjammer@gmail.com">Naohide Sano</a> (nsano)
  * @version 0.00 010819 nsano initial version <br>
  */
 public class D88 implements DiskImage {

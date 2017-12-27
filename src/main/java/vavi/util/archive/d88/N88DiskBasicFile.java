@@ -24,7 +24,7 @@ import vavi.util.archive.Entry;
 /**
  * N88DiskBasic の {@link java.util.zip.ZipFile} みたいなものです．
  * 
- * @author <a href="mailto:vavivavi@yahoo.co.jp">Naohide Sano</a> (nsano)
+ * @author <a href="mailto:umjammer@gmail.com">Naohide Sano</a> (nsano)
  * @version 0.00 010820 nsano initial version <br>
  *          0.01 021123 nsano rename class <br>
  *          0.02 021123 nsano independent of D88 <br>
