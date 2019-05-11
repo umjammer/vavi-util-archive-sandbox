@@ -6,13 +6,21 @@
 
 package vavi.util.archive.d88;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.nio.channels.Channels;
+import java.nio.channels.FileChannel;
+import java.nio.channels.ReadableByteChannel;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import vavi.util.archive.Entry;
 
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.fail;
 
 
 /**
@@ -38,12 +46,46 @@ public class N88DiskBasicFileTest {
         N88DiskBasicFile disk = new N88DiskBasicFile(args[0]);
 //System.err.println(disk);
 
+        Path dir = Paths.get(args[1]);
+        if (!Files.exists(dir)) {
+            Files.createDirectories(dir);
+        }
+
+        for (Entry e : disk.entries()) {
+            N88DiskBasicEntry entry = (N88DiskBasicEntry) e;
+            String name = entry.getName();
+            if (name.endsWith(".IMG")) {
+                InputStream is = disk.getInputStream(entry);
+                File file = Paths.get(args[1], name).toFile();
+System.err.println(entry.getName() + " -> " + file);
+                ReadableByteChannel rc = Channels.newChannel(is);
+                FileChannel wc = new FileOutputStream(file).getChannel();
+                wc.transferFrom(rc, 0, is.available());
+                wc.close();
+            }
+        }
+    }
+
+    /**
+     * java N88DiskBasicFile file
+     */
+    public static void main2(String[] args) throws Exception {
+
+        N88DiskBasicFile disk = new N88DiskBasicFile(args[0]);
+//System.err.println(disk);
+
+        Path dir = Paths.get(args[1]);
+        if (!Files.exists(dir)) {
+            Files.createDirectories(dir);
+        }
+
         for (Entry e : disk.entries()) {
             int n = 0;
             N88DiskBasicEntry entry = (N88DiskBasicEntry) e;
             InputStream is = disk.getInputStream(entry);
 //Debug.dump(is);
-            top: while (true) {
+/*
+top:        while (true) {
                 System.err.println("---- " + n++ + " ----");
                 for (int y = 0; y < 16; y++) {
                     for (int x = 0; x < 16; x++) {
@@ -58,6 +100,7 @@ public class N88DiskBasicFileTest {
                 }
                 System.err.println();
             }
+*/
         }
     }
 }

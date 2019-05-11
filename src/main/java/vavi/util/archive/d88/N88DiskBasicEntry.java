@@ -44,7 +44,8 @@ public class N88DiskBasicEntry implements Entry {
 
     /** */
     public String getName() {
-        return name;
+        String[] pair = name.split("\\.");
+        return pair[0].trim() + (pair[1].trim().length() > 0 ? "." + pair[1].trim() : "");
     }
 
     /** */
@@ -90,8 +91,8 @@ public class N88DiskBasicEntry implements Entry {
 
     /** @see vavi.util.archive.Entry#getSize() */
     public long getSize() {
-        // TODO Auto-generated method stub
-        return 0;
+        // TODO ほすぃ～
+        throw new UnsupportedOperationException("not fixed until Archive#getInputStream(Entry)");
     }
 
     /** @see vavi.util.archive.Entry#getTime() */

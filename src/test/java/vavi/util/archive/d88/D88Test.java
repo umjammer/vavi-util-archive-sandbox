@@ -10,9 +10,9 @@ import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.InputStream;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 
 /**
@@ -34,7 +34,7 @@ public class D88Test {
         InputStream is = new BufferedInputStream(new FileInputStream(args[0]));
 
         D88 d88 = D88.readFrom(is);
-        //d88.getHeader().print();
+//d88.getHeader().print();
         for (int i = 0; i < 164; i++) {
             if (d88.getTracks()[i] != null) {
                 d88.getTracks()[i].print();

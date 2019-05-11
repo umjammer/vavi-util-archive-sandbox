@@ -33,7 +33,7 @@ public class N88DiskBasicFile implements Archive {
 
     /** */
     private static String encoding = "MS932";
-    
+
     /** */
     private Map<String,Entry> entries = new HashMap<>();
     /** */
