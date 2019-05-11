@@ -22,6 +22,7 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
+import vavi.util.Debug;
 import vavi.util.StringUtil;
 
 
@@ -532,6 +533,7 @@ System.err.println("Can't read file header");
                 return 0;
             }
 
+Debug.dump(temp);
             if (new String(temp, S_SIGNATURE,  4).equals("SIT!") &&
                 new String(temp, S_SIGNATURE2, 4).equals("rLau")) {
                 s.numFiles = get2(temp, S_NUMFILES);
