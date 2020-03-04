@@ -6,12 +6,7 @@
 
 package vavi.util.archive.d88;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.nio.channels.Channels;
-import java.nio.channels.FileChannel;
-import java.nio.channels.ReadableByteChannel;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -55,13 +50,9 @@ public class N88DiskBasicFileTest {
             N88DiskBasicEntry entry = (N88DiskBasicEntry) e;
             String name = entry.getName();
             if (name.endsWith(".IMG")) {
-                InputStream is = disk.getInputStream(entry);
-                File file = Paths.get(args[1], name).toFile();
-System.err.println(entry.getName() + " -> " + file);
-                ReadableByteChannel rc = Channels.newChannel(is);
-                FileChannel wc = new FileOutputStream(file).getChannel();
-                wc.transferFrom(rc, 0, is.available());
-                wc.close();
+                Path file = Paths.get(args[1], name);
+System.err.println(name + " -> " + file);
+                Files.copy(disk.getInputStream(entry), file);
             }
         }
     }
