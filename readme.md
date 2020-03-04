@@ -8,9 +8,10 @@
 
 |name | mathod | read | write | comment | library |
 |-----|--------|--------|--------|---------|---------|
-|d88 | disk | ✅ | - | ||
-|rar | archiving | 🚧 | - | | |
-|stuffit | archiving | 🚧 | - | ||
+| d88 | disk | ✅ | - | ||
+| rar | archiving | 🚧 | - | | |
+| stuffit | archiving | 🚧 | - | ||
+| asar | archiving | | - ||
 
 ## Library
 
@@ -19,7 +20,8 @@
 ## TODO
 
  * ~~とりあえずコンパイル通るようにしよう~~
+ * asar
 
-## Primary License
+## License
 
- [GPL](http://www.gnu.org/licenses/gpl.html)
+ * unrar [GPL](http://www.gnu.org/licenses/gpl.html)
