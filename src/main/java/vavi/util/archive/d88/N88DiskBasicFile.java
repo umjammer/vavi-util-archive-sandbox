@@ -35,7 +35,7 @@ public class N88DiskBasicFile implements Archive {
     private static String encoding = "MS932";
 
     /** */
-    private Map<String,Entry> entries = new HashMap<>();
+    private Map<String, Entry<?>> entries = new HashMap<>();
     /** */
     private DiskImage diskImage;
     /** */
@@ -133,9 +133,9 @@ System.err.println(entry);
     /**
      *
      */
-    public Entry[] entries() {
-        Entry[] result = new Entry[entries.size()];
-        Iterator<Entry> i = entries.values().iterator();
+    public Entry<?>[] entries() {
+        Entry<?>[] result = new Entry[entries.size()];
+        Iterator<Entry<?>> i = entries.values().iterator();
         int c = 0;
         while (i.hasNext()) {
             result[c++] = i.next(); 
@@ -160,7 +160,7 @@ System.err.println(entry);
     /**
      *
      */
-    public Entry getEntry(String name) {
+    public Entry<?> getEntry(String name) {
         return entries.get(name);
     }
 
@@ -199,7 +199,7 @@ System.err.println(entry);
     /**
      * @param entry
      */
-    public InputStream getInputStream(Entry entry) {
+    public InputStream getInputStream(Entry<?> entry) {
         // FAT
         //  1D(5inch)    Track 18           Sector 14, 15, 16 (all same)
         //  2D(5inch)    Track 18 Surface 1 Sector 14, 15, 16 (all same)

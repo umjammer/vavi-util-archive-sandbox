@@ -15,7 +15,7 @@ import vavi.util.archive.Entry;
  * @author <a href="mailto:umjammer@gmail.com">Naohide Sano</a> (nsano)
  * @version 0.00 010820 nsano initial version <br>
  */
-public class N88DiskBasicEntry implements Entry {
+public class N88DiskBasicEntry implements Entry<Void> {
 
     /** */
     private static final int NOT_ASCII        = 0x80;
@@ -145,7 +145,7 @@ public class N88DiskBasicEntry implements Entry {
     }
 
     /** @throws UnsupportedOperationException このメソッドはサポートされていません。 */
-    public Object getWrappedObject() {
+    public Void getWrappedObject() {
         throw new UnsupportedOperationException("non sense");
     }
 }
