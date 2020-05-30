@@ -117,7 +117,6 @@ public class D88 implements DiskImage {
 
             Header header = new Header();
 
-            @SuppressWarnings("resource")
             LittleEndianDataInputStream ledis = new LittleEndianDataInputStream(in);
 
             byte[] buf = new byte[17];
@@ -225,7 +224,6 @@ public class D88 implements DiskImage {
 
             Sector sector = new Sector();
 
-            @SuppressWarnings("resource")
             LittleEndianDataInputStream ledis = new LittleEndianDataInputStream(in);
 
             sector.C = ledis.readUnsignedByte();

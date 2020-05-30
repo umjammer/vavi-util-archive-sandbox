@@ -12,6 +12,7 @@
 | rar | archiving | 🚧 | - | | |
 | stuffit | archiving | 🚧 | - | ||
 | asar | archiving | | - ||
+|arj | archiving | | - | ||
 
 ## Library
 
