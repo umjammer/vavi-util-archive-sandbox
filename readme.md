@@ -13,6 +13,7 @@
 | stuffit | archiving | 🚧 | - | ||
 |arj | archiving | | - | ||
 | asar | archiving | ✅ | - | | [asar](https://github.com/Scroetchen/asar) |
+| xar | archiving | ✅ | - | | [xar](https://github.com/sprylab/xar) |
 
 ## Library
 
