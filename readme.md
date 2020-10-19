@@ -11,8 +11,8 @@
 | d88 | disk | ✅ | - | ||
 | rar | archiving | 🚧 | - | | |
 | stuffit | archiving | 🚧 | - | ||
-| asar | archiving | | - ||
 |arj | archiving | | - | ||
+| asar | archiving | ✅ | - | | [asar](https://github.com/Scroetchen/asar) |
 
 ## Library
 

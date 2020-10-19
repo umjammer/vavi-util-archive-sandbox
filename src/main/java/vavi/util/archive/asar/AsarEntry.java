@@ -4,7 +4,7 @@
  * Programmed by Naohide Sano
  */
 
-package vavi.util.asar;
+package vavi.util.archive.asar;
 
 import vavi.util.archive.Entry;
 
