@@ -11,6 +11,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import vavi.util.archive.Entry;
@@ -27,6 +28,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 public class N88DiskBasicFileTest {
 
     @Test
+    @Disabled
     public void test() {
         fail("Not yet implemented");
     }

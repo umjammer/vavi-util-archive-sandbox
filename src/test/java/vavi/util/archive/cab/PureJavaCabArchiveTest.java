@@ -8,6 +8,7 @@ package vavi.util.archive.cab;
 
 import java.io.File;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import vavi.util.archive.Archive;
@@ -26,6 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class PureJavaCabArchiveTest {
 
     @Test
+    @Disabled
     void test() throws Exception {
         Archive archive = new PureJavaCabArchive(PureJavaCabArchive.class.getResourceAsStream("/test.cab"));
         for (Entry<?> entry : archive.entries()) {
