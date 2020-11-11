@@ -11,9 +11,9 @@
 | d88 | disk | ✅ | - | ||
 | rar | archiving | 🚧 | - | | |
 | stuffit | archiving | 🚧 | - | ||
-|arj | archiving | | - | ||
 | asar | archiving | ✅ | - | | [asar](https://github.com/Scroetchen/asar) |
 | xar | archiving | ✅ | - | | [xar](https://github.com/sprylab/xar) |
+|arj | archiving | 🚧 | - | commons-compress | [c](https://github.com/tripsin/unarj) |
 
 ## Library
 
@@ -21,7 +21,7 @@
 
 ## TODO
 
- * ~~とりあえずコンパイル通るようにしよう~~
+ * ~~make it enable to compile~~
  * asar
 
 ## License
