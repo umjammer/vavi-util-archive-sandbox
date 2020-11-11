@@ -17,7 +17,7 @@ import vavi.util.archive.Archive;
 
 /**
  * RAR アーカイブを処理するサービスプロバイダです．
- * 
+ *
  * @author <a href="mailto:umjammer@gmail.com">Naohide Sano</a> (nsano)
  * @version 0.00 021222 nsano initial version <br>
  *          0.01 030128 nsano implements <br>

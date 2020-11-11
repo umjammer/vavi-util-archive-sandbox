@@ -1,1 +1,3 @@
 vavi.util.archive.d88.N88DiskBasicFileSpi
+vavi.util.archive.asar.AsarArchiveSpi
+vavi.util.archive.xar.XarArchiveSpi

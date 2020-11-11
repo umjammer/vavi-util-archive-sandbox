@@ -108,7 +108,7 @@ e.printStackTrace(System.err);
             if ((numread == 0) || (numread == -1)) {
                 iis = readBlock();
             } else {
-                ret += numread;
+                ret += (int) numread;
             }
         }
         return ret;

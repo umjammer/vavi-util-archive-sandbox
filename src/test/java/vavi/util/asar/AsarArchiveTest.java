@@ -11,6 +11,7 @@ import java.io.File;
 import org.junit.jupiter.api.Test;
 
 import vavi.util.archive.Entry;
+import vavi.util.archive.asar.AsarArchive;
 
 
 /**
