@@ -1261,7 +1261,7 @@ public class UnRar {
         while (count-- > 0) {
             pn2 += pn3;
             pn1 += pn2;
-            data[p] += pn1;
+            data[p] += (byte) pn1;
             p++;
         }
     }
