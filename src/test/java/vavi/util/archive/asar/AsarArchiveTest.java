@@ -4,14 +4,14 @@
  * Programmed by Naohide Sano
  */
 
-package vavi.util.asar;
+package vavi.util.archive.asar;
 
 import java.io.File;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import vavi.util.archive.Entry;
-import vavi.util.archive.asar.AsarArchive;
 
 
 /**
@@ -23,9 +23,10 @@ import vavi.util.archive.asar.AsarArchive;
 class AsarArchiveTest {
 
     @Test
+    @Disabled
     void test() throws Exception {
-        AsarArchive archive = new AsarArchive(new File("tmp/MYukkuriVoice-darwin-x64/MYukkuriVoice.app/Contents/Resources/electron.asar"));
-        for (Entry e : archive.entries()) {
+        AsarArchive archive = new AsarArchive(new File("src/test/resources/test.asar"));
+        for (Entry<?> e : archive.entries()) {
             System.err.println(e.getName());
         }
     }
@@ -34,6 +35,10 @@ class AsarArchiveTest {
      * @param args
      */
     public static void main(String[] args) throws Exception {
+        AsarArchive archive = new AsarArchive(new File("tmp/MYukkuriVoice-darwin-x64/MYukkuriVoice.app/Contents/Resources/electron.asar"));
+        for (Entry<?> e : archive.entries()) {
+            System.err.println(e.getName());
+        }
     }
 }
 

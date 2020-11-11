@@ -9,6 +9,7 @@ package vavi.util.archive.cab;
 import java.io.File;
 import java.io.InputStream;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import vavi.util.archive.Entry;
@@ -25,6 +26,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 class ComCabArchiveTest {
 
     @Test
+    @Disabled
     void test() {
         fail("Not yet implemented");
     }
