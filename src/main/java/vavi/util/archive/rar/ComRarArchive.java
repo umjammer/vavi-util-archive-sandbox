@@ -16,8 +16,8 @@ import vavi.util.archive.Entry;
 
 
 /**
- * RAR アーカイブを処理するサービスプロバイダです．
- * (COM バージョン)
+ * The SPI for RAR archived file.
+ * COM version.
  *
  * @target 1.1
  *

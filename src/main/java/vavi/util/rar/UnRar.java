@@ -37,7 +37,7 @@ import vavi.util.win32.DateUtil;
 /**
  * UnRar.
  *
- * TODO 未完成
+ * TODO complete
  *
  * @author <a href="mailto:umjammer@gmail.com">Naohide Sano</a> (nsano)
  * @version 0.00 021023 nsano initial version <br>

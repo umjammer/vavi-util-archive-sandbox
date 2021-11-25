@@ -16,8 +16,8 @@ import vavi.util.archive.Entry;
 
 
 /**
- * CAB アーカイブを処理するサービスプロバイダです．
- * (COM バージョン)
+ * The SPI for CAB archived file.
+ * COM version.
  *
  * @target 1.1
  *

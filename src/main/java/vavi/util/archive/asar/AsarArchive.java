@@ -20,7 +20,7 @@ import asar.VirtualFile;
 
 
 /**
- * ASAR アーカイブを処理するサービスプロバイダです．
+ * Represents ASAR archived file.
  *
  * @author <a href="mailto:umjammer@gmail.com">Naohide Sano</a> (umjammer)
  * @version 0.00 2019/09/14 umjammer initial version <br>
@@ -41,16 +41,12 @@ public class AsarArchive implements Archive {
         this.size = file.length();
     }
 
-    /**
-     * ファイルを閉じます。
-     */
+    @Override
     public void close() throws IOException {
         archive.close();
     }
 
-    /**
-     * ファイルエントリの列挙を返します。
-     */
+    @Override
     public Entry[] entries() {
         List<Entry> entries = new ArrayList<>();
         for (VirtualFile e : archive) {
@@ -59,10 +55,7 @@ public class AsarArchive implements Archive {
         return entries.toArray(new Entry[entries.size()]);
     }
 
-    /**
-     * 指定された名前の ZIP ファイルエントリを返します。
-     * 見つからない場合は null を返します。
-     */
+    @Override
     public Entry getEntry(String name) {
         for (VirtualFile e : archive) {
             if (name.equals(e.getPath())) {
@@ -72,10 +65,7 @@ public class AsarArchive implements Archive {
         return null;
     }
 
-    /**
-     * 指定された ファイルエントリの内容を読み込むための入力ストリームを
-     * 返します。
-     */
+    @Override
     public InputStream getInputStream(Entry entry) throws IOException {
         for (VirtualFile e : archive) {
             if (entry.getName().equals(e.getPath())) {
@@ -85,16 +75,12 @@ public class AsarArchive implements Archive {
         return null;
     }
 
-    /**
-     * ファイルのパス名を返します。
-     */
+    @Override
     public String getName() {
         return name;
     }
 
-    /**
-     * ファイル中のエントリの数を返します。
-     */
+    @Override
     public int size() {
         return (int) size;
     }

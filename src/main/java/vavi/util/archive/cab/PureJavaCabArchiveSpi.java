@@ -16,7 +16,7 @@ import vavi.util.archive.Archive;
 
 
 /**
- * CAB アーカイブを処理するサービスプロバイダです．
+ * The CAB archived file.
  *
  * @author <a href="mailto:umjammer@gmail.com">Naohide Sano</a> (nsano)
  * @version 0.00 041002 nsano initial version <br>
@@ -24,8 +24,7 @@ import vavi.util.archive.Archive;
 public class PureJavaCabArchiveSpi extends CabArchiveSpi {
 
     /**
-     * 解凍できるかどうか調べます．
-     * @param target 今のところ File, InputStream しか受け付けません
+     * @param target currently accepts {@link File}, {@link InputStream} only.
      */
     public boolean canExtractInput(Object target) throws IOException {
         InputStream is;

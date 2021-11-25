@@ -79,10 +79,9 @@ import vavi.util.StringUtil;
  * I'm always glad to receive advice, suggestions, or comments about the
  * program so feel free to send whatever you think would be helpful
  *
- * TODO 未完成
- *
  * @author Allan G. Weber weber%brand.usc.edu@oberon.usc.edu ...sdcrdcf!usc-oberon!brand!weber
  * @version 1.5c, for StuffIt 1.5 August 3, 1989
+ * TODO complete
  */
 public class StuffIt {
 

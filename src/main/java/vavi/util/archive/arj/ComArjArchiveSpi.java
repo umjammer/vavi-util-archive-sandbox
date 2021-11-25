@@ -17,7 +17,7 @@ import vavi.util.archive.spi.ArchiveSpi;
 
 
 /**
- * ARJ アーカイブを処理するサービスプロバイダです．
+ * The SPI for ARJ archived file.
  *
  * @author <a href="mailto:umjammer@gmail.com">Naohide Sano</a> (nsano)
  * @version 0.00 041002 nsano initial version <br>

@@ -103,7 +103,7 @@ public class XarEntry implements WrappedEntry<com.sprylab.xar.XarEntry> {
         return null;
     }
 
-    /** */
+    @Override
     public com.sprylab.xar.XarEntry getWrappedObject() {
         return entry;
     }

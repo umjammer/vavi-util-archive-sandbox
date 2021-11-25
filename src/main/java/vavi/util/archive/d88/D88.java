@@ -14,44 +14,44 @@ import vavi.io.LittleEndianDataInputStream;
 
 
 /**
- * D88 形式のディスクイメージです．
+ * Represents D88 formatted disc image.
  *
  * <pre>
- *  ＊ ヘッダー部
- *     トラック部(0 TRACK)
- *     トラック部(1 TRACK)
- *     ・
- *     ・
- *     ・
- *     トラック部 (83 TRACK)
- *  複数ディスクの場合、これらのファイルを連結します。
+ *  * header part
+ *     track part (0 TRACK)
+ *     track part (1 TRACK)
+ *     .
+ *     .
+ *     .
+ *     track part (83 TRACK)
+ *  multiple disk is connected those files.
  *
- *  ＊ ヘッダー部 (サイズ 2B0H)
- *     offset    size(byte)    内容
- *     0000H    17    ディスクの名前(ASCIIZ)
- *     0011H     9    リザーブ (00H)
- *     001AH     1    ライトプロテクトフラグ (00H:なし, 10H:あり)
- *     001BH     1    ディスクの種類 (00H: 2D, 10H: 2DD, 20H: 2HD)
- *     001CH     4    (DWORD) ディスクのサイズ
- *     0020H     4    (DWORD) * 164  トラックデータテーブル (0-163 tracks)
+ *  * header part (size 2B0H)
+ *     offset    size(byte)    content
+ *     0000H        17       disk name (ASCIIZ)
+ *     0011H         9       reserved (00H)
+ *     001AH         1       write protect flag (00H:none, 10H:protected)
+ *     001BH         1       disk type (00H: 2D, 10H: 2DD, 20H: 2HD)
+ *     001CH         4       (DWORD) size of disk
+ *     0020H         4       (DWORD) * 164  track data table (0-163 tracks)
  *
- *     ＊ トラック部 (サイズ:可変)
- *     セクター部を必要数連結したもの
+ *     * track part (size:variable)
+ *     connected necessary numbers of sector parts
  *
- *  ＊ セクター部(サイズ:可変)
- *     offset    size(byte)    内容
- *     0000H    1    ID の C
- *     0001H    1    ID の H
- *     0002H    1    ID の R
- *     0003H    1    ID の N
- *     0004H    2    (WORD) このトラックに存在するセクターの数
- *     0006H    1    記録密度 (00H: 倍密度, 40H: 単密度)
- *     0007H    1    DELETED DATA (00H:ノーマル 10H:DELETED DATA)
- *     0008H    1    ステータス (00H:ノーマルエンド,
- *                         その他エラー[DISK BIOSが返すステータス])
- *     0009H    5    リザーブ (00H)
- *     000EH    2    (WORD) セクターのサイズ
- *     0010H    可変    (000EH)で示したサイズ分のデータ
+ *  * sector part (size:variable)
+ *     offset    size(byte)    content
+ *     0000H        1        C ID 
+ *     0001H        1        H ID 
+ *     0002H        1        R ID 
+ *     0003H        1        N ID 
+ *     0004H        2        (WORD) sectors in this track
+ *     0006H        1        density (00H: double, 40H: single)
+ *     0007H        1        DELETED DATA (00H:normal 10H:DELETED DATA)
+ *     0008H        1        status (00H:normal end,
+ *                                   others:error[status returned by DISK BIOS])
+ *     0009H        5        reserved (00H)
+ *     000EH        2        (WORD) size of sector
+ *     0010H        variable data, size is indicated (000EH)
  * </pre>
  *
  * @author <a href="mailto:umjammer@gmail.com">Naohide Sano</a> (nsano)

@@ -22,7 +22,7 @@ import vavi.util.archive.Entry;
 
 
 /**
- * N88DiskBasic の {@link java.util.zip.ZipFile} みたいなものです．
+ * Represents the N88 Disk Basic disk.
  * 
  * @author <a href="mailto:umjammer@gmail.com">Naohide Sano</a> (nsano)
  * @version 0.00 010820 nsano initial version <br>
@@ -44,7 +44,7 @@ public class N88DiskBasicFile implements Archive {
     private String name;
 
     /**
-     *
+     * @param name filename
      */
     public N88DiskBasicFile(String name) throws IOException {
         this(new BufferedInputStream(new FileInputStream(name)));
@@ -60,7 +60,7 @@ public class N88DiskBasicFile implements Archive {
     }
 
     /**
-     *
+     * {@link File#separator} in entry name will be replaced by '_'; 
      */
     private N88DiskBasicFile(InputStream is) throws IOException {
 
@@ -68,11 +68,11 @@ public class N88DiskBasicFile implements Archive {
         this.diskImage = DiskImage.Factory.readFrom(is);
 
 System.err.println("-fname----:aREP   m: SC");
-        // ディレクトリ
+        // Directory
         //  1D(5inch)    Track 18           Sector 1 - 12
         //  2D(5inch)    Track 18 Surface 1 Sector 1 - 12
         //  2D(8inch)    Track 35 Surface 0 Sector 1 - 22
-        // 2D のみ TODO その他
+        // currently deals only 2D TODO else 2D
         int t;
         int s;
         switch (diskImage.getDensity()) {
@@ -116,12 +116,12 @@ System.err.println(entry);
         // 1D(5inch)  Track 18 Sector 13
         //  2D(5inch) Track 18 Surface 1 Sector 13
         //  2D(8inch) Track 35 Surface 0 Sector 23
-        // 0x00 ディスク全体の属性 @see Entry.attribte
-        // 0x01 一度に OPEN できるファイル数
+        // 0x00 disk total attribute @see Entry.attribte
+        // 0x01 number of files that is able to OPEN at the same time
         // 0x02 - 0xff BASIC Text
     }
 
-    /** */
+    @Override
     public String getName() {
         if (name == null) {
             return is.toString();
@@ -141,24 +141,18 @@ System.err.println(entry);
         return result;
     }
 
-    /**
-     * ファイル中のエントリの数を返します。
-     */
+    @Override
     public int size() {
         return entries.size();
     }
 
-    /**
-     *
-     */
+    @Override
     public void close() throws IOException {
         is.close();
     }
 
-    /**
-     *
-     */
         return entries.get(name);
+    @Override
     public Entry getEntry(String name) {
     }
 
@@ -177,7 +171,7 @@ System.err.println(entry);
      *              Surface = Cluster % 2
      *              Sector  = 1 [~ 26]
      * </pre>
-     * TODO 2D のみ
+     * TODO currently deals only 2D
      */
     private byte[][] readCluster(int cluster) {
         int track = cluster / 4;
@@ -194,15 +188,13 @@ System.err.println(entry);
         return data;
     }
 
-    /**
-     * @param entry
-     */
     public InputStream getInputStream(Entry<?> entry) {
+    @Override
         // FAT
         //  1D(5inch)    Track 18           Sector 14, 15, 16 (all same)
         //  2D(5inch)    Track 18 Surface 1 Sector 14, 15, 16 (all same)
         //  2D(8inch)    Track 35 Surface 0 Sector 24, 25, 26 (all same)
-        // TODO 2D のみ
+        // TODO currently deals only 2D
         byte[] data = diskImage.readData(18, 1, 14);
 
         ByteArrayOutputStream os = new ByteArrayOutputStream();
@@ -216,7 +208,7 @@ System.err.println(entry);
 
             byte[][] tmp = readCluster(c);
 
-            // TODO 2D のみ
+            // TODO currently deals only 2D
             int max = (nc < 0xc1) ? 8 : nc & 0x1f;
             for (int i = 0; i < max; i++) {
                 os.write(tmp[i], 0, tmp[i].length);
