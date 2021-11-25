@@ -7,6 +7,9 @@
 package vavi.util.archive.asar;
 
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -32,12 +35,18 @@ class AsarArchiveTest {
     }
 
     /**
-     * @param args
+     * @param args archive output_directory
      */
     public static void main(String[] args) throws Exception {
-        AsarArchive archive = new AsarArchive(new File("tmp/MYukkuriVoice-darwin-x64/MYukkuriVoice.app/Contents/Resources/electron.asar"));
-            System.err.println(e.getName());
+        AsarArchive archive = new AsarArchive(new File(args[0]));
         for (Entry e : archive.entries()) {
+            String name = e.getName();
+            Path file = Paths.get(args[1], name);
+System.err.println(name + " -> " + file);
+            if (!Files.exists(file.getParent())) {
+                Files.createDirectories(file.getParent());
+            }
+            Files.copy(archive.getInputStream(e), file);
         }
     }
 }
