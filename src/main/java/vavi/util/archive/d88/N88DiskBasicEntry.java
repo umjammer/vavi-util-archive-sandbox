@@ -6,6 +6,8 @@
 
 package vavi.util.archive.d88;
 
+import java.util.Date;
+
 import vavi.util.archive.Entry;
 
 
@@ -34,6 +36,8 @@ public class N88DiskBasicEntry implements Entry {
     private int attribute;
     /** @see #getExtra() */
     private int startCluster;
+
+    private long size;
 
     /** */
     protected N88DiskBasicEntry(String name, int attribute, int startCluster) {
@@ -91,19 +95,17 @@ public class N88DiskBasicEntry implements Entry {
 
     @Override
     public long getSize() {
-        // TODO ほすぃ～
-        throw new UnsupportedOperationException("not fixed until Archive#getInputStream(Entry)");
+        return size;
     }
 
     @Override
     public long getTime() {
-        // TODO Auto-generated method stub
-        return 0;
+        return new Date().getTime();
     }
 
     @Override
     public boolean isDirectory() {
-        throw new UnsupportedOperationException("non sense");
+        return false;
     }
 
     @Override

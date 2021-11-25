@@ -16,7 +16,9 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.logging.Level;
 
+import vavi.util.Debug;
 import vavi.util.archive.Archive;
 import vavi.util.archive.Entry;
 
@@ -62,7 +64,7 @@ public class N88DiskBasicFile implements Archive {
     /**
      * {@link File#separator} in entry name will be replaced by '_'; 
      */
-    private N88DiskBasicFile(InputStream is) throws IOException {
+    public N88DiskBasicFile(InputStream is) throws IOException {
 
         this.is = is;
         this.diskImage = DiskImage.Factory.readFrom(is);
@@ -97,11 +99,12 @@ System.err.println("-fname----:aREP   m: SC");
                     System.err.println("killed");
                     break;
                 case (byte) 0xff:
-//System.err.println("not used");
+System.err.println("not used");
                     break;
                 default:
                     String name = new String(data, j * 16, 6, encoding) + "." +
                                   new String(data, j * 16 + 6, 3, encoding);
+                    name = name.replace(File.separator, "_");
                     N88DiskBasicEntry entry = new N88DiskBasicEntry(name,
                                                                     data[j * 16 + 9],
                                                                     data[j * 16 + 10] & 0xff);
@@ -151,9 +154,15 @@ System.err.println(entry);
         is.close();
     }
 
-        return entries.get(name);
     @Override
     public Entry getEntry(String name) {
+        if (name == null || name.isEmpty()) {
+            return null;
+        }
+        String[] p = name.split("\\.", -1);
+        String normalized = String.format("%-6s.%-3s", p[0], p.length > 1 ? p[1] : "");
+//Debug.println(name + ", " + normalized);
+        return entries.get(normalized);
     }
 
     /**
@@ -182,18 +191,18 @@ System.err.println(entry);
 
         for (int i = 0; i < 8; i++) {
             data[i] = diskImage.readData(track, surface, sector + i);
-//System.err.println(Integer.toHexString(cluster)+": "+track+", "+surface+", "+(sector+i));
+Debug.printf(Level.FINE, "%08x: %d, %d, %d%n", cluster, track, surface, (sector + i));
         }
 
         return data;
     }
 
-    public InputStream getInputStream(Entry<?> entry) {
     @Override
+    public InputStream getInputStream(Entry entry) {
         // FAT
-        //  1D(5inch)    Track 18           Sector 14, 15, 16 (all same)
-        //  2D(5inch)    Track 18 Surface 1 Sector 14, 15, 16 (all same)
-        //  2D(8inch)    Track 35 Surface 0 Sector 24, 25, 26 (all same)
+        //  1D(5inch)    Track 18           Sector 14, 15, 16 (the three are the same)
+        //  2D(5inch)    Track 18 Surface 1 Sector 14, 15, 16 (the three are the same)
+        //  2D(8inch)    Track 35 Surface 0 Sector 24, 25, 26 (the three are the same)
         // TODO currently deals only 2D
         byte[] data = diskImage.readData(18, 1, 14);
 
@@ -223,6 +232,8 @@ System.err.println(entry);
             c = nc;
         }
 //System.err.println();
+
+        N88DiskBasicEntry.class.cast(entry).setSize(os.size());
 
         return new ByteArrayInputStream(os.toByteArray());
     }

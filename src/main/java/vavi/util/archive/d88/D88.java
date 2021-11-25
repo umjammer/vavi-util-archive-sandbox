@@ -8,23 +8,30 @@ package vavi.util.archive.d88;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.nio.charset.Charset;
 
 import vavi.io.LittleEndianDataInputStream;
+import vavi.util.Debug;
 
 
 /**
  * Represents D88 formatted disc image.
  *
  * <pre>
- *  * header part
- *     track part (0 TRACK)
- *     track part (1 TRACK)
- *     .
- *     .
- *     .
- *     track part (83 TRACK)
- *  multiple disk is connected those files.
+ *  * disk image 1
+ *     header part
+ *     track part
+ *     :
+ *     sector part start
+ *     :
+ *     sector part end
+ *    disk image 2
+ *     :
+ *     :
+ *
+ *  multiple disk is connected disc images.
  *
  *  * header part (size 2B0H)
  *     offset    size(byte)    content
@@ -33,17 +40,20 @@ import vavi.io.LittleEndianDataInputStream;
  *     001AH         1       write protect flag (00H:none, 10H:protected)
  *     001BH         1       disk type (00H: 2D, 10H: 2DD, 20H: 2HD)
  *     001CH         4       (DWORD) size of disk
- *     0020H         4       (DWORD) * 164  track data table (0-163 tracks)
+ *     0020H         4       (DWORD) * number of tracks
+ *                   :
  *
- *     * track part (size:variable)
- *     connected necessary numbers of sector parts
+ *  * track part (size:variable)
+ *     size:
+ *      first track is 672 then number of tracks is 160
+ *      first track is 688 then number of tracks is 164
  *
  *  * sector part (size:variable)
  *     offset    size(byte)    content
- *     0000H        1        C ID 
- *     0001H        1        H ID 
- *     0002H        1        R ID 
- *     0003H        1        N ID 
+ *     0000H        1        C ID
+ *     0001H        1        H ID
+ *     0002H        1        R ID
+ *     0003H        1        N ID
  *     0004H        2        (WORD) sectors in this track
  *     0006H        1        density (00H: double, 40H: single)
  *     0007H        1        DELETED DATA (00H:normal 10H:DELETED DATA)
@@ -85,31 +95,34 @@ public class D88 implements DiskImage {
 
         int[] tracks = new int[164];
 
-        /** */
-        void print() {
-            System.err.println("name: " + name);
+        @Override
+        public String toString() {
+            StringWriter sw = new StringWriter();
+            PrintWriter pr = new PrintWriter(sw);
+            pr.println("name: " + name);
             for (int i = 0; i < 9; i++) {
-                System.err.println("reserved" + i + ": " + reserved[i]);
+                pr.println("reserved" + i + ": " + reserved[i]);
             }
-            System.err.println("isProtected: " + isProtected);
+            pr.println("isProtected: " + isProtected);
             switch (type) {
             case _2D:
-                System.err.println("type: 2D");
+                pr.println("type: 2D");
                 break;
             case _2DD:
-                System.err.println("type: 2DD");
+                pr.println("type: 2DD");
                 break;
             case _2HD:
-                System.err.println("type: 2HD");
+                pr.println("type: 2HD");
                 break;
             default:
-                System.err.println("type: unknown: " + type);
+                pr.println("type: unknown: " + type);
                 break;
             }
-            System.err.println("size: " + size);
+            pr.println("size: " + size);
             for (int i = 0; i < 164; i++) {
-                System.err.println("track" + i + ": " + tracks[i]);
+                pr.println("track" + i + ": " + tracks[i]);
             }
+            return sw.toString();
         }
 
         /** */
@@ -121,11 +134,7 @@ public class D88 implements DiskImage {
 
             byte[] buf = new byte[17];
             ledis.read(buf, 0, 17);
-            try {
-                header.name = new String(buf, 0, 16, "MS932");
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace(System.err);
-            }
+            header.name = new String(buf, 0, 16, Charset.forName("MS932"));
             for (int i = 0; i < 9; i++) {
                 header.reserved[i] = ledis.read();
             }
@@ -135,6 +144,9 @@ public class D88 implements DiskImage {
 
             for (int i = 0; i < 164; i++) {
                 header.tracks[i] = ledis.readInt();
+if (i == 0) {
+ Debug.println("track[0]: " + header.tracks[i]);
+}
             }
 
             return header;
@@ -145,10 +157,14 @@ public class D88 implements DiskImage {
     public static class Track {
         Sector[] sectors;
 
-        void print() {
+        @Override
+        public String toString() {
+            StringWriter sw = new StringWriter();
+            PrintWriter pr = new PrintWriter(sw);
             for (int i = 1; i < sectors.length; i++) {
-                sectors[i].print();
+                pr.println(sectors[i]);
             }
+            return sw.toString();
         }
 
         public Sector getSector(int number) {
@@ -193,30 +209,33 @@ public class D88 implements DiskImage {
         int size;
         byte[] data;
 
-        /** */
-        void print() {
-            System.err.println("C: " + C);
-            System.err.println("H: " + H);
-            System.err.println("R: " + R);
-            System.err.println("N: " + N);
-            System.err.println("number: " + number);
+        @Override
+        public String toString() {
+            StringWriter sw = new StringWriter();
+            PrintWriter pr = new PrintWriter(sw);
+            pr.println("C: " + C);
+            pr.println("H: " + H);
+            pr.println("R: " + R);
+            pr.println("N: " + N);
+            pr.println("number: " + number);
             switch (density) {
             case _2D:
-                System.err.println("density: 2D");
+                pr.println("density: 2D");
                 break;
             case _2DD:
-                System.err.println("density: 2DD");
+                pr.println("density: 2DD");
                 break;
             default:
-                System.err.println("density: unknown: " + density);
+                pr.println("density: unknown: " + density);
                 break;
             }
-            System.err.println("isDeleted: " + isDeleted);
-            System.err.println("status: " + status);
+            pr.println("isDeleted: " + isDeleted);
+            pr.println("status: " + status);
             for (int i = 0; i < 5; i++) {
-                System.err.println("reserved" + i + ": " + reserved[i]);
+                pr.println("reserved" + i + ": " + reserved[i]);
             }
-            System.err.println("size: " + size);
+            pr.println("size: " + size);
+            return sw.toString();
         }
 
         /** */
@@ -245,7 +264,6 @@ public class D88 implements DiskImage {
 
             ledis.readFully(sector.data, 0, sector.size);
 
-            //sector.print();
             return sector;
         }
     }
@@ -256,7 +274,6 @@ public class D88 implements DiskImage {
         D88 d88 = new D88();
 
         d88.header = Header.readFrom(in);
-        //d88.header.print();
 
         for (int i = 0; i < 164; i++) {
             if (d88.header.tracks[i] != 0) {
