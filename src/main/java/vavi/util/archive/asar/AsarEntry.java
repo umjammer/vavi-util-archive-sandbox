@@ -6,7 +6,7 @@
 
 package vavi.util.archive.asar;
 
-import vavi.util.archive.Entry;
+import vavi.util.archive.WrappedEntry;
 
 import asar.VirtualFile;
 
@@ -17,7 +17,7 @@ import asar.VirtualFile;
  * @author <a href="mailto:umjammer@gmail.com">Naohide Sano</a> (umjammer)
  * @version 0.00 2019/09/14 umjammer initial version <br>
  */
-public class AsarEntry implements Entry<VirtualFile> {
+public class AsarEntry implements WrappedEntry<VirtualFile> {
 
     /** */
     private VirtualFile entry;

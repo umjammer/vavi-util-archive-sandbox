@@ -15,8 +15,8 @@ import java.util.List;
 
 import vavi.util.Debug;
 import vavi.util.archive.Archive;
+import vavi.util.archive.CommonEntry;
 import vavi.util.archive.Entry;
-import vavi.util.archive.spi.CommonEntry;
 import vavi.util.cab.Cab;
 import vavi.util.cab.CabFile;
 import vavi.util.cab.CabFolder;
@@ -40,7 +40,7 @@ public class PureJavaCabArchive implements Archive {
     private String name;
 
     /** */
-    private List<Entry<?>> entries = new ArrayList<>();
+    private List<Entry> entries = new ArrayList<>();
 
     /** */
     public PureJavaCabArchive(File file) throws IOException {
@@ -78,15 +78,15 @@ Debug.println(cab.getFolders().size());
     }
 
     /** */
-    public Entry<?>[] entries() {
-        Entry<?>[] entries = new Entry[this.entries.size()];
+    public Entry[] entries() {
+        Entry[] entries = new Entry[this.entries.size()];
         this.entries.toArray(entries);
         return entries;
     }
 
     /** */
-    public Entry<?> getEntry(String name) {
-        for (Entry<?> entry : entries) {
+    public Entry getEntry(String name) {
+        for (Entry entry : entries) {
           if (entry.getName().equals(name)) {
                 return entry;
             }
@@ -95,7 +95,7 @@ Debug.println(cab.getFolders().size());
     }
 
     /** reads a CAB file, parses it, and returns an InputStream representing the named file */
-    public InputStream getInputStream(Entry<?> entry) throws IOException {
+    public InputStream getInputStream(Entry entry) throws IOException {
         // TODO Auto-generated method stub
         return null;
     }

@@ -36,7 +36,7 @@ class ComArjArchiveTest {
     /** */
     public static void main(String[] args) throws Exception {
         ComArjArchive rar = new ComArjArchive(new File(args[0]));
-        Entry<?> entry = rar.getEntry(args[1]);
+        Entry entry = rar.getEntry(args[1]);
 System.err.println("entry: " + entry);
         InputStream is = rar.getInputStream(entry);
 System.err.println("is: " + is);

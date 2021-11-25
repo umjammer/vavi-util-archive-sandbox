@@ -48,9 +48,9 @@ public class XarArchive implements Archive {
     }
 
     @Override
-    public Entry<?>[] entries() {
+    public Entry[] entries() {
         try {
-            List<Entry<?>> entries = new ArrayList<>();
+            List<Entry> entries = new ArrayList<>();
             for (com.sprylab.xar.XarEntry e : archive.getEntries()) {
                 entries.add(new XarEntry(e));
             }
@@ -61,7 +61,7 @@ public class XarArchive implements Archive {
     }
 
     @Override
-    public Entry<?> getEntry(String name) {
+    public Entry getEntry(String name) {
         try {
             for (com.sprylab.xar.XarEntry e : archive.getEntries()) {
 //Debug.println("@@@: " + name + ", " + e.getName());
@@ -76,7 +76,7 @@ public class XarArchive implements Archive {
     }
 
     @Override
-    public InputStream getInputStream(Entry<?> entry) throws IOException {
+    public InputStream getInputStream(Entry entry) throws IOException {
         for (com.sprylab.xar.XarEntry e : archive.getEntries()) {
             if (entry.getName().equals(e.getName())) {
                 return new ByteArrayInputStream(e.getBytes());

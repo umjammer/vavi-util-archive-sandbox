@@ -6,7 +6,7 @@
 
 package vavi.util.archive.xar;
 
-import vavi.util.archive.Entry;
+import vavi.util.archive.WrappedEntry;
 
 
 /**
@@ -15,7 +15,7 @@ import vavi.util.archive.Entry;
  * @author <a href="mailto:umjammer@gmail.com">Naohide Sano</a> (umjammer)
  * @version 0.00 2020/10/07 umjammer initial version <br>
  */
-public class XarEntry implements Entry<com.sprylab.xar.XarEntry> {
+public class XarEntry implements WrappedEntry<com.sprylab.xar.XarEntry> {
 
     /** */
     private com.sprylab.xar.XarEntry entry;

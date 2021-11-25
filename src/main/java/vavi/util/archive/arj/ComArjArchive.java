@@ -32,8 +32,8 @@ public class ComArjArchive extends ComArchive {
     /** */
     private static final MessageFormat commandLineBase = new MessageFormat("x -i -y \"{0}\" \"{1}\" \"{2}\"");
 
-    /** */
-    protected String getCommandString(Entry<?> entry) {
+    @Override
+    protected String getCommandString(Entry entry) {
 
         String commandLine = commandLineBase.format(new Object[] {
             file.getPath(),
@@ -45,8 +45,8 @@ Debug.println("commandLine: " + commandLine);
         return commandLine;
     }
 
-    /** */
-    protected String getTemporaryFileName(Entry<?> entry) {
+    @Override
+    protected String getTemporaryFileName(Entry entry) {
         return System.getProperty("java.io.tmpdir") + entry.getName();
     }
 }

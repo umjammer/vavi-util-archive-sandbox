@@ -26,7 +26,7 @@ class AsarArchiveTest {
     @Disabled
     void test() throws Exception {
         AsarArchive archive = new AsarArchive(new File("src/test/resources/test.asar"));
-        for (Entry<?> e : archive.entries()) {
+        for (Entry e : archive.entries()) {
             System.err.println(e.getName());
         }
     }
@@ -36,8 +36,8 @@ class AsarArchiveTest {
      */
     public static void main(String[] args) throws Exception {
         AsarArchive archive = new AsarArchive(new File("tmp/MYukkuriVoice-darwin-x64/MYukkuriVoice.app/Contents/Resources/electron.asar"));
-        for (Entry<?> e : archive.entries()) {
             System.err.println(e.getName());
+        for (Entry e : archive.entries()) {
         }
     }
 }

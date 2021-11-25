@@ -51,8 +51,8 @@ public class AsarArchive implements Archive {
     /**
      * ファイルエントリの列挙を返します。
      */
-    public Entry<?>[] entries() {
-        List<Entry<?>> entries = new ArrayList<>();
+    public Entry[] entries() {
+        List<Entry> entries = new ArrayList<>();
         for (VirtualFile e : archive) {
             entries.add(new AsarEntry(e));
         }
@@ -63,7 +63,7 @@ public class AsarArchive implements Archive {
      * 指定された名前の ZIP ファイルエントリを返します。
      * 見つからない場合は null を返します。
      */
-    public Entry<?> getEntry(String name) {
+    public Entry getEntry(String name) {
         for (VirtualFile e : archive) {
             if (name.equals(e.getPath())) {
                 return new AsarEntry(e);
@@ -76,7 +76,7 @@ public class AsarArchive implements Archive {
      * 指定された ファイルエントリの内容を読み込むための入力ストリームを
      * 返します。
      */
-    public InputStream getInputStream(Entry<?> entry) throws IOException {
+    public InputStream getInputStream(Entry entry) throws IOException {
         for (VirtualFile e : archive) {
             if (entry.getName().equals(e.getPath())) {
                 return new ByteArrayInputStream(e.read());

@@ -15,7 +15,7 @@ import vavi.util.archive.Entry;
  * @author <a href="mailto:umjammer@gmail.com">Naohide Sano</a> (nsano)
  * @version 0.00 010820 nsano initial version <br>
  */
-public class N88DiskBasicEntry implements Entry<Void> {
+public class N88DiskBasicEntry implements Entry {
 
     /** */
     private static final int NOT_ASCII        = 0x80;
@@ -142,11 +142,6 @@ public class N88DiskBasicEntry implements Entry<Void> {
     /** @see vavi.util.archive.Entry#setTime(long) */
     public void setTime(long time) {
         // TODO Auto-generated method stub
-    }
-
-    /** @throws UnsupportedOperationException このメソッドはサポートされていません。 */
-    public Void getWrappedObject() {
-        throw new UnsupportedOperationException("non sense");
     }
 }
 
