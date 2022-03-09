@@ -17,16 +17,14 @@ import vavi.util.archive.spi.ArchiveSpi;
 
 
 /**
- * ASAR アーカイブを処理するサービスプロバイダです．
+ * The SPI for ASAR archived file.
  *
  * @author <a href="mailto:umjammer@gmail.com">Naohide Sano</a> (umjammer)
  * @version 0.00 2019/09/14 umjammer initial version <br>
  */
 public class AsarArchiveSpi implements ArchiveSpi {
 
-    /**
-     * 解凍できるかどうか調べます．
-     */
+    @Override
     public boolean canExtractInput(Object target) throws IOException {
 
         if (!(target instanceof File)) {
@@ -51,7 +49,7 @@ public class AsarArchiveSpi implements ArchiveSpi {
                b[1] == 'K';
     }
 
-    /** */
+    @Override
     public Archive createArchiveInstance(Object obj) throws IOException {
         return new AsarArchive((File) obj);
     }

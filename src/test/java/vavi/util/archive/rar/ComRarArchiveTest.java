@@ -9,12 +9,12 @@ package vavi.util.archive.rar;
 import java.io.File;
 import java.io.InputStream;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledOnOs;
+import org.junit.jupiter.api.condition.OS;
 
 import vavi.util.archive.Entry;
-
-import static org.junit.jupiter.api.Assertions.fail;
+import vavi.util.rar.UnRar;
 
 
 /**
@@ -26,9 +26,9 @@ import static org.junit.jupiter.api.Assertions.fail;
 class ComRarArchiveTest {
 
     @Test
-    @Disabled
-    void test() {
-        fail("Not yet implemented");
+    @EnabledOnOs(OS.WINDOWS)
+    void test() throws Exception {
+        UnRar unrar = new UnRar(new String[] { "l", "src/test/resources/test.rar" }); 
     }
 
     //----
@@ -36,7 +36,7 @@ class ComRarArchiveTest {
     /** */
     public static void main(String[] args) throws Exception {
         ComRarArchive rar = new ComRarArchive(new File(args[0]));
-        Entry<?> entry = rar.getEntry(args[1]);
+        Entry entry = rar.getEntry(args[1]);
 System.err.println("entry: " + entry);
         InputStream is = rar.getInputStream(entry);
 System.err.println("is: " + is);

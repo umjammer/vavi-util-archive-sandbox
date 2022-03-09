@@ -79,10 +79,9 @@ import vavi.util.StringUtil;
  * I'm always glad to receive advice, suggestions, or comments about the
  * program so feel free to send whatever you think would be helpful
  *
- * TODO 未完成
- *
  * @author Allan G. Weber weber%brand.usc.edu@oberon.usc.edu ...sdcrdcf!usc-oberon!brand!weber
  * @version 1.5c, for StuffIt 1.5 August 3, 1989
+ * TODO complete
  */
 public class StuffIt {
 
@@ -349,27 +348,30 @@ public class StuffIt {
         try {
             infp = new FileInputStream(cl.getArgs()[0]);
         } catch (IOException e) {
-System.err.println("Can't open input file \"" + cl.getArgs()[0] + "\"");
-            System.exit(1);
+Debug.println("Can't open input file \"" + cl.getArgs()[0] + "\"");
+            return;
+//            System.exit(1);
         }
 
         if (macbin) {
             try {
                 infp.skip(MACBINHDRSIZE);
             } catch (IOException e) {
-System.err.println("Can't skip over MacBinary header");
-                System.exit(1);
+Debug.println("Can't skip over MacBinary header");
+                return;
+//                System.exit(1);
             }
         }
 
         if (readSitHdr(sitHdr) == 0) {
-System.err.println("Can't read file header");
-            System.exit(1);
+Debug.println("Can't read file header");
+            return;
+//            System.exit(1);
         }
 //System.out.println("numfiles=" + sitHdr.numFiles + ", arclength=" + sitHdr.arcLength);
 
         int status = extract("", false);
-        System.exit((status < 0) ? 1 : 0);
+//        System.exit((status < 0) ? 1 : 0);
     }
 
     /**
@@ -393,7 +395,7 @@ System.err.println("Can't read file header");
                 status = rstat;
                 break;
             }
-//System.err.println("compr=" + filehdr.compRMethod + ", compd=" + filehdr.compDMethod + ", rsrclen=" + filehdr.compRLength + ", datalen=" + filehdr.compDLength + ", rsrccrc=" + filehdr.rsrcCRC + ", datacrc=" + filehdr.dataCRC);
+//Debug.println("compr=" + filehdr.compRMethod + ", compd=" + filehdr.compDMethod + ", rsrclen=" + filehdr.compRLength + ", datalen=" + filehdr.compDLength + ", rsrccrc=" + filehdr.rsrcCRC + ", datacrc=" + filehdr.dataCRC);
 
             skipit = rstat == H_SKIP;
 
@@ -407,17 +409,17 @@ System.err.println("Can't read file header");
                     File file = new File(new String(uname));
                     if (!file.exists()) {    // directory doesn't exist
                         if (!file.mkdirs()) {
-System.err.println("Can't create subdirectory " + uname);
+Debug.println("Can't create subdirectory " + uname);
                             return -1;
                         }
                     } else {        // something exists with this name
                         if (!file.isDirectory()) {
-System.err.println("Directory name " + uname + " already in use");
+Debug.println("Directory name " + uname + " already in use");
                             return -1;
                         }
                     }
 //                  if (chdir(uname) == -1) {
-//System.err.println("Can't chdir to " + uname);
+//Debug.println("Can't chdir to " + uname);
 //                      return -1;
 //                  }
                     name = parent + ":" + new String(uname);
@@ -490,7 +492,7 @@ System.err.println("Directory name " + uname + " already in use");
             try {
                 fp = new FileOutputStream(new String(f_info));
             } catch (IOException e) {
-                System.err.println(e);
+                Debug.println(e);
                 System.exit(1);
             }
             fp.write(info, 0, INFOBYTES);
@@ -502,7 +504,7 @@ System.err.println("Directory name " + uname + " already in use");
             crc = writeFile(f_rsrc, fh.compRLength,
                             fh.rsrcLength, fh.compRMethod);
             if (chkcrc && (fh.rsrcCRC != crc)) {
-                System.err.println("CRC error on resource fork: need 0x" + StringUtil.toHex4(fh.rsrcCRC) + ", got 0x" + StringUtil.toHex4(crc));
+                Debug.printf("CRC error on resource fork: need 0x%04x, got 0x%04x%n", fh.rsrcCRC, crc);
                 return -1;
             }
         } else {
@@ -513,7 +515,7 @@ System.err.println("Directory name " + uname + " already in use");
             crc = writeFile(f_data, fh.compDLength,
                             fh.dataLength, fh.compDMethod);
             if (chkcrc && (fh.dataCRC != crc)) {
-                System.err.println("CRC error on data fork: need 0x" + StringUtil.toHex4(fh.dataCRC) + ", got 0x" + StringUtil.toHex4(crc));
+                Debug.printf("CRC error on data fork: need 0x%04x, got 0x%04x%n", fh.dataCRC, crc);
                 return -1;
             }
         } else {
@@ -529,11 +531,11 @@ System.err.println("Directory name " + uname + " already in use");
 
         while (true) {
             if (infp.read(temp, 0, SITHDRSIZE) != SITHDRSIZE) {
-System.err.println("Can't read file header");
+Debug.println("Can't read file header");
                 return 0;
             }
 
-Debug.dump(temp);
+Debug.println("\n" + StringUtil.getDump(temp));
             if (new String(temp, S_SIGNATURE,  4).equals("SIT!") &&
                 new String(temp, S_SIGNATURE2, 4).equals("rLau")) {
                 s.numFiles = get2(temp, S_NUMFILES);
@@ -542,13 +544,13 @@ Debug.dump(temp);
             }
 
             if (++count == 2) {
-System.err.println("Not a StuffIt file");
+Debug.println("Not a StuffIt file");
                 return 0;
             }
 
             if (infp.read(temp, SITHDRSIZE, FILEHDRSIZE - SITHDRSIZE) !=
                 FILEHDRSIZE - SITHDRSIZE) {
-System.err.println("Can't read file header");
+Debug.println("Can't read file header");
                 return 0;
             }
 
@@ -590,7 +592,7 @@ System.err.println("Can't read file header");
         if (n == 0) {            // return 0 on EOF
             return H_EOF;
         } else if (n != FILEHDRSIZE) {
-System.err.println("Can't read file header");
+Debug.println("Can't read file header");
             return H_ERROR;
         }
 
@@ -599,7 +601,7 @@ System.err.println("Can't read file header");
         crc = updateCrc(crc, hdr, FILEHDRSIZE - 2);
         f.hdrCRC = get2(hdr, F_HDRCRC);
         if (f.hdrCRC != crc) {
-System.err.println("Header CRC mismatch: got 0x" + StringUtil.toHex4(f.hdrCRC) + ", need 0x" + StringUtil.toHex4(crc));
+Debug.printf("Header CRC mismatch: got 0x%04x, need 0x%04x%n", f.hdrCRC, crc);
             return H_ERROR;
         }
 
@@ -734,7 +736,7 @@ System.err.println("Header CRC mismatch: got 0x" + StringUtil.toHex4(f.hdrCRC) +
             try {
                 outf = new FileOutputStream(new String(fname));
             } catch (IOException e) {
-                System.err.println(e);
+                Debug.println(e);
                 System.exit(1);
             }
             while (ibytes > 0) {
@@ -753,7 +755,7 @@ System.err.println("Header CRC mismatch: got 0x" + StringUtil.toHex4(f.hdrCRC) +
             try {
                 outf = new FileOutputStream(new String(fname));
             } catch (IOException e) {
-                System.err.println(e);
+                Debug.println(e);
                 System.exit(1);
             }
             while (ibytes > 0) {
@@ -795,7 +797,7 @@ System.err.println("Header CRC mismatch: got 0x" + StringUtil.toHex4(f.hdrCRC) +
             try {
                 outf = new FileOutputStream(temp);
             } catch (IOException e) {
-                System.err.println(e);
+                Debug.println(e);
                 System.exit(1);
             }
             while (ibytes > 0) {
@@ -814,7 +816,7 @@ System.err.println("Header CRC mismatch: got 0x" + StringUtil.toHex4(f.hdrCRC) +
                     // read the file to get CRC value
                     is = new FileInputStream(new String(fname));
                 } catch (IOException e) {
-                    System.err.println(e);
+                    Debug.println(e);
                     System.exit(1);
                 }
                 while (true) {
@@ -831,7 +833,7 @@ System.err.println("Header CRC mismatch: got 0x" + StringUtil.toHex4(f.hdrCRC) +
             try {
                 outf = new FileOutputStream(new String(fname));
             } catch (IOException e) {
-                System.err.println(e);
+                Debug.println(e);
                 System.exit(1);
             }
             nodeptr = 0;
@@ -848,7 +850,7 @@ System.err.println("Header CRC mismatch: got 0x" + StringUtil.toHex4(f.hdrCRC) +
             outf.close();
             break;
         default:
-System.err.println("Unknown compression method: " + type);
+Debug.println("Unknown compression method: " + type);
             chkcrc = false;    // inhibit crc check if file not written
             return -1;
         }

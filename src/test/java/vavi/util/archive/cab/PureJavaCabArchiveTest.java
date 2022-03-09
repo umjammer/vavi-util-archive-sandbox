@@ -30,7 +30,7 @@ class PureJavaCabArchiveTest {
     @Disabled
     void test() throws Exception {
         Archive archive = new PureJavaCabArchive(PureJavaCabArchive.class.getResourceAsStream("/test.cab"));
-        for (Entry<?> entry : archive.entries()) {
+        for (Entry entry : archive.entries()) {
             System.err.println(entry.getName());
         }
         assertTrue(true);
@@ -39,7 +39,7 @@ class PureJavaCabArchiveTest {
     @Test
     void test2() throws Exception {
         Archive archive = Archives.getArchive(new File("src/test/resources/test.cab"));
-        for (Entry<?> entry : archive.entries()) {
+        for (Entry entry : archive.entries()) {
             System.err.println(entry.getName());
         }
         assertTrue(true);

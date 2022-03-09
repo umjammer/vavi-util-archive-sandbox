@@ -8,12 +8,10 @@ package vavi.util.archive.d88;
 
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 
 /**
@@ -25,9 +23,16 @@ import static org.junit.jupiter.api.Assertions.*;
 public class D88Test {
 
     @Test
-    @Disabled
-    public void test() {
-        fail("Not yet implemented");
+    public void test() throws IOException {
+        InputStream is = new BufferedInputStream(D88Test.class.getResourceAsStream("/test.d88"));
+
+        D88 d88 = D88.readFrom(is);
+System.err.print(d88.getHeader());
+        for (int i = 0; i < 164; i++) {
+            if (d88.getTracks()[i] != null) {
+//System.err.print(d88.getTracks()[i]);
+            }
+        }
     }
 
     /** */
@@ -36,10 +41,10 @@ public class D88Test {
         InputStream is = new BufferedInputStream(new FileInputStream(args[0]));
 
         D88 d88 = D88.readFrom(is);
-//d88.getHeader().print();
+System.err.print(d88.getHeader());
         for (int i = 0; i < 164; i++) {
             if (d88.getTracks()[i] != null) {
-                d88.getTracks()[i].print();
+System.err.print(d88.getTracks()[i]);
             }
         }
     }

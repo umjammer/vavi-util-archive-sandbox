@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003 by Naohide Sano, All rights reserved.
+ * Copyright (c) 2021 by Naohide Sano, All rights reserved.
  *
  * Programmed by Naohide Sano
  */
@@ -15,14 +15,14 @@ import vavi.util.archive.Archive;
 /**
  * The SPI for ARJ archived file.
  *
- * @author <a href="mailto:umjammer@gmail.com">Naohide Sano</a> (nsano)
- * @version 0.00 041002 nsano initial version <br>
+ * @author <a href="mailto:umjammer@gmail.com">Naohide Sano</a> (umjammer)
+ * @version 0.00 2021/11/17 umjammer initial version <br>
  */
-public class ComArjArchiveSpi extends ArjArchiveSpi {
+public class ApacheArjArchiveSpi extends ArjArchiveSpi {
 
     @Override
     public Archive createArchiveInstance(Object obj) throws IOException {
-        return new ComArjArchive((File) obj);
+        return new ApacheArjArchive((File) obj);
     }
 }
 

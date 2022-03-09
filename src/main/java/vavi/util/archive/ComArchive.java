@@ -21,7 +21,7 @@ import com.jacob.com.Dispatch;
 import com.jacob.com.Variant;
 
 import vavi.util.Debug;
-import vavi.util.archive.spi.CommonEntry;
+
 import vavix.util.ComUtil;
 
 
@@ -58,7 +58,7 @@ public abstract class ComArchive implements Archive {
     private String type;
 
     /** */
-    private List<Entry<?>> entries = new ArrayList<>();
+    private List<Entry> entries = new ArrayList<>();
 
     /** KBA manager */
     private Dispatch manager;
@@ -120,7 +120,7 @@ Debug.println("openArc: " + ComUtil.toObject(result));
 Debug.println("no content");
             return;
         }
-    
+
         do {
             CommonEntry entry = new CommonEntry();
 
@@ -175,8 +175,8 @@ Debug.println(ComUtil.toObject(result));
     /**
      * ファイルエントリの列挙を返します。
      */
-    public Entry<?>[] entries() {
-        Entry<?>[] entries = new Entry[this.entries.size()];
+    public Entry[] entries() {
+        Entry[] entries = new Entry[this.entries.size()];
         this.entries.toArray(entries);
         return entries;
     }
@@ -185,8 +185,8 @@ Debug.println(ComUtil.toObject(result));
      * 指定された名前の RAR ファイルエントリを返します。
      * 見つからない場合は null を返します。
      */
-    public Entry<?> getEntry(String name) {
-        for (Entry<?> entry : entries) {
+    public Entry getEntry(String name) {
+        for (Entry entry : entries) {
 //Debug.println(entry.getName() + ", " + name);
             if (entry.getName().equals(name)) {
                 return entry;
@@ -199,7 +199,7 @@ Debug.println(ComUtil.toObject(result));
      * 指定された ファイルエントリの内容を読み込むための入力ストリームを
      * 返します。
      */
-    public InputStream getInputStream(Entry<?> entry) throws IOException {
+    public InputStream getInputStream(Entry entry) throws IOException {
         Variant result = Dispatch.invoke(module, "ArcCmd", Dispatch.Method, new Object[] { getCommandString(entry) }, new int[1]);
 Debug.println("ArcCmd: " + ComUtil.toObject(result));
         String resultString = Dispatch.get(module, "ArcCmdRes").getString();
@@ -218,10 +218,10 @@ Debug.println("result: " + resultString);
     }
 
     /** COM に渡すコマンドラインを返してください。 */
-    protected abstract String getCommandString(Entry<?> entry);
+    protected abstract String getCommandString(Entry entry);
 
     /** 解凍されたファイルネームを返してください。 */
-    protected abstract String getTemporaryFileName(Entry<?> entry);
+    protected abstract String getTemporaryFileName(Entry entry);
 
     /**
      * ファイルのパス名を返します。

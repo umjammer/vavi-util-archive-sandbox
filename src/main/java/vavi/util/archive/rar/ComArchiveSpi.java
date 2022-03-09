@@ -16,7 +16,7 @@ import vavi.util.archive.Archive;
 
 
 /**
- * RAR アーカイブを処理するサービスプロバイダです．
+ * The SPI for RAR archived file.
  *
  * @author <a href="mailto:umjammer@gmail.com">Naohide Sano</a> (nsano)
  * @version 0.00 021222 nsano initial version <br>
@@ -26,9 +26,9 @@ import vavi.util.archive.Archive;
 public class ComArchiveSpi extends RarArchiveSpi {
 
     /**
-     * 解凍できるかどうか調べます．
-     * @param target 今のところ File しか受け付けません
+     * @param target currently accepts {@link File} only.
      */
+    @Override
     public boolean canExtractInput(Object target) throws IOException {
         InputStream is;
         boolean needToClose = false;
@@ -43,7 +43,7 @@ public class ComArchiveSpi extends RarArchiveSpi {
         return canExtractInput(is, needToClose);
     }
 
-    /* */
+    @Override
     public Archive createArchiveInstance(Object obj) throws IOException {
         return new ComRarArchive((File) obj);
     }

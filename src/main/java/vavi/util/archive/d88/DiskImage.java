@@ -11,7 +11,7 @@ import java.io.InputStream;
 
 
 /**
- * ディスクイメージです．
+ * Represents Disk image.
  *
  * @author <a href="mailto:umjammer@gmail.com">Naohide Sano</a> (nsano)
  * @version 0.00 010819 nsano initial version <br>
@@ -33,7 +33,7 @@ public interface DiskImage {
     /** */
     static class Factory {
         /**
-         * TODO header を読んでイメージ形式を振り分ける
+         * TODO read header and dispatch image type.
          */
         public static DiskImage readFrom(InputStream is) throws IOException {
             return D88.readFrom(is);

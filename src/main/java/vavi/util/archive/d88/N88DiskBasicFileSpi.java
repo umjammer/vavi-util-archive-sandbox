@@ -14,16 +14,14 @@ import vavi.util.archive.spi.ArchiveSpi;
 
 
 /**
- * N88 Disk Basic File を処理するサービスプロバイダです．
+ * The SPI for N88 Disk Basic File.
  *
  * @author <a href="mailto:umjammer@gmail.com">Naohide Sano</a> (nsano)
  * @version 0.00 021222 nsano initial version <br>
  */
 public class N88DiskBasicFileSpi implements ArchiveSpi {
 
-    /**
-     * 解凍できるかどうか調べます．
-     */
+    @Override
     public boolean canExtractInput(Object target) throws IOException {
 
         if (!(target instanceof File)) {
@@ -36,7 +34,7 @@ public class N88DiskBasicFileSpi implements ArchiveSpi {
         return extension.equals("d88");
     }
 
-    /** */
+    @Override
     public Archive createArchiveInstance(Object obj) throws IOException {
         return new N88DiskBasicFile((File) obj);
     }

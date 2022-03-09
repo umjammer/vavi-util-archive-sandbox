@@ -19,9 +19,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 import java.util.ResourceBundle;
-import java.util.zip.CRC32;
-
-import jp.gr.java_conf.dangan.util.lha.CRC16;
+import java.util.logging.Level;
 
 import org.apache.commons.cli.BasicParser;
 import org.apache.commons.cli.CommandLine;
@@ -30,21 +28,23 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
+import vavi.util.ByteUtil;
 import vavi.util.Debug;
+import vavi.util.StringUtil;
 import vavi.util.win32.DateUtil;
+
+import de.innosystec.unrar.crc.RarCRC;
 
 
 /**
  * UnRar.
  *
- * TODO 未完成
+ * TODO complete
  *
  * @author <a href="mailto:umjammer@gmail.com">Naohide Sano</a> (nsano)
  * @version 0.00 021023 nsano initial version <br>
  */
 public class UnRar {
-    /** */
-//    private Logger logger = Logger.getLogger(UnRar.class.getName());
 
     private static final int NM = 260;
     private static final int SIZEOF_MARKHEAD = 7;
@@ -208,11 +208,49 @@ public class UnRar {
         int unpSize;
         byte hostOS;
         int fileCRC;
-        int fileTime;
+        private long fileTime;
         byte unpVer;
         byte method;
         int nameSize;
         int fileAttr;
+        String name;
+        void setFileTime(int value) {
+            fileTime = DateUtil.dosDateTimeToLong((value & 0xff00) >> 8, value & 0xff);            
+        }
+        String convertDate() {
+            DateFormat format = new SimpleDateFormat("yy-MM-dd HH:mm");
+//Debug.println("fileTime: " + fileTime);
+            return format.format(new Date());
+        }
+        String showAttr() {
+            int a;
+            a = fileAttr;
+            switch (hostOS) {
+            case MS_DOS:
+            case OS2:
+            case WIN_32:
+                return "  " + (((a & 0x08) != 0) ? 'V' : '.') +
+                        (((a & 0x10) != 0) ? 'D' : '.') +
+                        (((a & 0x01) != 0) ? 'R' : '.') +
+                        (((a & 0x02) != 0) ? 'H' : '.') +
+                        (((a & 0x04) != 0) ? 'S' : '.') +
+                        (((a & 0x20) != 0) ? 'A' : '.') + "  ";
+            default:
+            case UNIX:
+                return "" + (((a & 0x4000) != 0) ? 'd' : '-') +
+                        (((a & 0x0100) != 0) ? 'r' : '-') +
+                        (((a & 0x0080) != 0) ? 'w' : '-') +
+                        (((a & 0x0040) != 0) ? (((a & 0x0800) != 0) ? 's' : 'x')
+                                             : (((a & 0x0800) != 0) ? 'S' : '-')) +
+                        (((a & 0x0020) != 0) ? 'r' : '-') +
+                        (((a & 0x0010) != 0) ? 'w' : '-') +
+                        (((a & 0x0008) != 0) ? (((a & 0x0400) != 0) ? 's' : 'x')
+                                             : (((a & 0x0400) != 0) ? 'S' : '-')) +
+                        (((a & 0x0004) != 0) ? 'r' : '-') +
+                        (((a & 0x0002) != 0) ? 'w' : '-') +
+                        (((a & 0x0001) != 0) ? 'x' : '-');
+            }
+        }
     }
 
     /** */
@@ -283,14 +321,14 @@ public class UnRar {
         int isDir;
     }
 
-    private MarkHeader markHead;
-    private OldMainHeader oldMhd;
-    private NewMainArchiveHeader newMhd;
-    private OldFileHeader oldLhd;
-    private NewFileHeader newLhd;
-    private BlockHeader blockHead;
-    private CommentHeader commHead;
-    private ProtectHeader protectHead;
+    private MarkHeader markHead = new MarkHeader();
+    private OldMainHeader oldMhd = new OldMainHeader();
+    private NewMainArchiveHeader newMhd = new NewMainArchiveHeader();
+    private OldFileHeader oldLhd = new OldFileHeader();
+    private NewFileHeader newLhd = new NewFileHeader();
+    private BlockHeader blockHead = new BlockHeader();
+    private CommentHeader commHead = new CommentHeader();
+    private ProtectHeader protectHead = new ProtectHeader();
 
     /** */
     private RAROptions opt = new RAROptions() {
@@ -312,13 +350,12 @@ public class UnRar {
     private byte[] tempMemory;
     private byte[] commMemory;
     private byte[] unpMemory;
-    private byte[] argBuf;
-    private byte[] exclPtr;
-    private String argName;
+//    private byte[] argBuf;
+//    private byte[] exclPtr;
+//    private String argName;
     private int numArcDrive;
     private String curExtrFile;
-    private String tmpArc;
-    private String arcFileName;
+//    private String tmpArc;
     private int solidType;
     private int lockedType;
     private int aVType;
@@ -331,7 +368,6 @@ public class UnRar {
     private InputStream tmpArcPtr;
     private InputStream fileInPtr;
     private OutputStream fileOutPtr;
-    private String dateStr;
     private int unpVolume;
     private int overwriteAll = 0;
     private int arcType;
@@ -342,7 +378,7 @@ public class UnRar {
     private String password;
     private int brokenMhd;
     private int brokenFileHeader;
-    private int exclCount;
+//    private int exclCount;
     private int arcCount;
     private int totalArcCount;
     private long arcNamesSize;
@@ -359,14 +395,14 @@ public class UnRar {
     private OutputStream wrUnpPtr;
     private long unpPackedSize;
     private long destUnpSize;
-    private long latestTime;
-    private int packFileCRC;
-    private long unpFileCRC;
-    private long packedCRC;
-    private long headerCRC;
+//    private long latestTime;
+//    private int packFileCRC;
+    private int unpFileCRC;
+    private int packedCRC;
+    private int headerCRC;
     private int encryption;
     private int arcFormat;
-    private int packSolid;
+//    private int packSolid;
     private int unpSolid;
     private int unpWrSize;
     private byte[] unpWrAddr;
@@ -377,29 +413,19 @@ public class UnRar {
 
     /** */
     private static final int UNP_MEMORY = 0x8000;
-    /** */
-    private CRC32 crc32 = new CRC32();
-    /** */
-    private CRC16 crc16 = new CRC16();
 
     /**
      * The program entry point.
-     * @throws Exception
      */
     public static void main(String[] args) throws Exception {
-        new UnRar(args);
+        UnRar app = new UnRar(args);
+        System.exit(app.exitCode);
     }
 
-    /**
-     * @throws IOException
-     * @throws ParseException
-     */
+    /** */
     public UnRar(String[] args) throws ParseException, IOException {
-
         executeCommand(args);
         shutDown(SD_MEMORY);
-
-        System.exit(exitCode);
     }
 
     /**
@@ -436,7 +462,7 @@ public class UnRar {
             break;
         }
         if (EEMPTY != errCode) {
-            System.err.println("\n" + errMsg + "\n" + rb.getString("message.ProgAborted"));
+            Debug.println("\n" + errMsg + "\n" + rb.getString("message.ProgAborted"));
         }
         shutDown(SD_FILES | SD_MEMORY);
         System.exit(code);
@@ -461,14 +487,12 @@ public class UnRar {
         }
     }
 
-    /**
-     * @throws IOException
-     */
+    /** */
     private int mergeArchive(int showFileName) throws IOException {
         arcPtr.close();
         if ((mainCommand == 'X') || (mainCommand == 'E') || (mainCommand == 'T')) {
             if ((newLhd.unpVer >= 20) && (newLhd.fileCRC != 0xffffffff) && (packedCRC != ~newLhd.fileCRC)) {
-                System.err.printf(rb.getString("message.DataBadCRC"), arcFileName, arcName);
+                Debug.printf(rb.getString("message.DataBadCRC"), newLhd.name, arcName);
             }
         }
         nextVolumeName(((newMhd.flags & MHD_NEWNUMBERING) != 0) &&
@@ -477,27 +501,27 @@ public class UnRar {
         do {
             arcPtr = new RandomAccessFile(arcName, "r");
             if (numArcDrive == -1) {
-                System.err.printf(rb.getString("message.AbsNextVol"), arcName);
+                Debug.printf(rb.getString("message.AbsNextVol"), arcName);
                 return 0;
             }
         } while(askNextVol());
         if (isArchive() == 0) {
-            System.err.printf(rb.getString("message.BadArc"), arcName);
+            Debug.printf(rb.getString("message.BadArc"), arcName);
             return 0;
         }
         if (mainCommand == 'T') {
-            System.err.printf(rb.getString("message.TestVol"), arcName);
+            Debug.printf(rb.getString("message.TestVol"), arcName);
         } else {
             if ((mainCommand == 'X') ||
                 (mainCommand == 'E')) {
-                System.err.printf(rb.getString("message.ExtrVol"), arcName);
+                Debug.printf(rb.getString("message.ExtrVol"), arcName);
             }
         }
         arcPtr.seek(newMhd.headSize - mainHeadSize);
         readBlock(FILE_HEAD);
 //        convertFlags();
         if (showFileName != 0) {
-            System.err.printf(rb.getString("message.ExtrPoints"), arcFileName);
+            Debug.printf(rb.getString("message.ExtrPoints"), newLhd.name);
         }
         unpVolume = (newLhd.flags & LHD_SPLIT_AFTER);
         arcPtr.seek(nextBlockPos - newLhd.packSize);
@@ -507,9 +531,7 @@ public class UnRar {
         return 1;
     }
 
-    /**
-     * @throws IOException
-     */
+    /** */
     private void unstoreFile() throws IOException {
         int code;
         tempMemory = new byte[0x8000];
@@ -556,11 +578,9 @@ public class UnRar {
         System.arraycopy(outPath, 0, tmpStr, 0, tmpStr.length);
     }
 
-    /**
-     * @throws IOException
-     */
-    private  boolean askNextVol() throws IOException {
-        System.err.printf(rb.getString("message.AskNextVol"), arcName);
+    /** */
+    private boolean askNextVol() throws IOException {
+        System.out.printf(rb.getString("message.AskNextVol"), arcName);
         ask(rb.getString("message.ContinueQuit"));
         if (choice == 2) {
             errExit(EEMPTY, USER_BREAK);
@@ -568,47 +588,29 @@ public class UnRar {
         return choice == 1;
     }
 
-// block
-
-    /** */
-    private byte getHeaderByte(byte[] header, int n) {
-        return header[n];
-    }
-
-    /** */
-    private int getHeaderWord(byte[] header, int n) {
-        return (header[n] & 0xff) | ((header[n + 1] & 0xff) << 8);
-    }
-
-    /** */
-    private int getHeaderDword(byte[] header, int n) {
-        return (header[n] & 0xff) | ((header[n + 1] & 0xff) << 8) |
-               ((header[n + 2] & 0xff) << 16) | ((header[n + 3] & 0xff) << 24);
-    }
-
-    /** */
+/** */
     private int isProcessFile(int comparePath) {
         boolean wildcards;
-        String pathArg = null;
-        String nameArg = null;
-        String pathArc = null;
-        String nameArc = null;
-        for (String argName : nextArgName) {
-            wildcards = splitPath(argName, pathArg, nameArg, 1);
-            splitPath(arcFileName, pathArc, nameArc, 1);
-            if (nameArg.equals(nameArc)) {
-                if (((comparePath == NOT_COMPARE_PATH) &&
-                    (pathArg.charAt(0) == 0)) || pathArg.equals(pathArc) ||
-                    (wildcards && pathArc.startsWith(pathArg))) {
-                    return 1;
-                }
-            }
-        }
-        return 0;
+//        String pathArg = null;
+//        String nameArg = null;
+//        String pathArc = null;
+//        String nameArc = null;
+//        for (String argName : nextArgName) {
+//            wildcards = splitPath(argName, pathArg, nameArg, 1);
+//            splitPath(newLhd.name, pathArc, nameArc, 1);
+//            if (nameArg.equals(nameArc)) {
+//                if (((comparePath == NOT_COMPARE_PATH) &&
+//                    (pathArg.charAt(0) == 0)) || pathArg.equals(pathArc) ||
+//                    (wildcards && pathArc.startsWith(pathArg))) {
+//                    return 1;
+//                }
+//            }
+//        }
+//        return 0;
+        return 1;
     }
 
-    /**
-     * @throws IOException */
+    /** */
     private int readBlock(int blockType) throws IOException {
         NewFileHeader saveFileHead;
         int size;
@@ -630,6 +632,7 @@ public class UnRar {
                     (oldLhd.headSize <= 21) ||
                     ((oldLhd.flags < 8) &&
                     (oldLhd.headSize != (21 + oldLhd.nameSize)))) {
+Debug.println(Level.WARNING, "here");
                     return 0;
                 }
             }
@@ -653,6 +656,9 @@ public class UnRar {
                 size = readHeader(FILE_HEAD);
                 if (size != 0) {
                     if (newLhd.headSize < SIZEOF_SHORTBLOCKHEAD) {
+if (newLhd.headSize != 0) {
+ Debug.println(Level.WARNING, "here: " + newLhd.headSize);
+}
                         return 0;
                     }
                     nextBlockPos = curBlockPos + newLhd.headSize;
@@ -660,11 +666,12 @@ public class UnRar {
                         nextBlockPos += newLhd.packSize;
                     }
                     if (nextBlockPos <= curBlockPos) {
+Debug.println(Level.WARNING, "here: " + nextBlockPos + ", " + curBlockPos);
                         return 0;
                     }
                 } else {
                     if (arcPtr.length() < nextBlockPos) {
-                        System.err.printf("\n%s", rb.getString("message.LogUnexpEOF"));
+                        Debug.printf("\n%s", rb.getString("message.LogUnexpEOF"));
                     }
                 }
                 if ((size > 0) && (blockType != SUB_HEAD)) {
@@ -692,22 +699,22 @@ public class UnRar {
         switch (blockType) {
         case FILE_HEAD:
             if (size > 0) {
-                newLhd.nameSize = Math.min(newLhd.nameSize,
-                                           arcFileName.length() - 1);
-                arcPtr.read(arcFileName.getBytes(), 0, newLhd.nameSize);
-                crc32.reset();
-                crc32.update((int) headerCRC);
-                crc32.update(arcFileName.getBytes(), 0, newLhd.nameSize);
+                newLhd.nameSize = newLhd.nameSize;
+                byte[] bytes = new byte[newLhd.nameSize];
+                arcPtr.read(bytes, 0, newLhd.nameSize);
+                int crc = RarCRC.checkCrc(headerCRC, bytes, 0, bytes.length);
+                newLhd.name = new String(bytes);
                 if ((arcFormat == NEW) &&
-                    (newLhd.headCRC != ~ crc32.getValue())) {
+                    ((newLhd.headCRC & 0xffff) != (~crc & 0xffff))) {
                     brokenFileHeader = 1;
-                    System.err.printf("\n%s - %s\n", arcFileName, rb.getString("message.LogFileHead"));
+                    Debug.printf("\n%s - %s: %08x, %08x\n", newLhd.name, rb.getString("message.LogFileHead"), newLhd.headCRC, ~crc);
                 }
+//Debug.println("newLhd.name: " + newLhd.name);
                 if (opt.convertNames == NAMES_UPPERCASE) {
-                    arcFileName = arcFileName.toUpperCase();
+                    newLhd.name = newLhd.name.toUpperCase();
                 }
                 if (opt.convertNames == NAMES_LOWERCASE) {
-                    arcFileName = arcFileName.toLowerCase();
+                    newLhd.name = newLhd.name.toLowerCase();
                 }
                 size += newLhd.nameSize;
                 convertUnknownHeader();
@@ -716,14 +723,12 @@ public class UnRar {
         default:
             newLhd = saveFileHead;
             arcPtr.seek(curBlockPos);
+Debug.println("skip not header");
             break;
         }
         return size;
     }
 
-    /**
-     * @throws IOException
-     */
     private int readHeader(int blockType) throws IOException {
         int size = 0;
         byte[] header = new byte[64];
@@ -732,105 +737,91 @@ public class UnRar {
             if (arcFormat == OLD) {
                 size = arcPtr.read(header, 0, SIZEOF_OLDMHD);
                 System.arraycopy(oldMhd.mark, 0, header, 0, 4);
-                oldMhd.headSize = getHeaderWord(header, 4);
-                oldMhd.flags = getHeaderByte(header, 6);
+                oldMhd.headSize = ByteUtil.readLeShort(header, 4);
+                oldMhd.flags = header[6];
             } else {
                 size = arcPtr.read(header, 0, SIZEOF_NEWMHD);
-                newMhd.headCRC = getHeaderWord(header, 0);
-                newMhd.headType = getHeaderByte(header, 2);
-                newMhd.flags = getHeaderWord(header, 3);
-                newMhd.headSize = getHeaderWord(header, 5);
-                newMhd.reserved = getHeaderWord(header, 7);
-                newMhd.reserved1 = getHeaderDword(header, 9);
-                crc32.reset();
-                crc32.update(0xffffffff);
-                crc32.update(header, 2, SIZEOF_NEWMHD - 2);
-                headerCRC = crc32.getValue();
+                newMhd.headCRC = ByteUtil.readLeShort(header, 0);
+                newMhd.headType = header[2];
+                newMhd.flags = ByteUtil.readLeShort(header, 3);
+                newMhd.headSize = ByteUtil.readLeShort(header, 5);
+                newMhd.reserved = ByteUtil.readLeShort(header, 7);
+                newMhd.reserved1 = ByteUtil.readLeInt(header, 9);
+                headerCRC = RarCRC.checkCrc(0xffffffff, header, 2, SIZEOF_NEWMHD - 2);
             }
             break;
         case FILE_HEAD:
             if (arcFormat == OLD) {
                 size = arcPtr.read(header, 0, SIZEOF_OLDLHD);
-                oldLhd.packSize = getHeaderDword(header, 0);
-                oldLhd.unpSize = getHeaderDword(header, 4);
-                oldLhd.fileCRC = getHeaderWord(header, 8);
-                oldLhd.headSize = getHeaderWord(header, 10);
-                oldLhd.fileTime = getHeaderDword(header, 12);
-                oldLhd.fileAttr = getHeaderByte(header, 16);
-                oldLhd.flags = getHeaderByte(header, 17);
-                oldLhd.unpVer = getHeaderByte(header, 18);
-                oldLhd.nameSize = getHeaderByte(header, 19);
-                oldLhd.method = getHeaderByte(header, 20);
+                oldLhd.packSize = ByteUtil.readLeInt(header, 0);
+                oldLhd.unpSize = ByteUtil.readLeInt(header, 4);
+                oldLhd.fileCRC = ByteUtil.readLeShort(header, 8);
+                oldLhd.headSize = ByteUtil.readLeShort(header, 10);
+                oldLhd.fileTime = ByteUtil.readLeInt(header, 12);
+                oldLhd.fileAttr = header[16];
+                oldLhd.flags = header[17];
+                oldLhd.unpVer = header[18];
+                oldLhd.nameSize = header[19];
+                oldLhd.method = header[20];
             } else {
                 size = arcPtr.read(header, 0, SIZEOF_NEWLHD);
-                newLhd.headCRC = getHeaderWord(header, 0);
-                newLhd.headType = getHeaderByte(header, 2);
-                newLhd.flags = getHeaderWord(header, 3);
-                newLhd.headSize = getHeaderWord(header, 5);
-                newLhd.packSize = getHeaderDword(header, 7);
-                newLhd.unpSize = getHeaderDword(header, 11);
-                newLhd.hostOS = getHeaderByte(header, 15);
-                newLhd.fileCRC = getHeaderDword(header, 16);
-                newLhd.fileTime = getHeaderDword(header, 20);
-                newLhd.unpVer = getHeaderByte(header, 24);
-                newLhd.method = getHeaderByte(header, 25);
-                newLhd.nameSize = getHeaderWord(header, 26);
-                newLhd.fileAttr = getHeaderDword(header, 28);
-                crc32.reset();
-                crc32.update(0xffffffff);
-                crc32.update(header, 2, SIZEOF_NEWLHD - 2);
-                headerCRC = crc32.getValue();
+                newLhd.headCRC = ByteUtil.readLeShort(header, 0);
+                newLhd.headType = header[2];
+                newLhd.flags = ByteUtil.readLeShort(header, 3);
+                newLhd.headSize = ByteUtil.readLeShort(header, 5);
+                newLhd.packSize = ByteUtil.readLeInt(header, 7);
+                newLhd.unpSize = ByteUtil.readLeInt(header, 11);
+                newLhd.hostOS = header[15];
+                newLhd.fileCRC = ByteUtil.readLeInt(header, 16);
+                newLhd.setFileTime(ByteUtil.readLeInt(header, 20));
+                newLhd.unpVer = header[24];
+                newLhd.method = header[25];
+                newLhd.nameSize = ByteUtil.readLeShort(header, 26);
+                newLhd.fileAttr = ByteUtil.readLeInt(header, 28);
+                headerCRC = RarCRC.checkCrc(0xffffffff, header, 2, SIZEOF_NEWLHD - 2);
             }
             break;
         case COMM_HEAD:
             size = arcPtr.read(header, 0, SIZEOF_COMMHEAD);
-            commHead.headCRC = getHeaderWord(header, 0);
-            commHead.headType = getHeaderByte(header, 2);
-            commHead.flags = getHeaderWord(header, 3);
-            commHead.headSize = getHeaderWord(header, 5);
-            commHead.unpSize = getHeaderWord(header, 7);
-            commHead.unpVer = getHeaderByte(header, 9);
-            commHead.method = getHeaderByte(header, 10);
-            commHead.commCRC = getHeaderWord(header, 11);
-            crc32.reset();
-            crc32.update(0xffffffff);
-            crc32.update(header, 2, SIZEOF_COMMHEAD - 2);
-            headerCRC = crc32.getValue();
+            commHead.headCRC = ByteUtil.readLeShort(header, 0);
+            commHead.headType = header[2];
+            commHead.flags = ByteUtil.readLeShort(header, 3);
+            commHead.headSize = ByteUtil.readLeShort(header, 5);
+            commHead.unpSize = ByteUtil.readLeShort(header, 7);
+            commHead.unpVer = header[9];
+            commHead.method = header[10];
+            commHead.commCRC = ByteUtil.readLeShort(header, 11);
+            headerCRC = RarCRC.checkCrc(0xffffffff, header, 2, SIZEOF_COMMHEAD - 2);
             break;
         case PROTECT_HEAD:
             size = arcPtr.read(header, 0, SIZEOF_PROTECTHEAD);
-            protectHead.headCRC = getHeaderWord(header, 0);
-            protectHead.headType = getHeaderByte(header, 2);
-            protectHead.flags = getHeaderWord(header, 3);
-            protectHead.headSize = getHeaderWord(header, 5);
-            protectHead.dataSize = getHeaderDword(header, 7);
-            protectHead.version = getHeaderByte(header, 11);
-            protectHead.recSectors = getHeaderWord(header, 12);
-            protectHead.totalBlocks = getHeaderDword(header, 14);
+            protectHead.headCRC = ByteUtil.readLeShort(header, 0);
+            protectHead.headType = header[2];
+            protectHead.flags = ByteUtil.readLeShort(header, 3);
+            protectHead.headSize = ByteUtil.readLeShort(header, 5);
+            protectHead.dataSize = ByteUtil.readLeInt(header, 7);
+            protectHead.version = header[11];
+            protectHead.recSectors = ByteUtil.readLeShort(header, 12);
+            protectHead.totalBlocks = ByteUtil.readLeInt(header, 14);
             System.arraycopy(protectHead.mark, 0, header, 18, 8);
-            crc32.reset();
-            crc32.update(0xffffffff);
-            crc32.update(header, 2, SIZEOF_PROTECTHEAD - 2);
-            headerCRC = crc32.getValue();
+            headerCRC = RarCRC.checkCrc(0xffffffff, header, 2, SIZEOF_PROTECTHEAD - 2);
             break;
         case ALL_HEAD:
             size = arcPtr.read(header, 0, SIZEOF_SHORTBLOCKHEAD);
-            blockHead.headCRC = getHeaderWord(header, 0);
-            blockHead.headType = getHeaderByte(header, 2);
-            blockHead.flags = getHeaderWord(header, 3);
-            blockHead.headSize = getHeaderWord(header, 5);
+            blockHead.headCRC = ByteUtil.readLeShort(header, 0);
+            blockHead.headType = header[2];
+            blockHead.flags = ByteUtil.readLeShort(header, 3);
+            blockHead.headSize = ByteUtil.readLeShort(header, 5);
             if ((blockHead.flags & LONG_BLOCK) != 0) {
                 size += arcPtr.read(header, 7, 4);
-                blockHead.dataSize = getHeaderDword(header, 7);
+                blockHead.dataSize = ByteUtil.readLeInt(header, 7);
             }
             break;
         }
         return size;
     }
 
-// comment
-
-    /** */
+    /** comment */
     private void viewComment() throws IOException {
         long curPos;
         int commLen;
@@ -847,14 +838,14 @@ public class UnRar {
                 return;
             }
             if (commHead.headCRC != ~headerCRC) {
-                System.err.printf("\n%s\n", rb.getString("message.LogCommHead"));
+                Debug.printf("\n%s\n", rb.getString("message.LogCommHead"));
                 arcPtr.seek(curPos);
                 return;
             }
             commLen = commHead.headSize - SIZEOF_COMMHEAD;
         }
         if (opt.disableComment == 0) {
-            System.err.println();
+            Debug.println("");
         }
         if (((arcFormat == OLD) && ((oldMhd.flags & MHD_PACK_COMMENT) != 0)) ||
             ((arcFormat == NEW) && (commHead.method != 0x30))) {
@@ -880,7 +871,7 @@ public class UnRar {
             }
             destUnpSize = unpCommLen;
             unpPackedSize = commLen;
-            unpFileCRC = 0xffffffffL;
+            unpFileCRC = 0xffffffff;
             rdUnpPtr = arcPtr;
             unpSolid = 0;
             suspend = 0;
@@ -889,18 +880,16 @@ public class UnRar {
             tunpack(unpMemory, 0,
                     (commHead.unpVer <= 15) ? OLD_UNPACK : NEW_UNPACK);
             if ((arcFormat == NEW) && (~unpFileCRC != commHead.commCRC)) {
-                System.err.printf("\n%s", rb.getString("message.LogCommBrk"));
+                Debug.printf("\n%s", rb.getString("message.LogCommBrk"));
             } else {
                 showComment(unpWrAddr, unpWrSize);
             }
         } else {
             tempMemory = new byte[commLen];
             arcPtr.read(tempMemory, 0, commLen);
-            crc32.reset();
-            crc32.update(0xffffffff);
-            crc32.update(tempMemory, 0, commLen);
-            if ((arcFormat == NEW) && (commHead.commCRC != ~crc32.getValue())) {
-                System.err.printf("\n%s", rb.getString("message.LogCommBrk"));
+            int crc = RarCRC.checkCrc(0xffffffff,tempMemory, 0, commLen);
+            if ((arcFormat == NEW) && (commHead.commCRC != ~crc)) {
+                Debug.printf("\n%s", rb.getString("message.LogCommBrk"));
             } else {
                 showComment(tempMemory, commLen);
             }
@@ -929,7 +918,7 @@ public class UnRar {
                 return;
             }
             if (commHead.headCRC != ~headerCRC) {
-                System.err.printf("\n%s", rb.getString("message.LogCommHead"));
+                Debug.printf("\n%s", rb.getString("message.LogCommHead"));
                 arcPtr.seek(curPos);
                 return;
             }
@@ -939,11 +928,9 @@ public class UnRar {
                 return;
             }
             arcPtr.read(commMemory, 0, commHead.unpSize);
-            crc32.reset();
-            crc32.update(0xffffffff);
-            crc32.update(commMemory, 0, commHead.unpSize);
-            if (commHead.commCRC != ~crc32.getValue()) {
-                System.err.printf("\n%s", rb.getString("message.LogBrokFCmt"));
+            int crc = RarCRC.checkCrc(0xffffffff, commMemory, 0, commHead.unpSize);
+            if (commHead.commCRC != ~crc) {
+                Debug.printf("\n%s", rb.getString("message.LogBrokFCmt"));
             } else {
                 System.out.write(commMemory, 0, commHead.unpSize);
                 System.out.flush();
@@ -996,6 +983,7 @@ public class UnRar {
     }
 
 // compr
+
     private static final int NC = 298; // alphabet = {0, 1, 2, ..., NC - 1}
     private static final int DC = 48;
     private static final int RC = 28;
@@ -1043,12 +1031,12 @@ public class UnRar {
 
     /** */
     private int rol(long x, int n) {
-        return (int) ((x << n) | (x >> (32 - n)));
+        return (int) ((x << n) | (x >> (NROUNDS - n)));
     }
 
     /** */
     private int ror(long x, int n) {
-        return (int) ((x >> n) | (x << (32 - n)));
+        return (int) ((x >> n) | (x << (NROUNDS - n)));
     }
 
     /** */
@@ -1221,10 +1209,7 @@ public class UnRar {
     private void setOldKeys(byte[] password) {
         long pswcrc;
         byte ch;
-        crc32.reset();
-        crc32.update(0xffffffff);
-        crc32.update(password, 0, password.length);
-        pswcrc = crc32.getValue();
+        pswcrc = RarCRC.checkCrc(0xffffffff, password, 0, password.length);
         oldKey[0] = pswcrc;
         oldKey[1] = pswcrc >> 16;
         oldKey[2] = oldKey[3] = 0;
@@ -1296,7 +1281,7 @@ public class UnRar {
 // extract
 
     /** */
-    private void extrFile() throws IOException {
+    public void extrFile() throws IOException {
         File fs = null;
         String destFileName = null;
         int chPtr;
@@ -1331,15 +1316,15 @@ GET_NEXT_ARCHIVE:
                 password = null;
             }
             if (isArchive() == 0) {
-                System.err.printf(rb.getString("message.NotRAR"), arcName);
+                Debug.printf(rb.getString("message.NotRAR"), arcName);
                 arcPtr.close();
                 continue;
             }
 
             if (mainCommand == 'T') {
-                System.err.printf(rb.getString("message.ExtrTest"), arcName);
+                Debug.printf(rb.getString("message.ExtrTest"), arcName);
             } else {
-                System.err.printf(rb.getString("message.Extracting"), arcName);
+                Debug.printf(rb.getString("message.Extracting"), arcName);
             }
 
             viewComment();
@@ -1352,17 +1337,20 @@ GET_NEXT_ARCHIVE:
             while (true) {
                 size = readBlock(FILE_HEAD | READSUBBLOCK);
                 if ((size <= 0) && (unpVolume == 0)) {
+Debug.println("readBlock");
                     break;
                 }
                 if (blockHead.headType == SUB_HEAD) {
+Debug.println("skip sub head");
                     arcPtr.seek(nextBlockPos);
                     continue;
                 }
 
                 if (allArgsUsed) {
+Debug.println("allArgsUsed");
                     break;
                 }
-                convertPath(arcFileName.getBytes(), arcFileName.getBytes());
+                convertPath(newLhd.name.getBytes(), newLhd.name.getBytes());
 
 //                convertFlags();
 
@@ -1380,7 +1368,7 @@ GET_NEXT_ARCHIVE:
                             continue;
                         }
                     }
-                    System.err.println(rb.getString("message.NeedFirstVol"));
+                    Debug.println(rb.getString("message.NeedFirstVol"));
                     if (totalArcCount > 1) {
                         continue GET_NEXT_ARCHIVE;
                     } else {
@@ -1411,7 +1399,7 @@ GET_NEXT_ARCHIVE:
                             }
                             tmpPassword = (solidType != 0) ? 2 : 1;
                         } else if (tmpPassword == 1) {
-                            System.err.println(rb.getString("message.UseCurPsw, ArcFileName"));
+                            Debug.println(rb.getString("message.UseCurPsw, newLhd.name"));
                             ask(rb.getString("message.YesNoAll"));
                             switch (choice) {
                             case -1:
@@ -1431,9 +1419,9 @@ GET_NEXT_ARCHIVE:
                     destFileName = extrPath;
 
                     if (mainCommand == 'E') {
-                        destFileName += pointToName(arcFileName);
+                        destFileName += pointToName(newLhd.name);
                     } else {
-                        destFileName += arcFileName;
+                        destFileName += newLhd.name;
                     }
 
                     extrFile = (skipSolid != 0) ? 0 : 1;
@@ -1452,7 +1440,7 @@ GET_NEXT_ARCHIVE:
                     }
 
                     if ((newLhd.unpVer < 13) || (newLhd.unpVer > UNP_VER)) {
-                        System.err.printf(rb.getString("message.UnknownMeth"), arcFileName);
+                        Debug.printf(rb.getString("message.UnknownMeth"), newLhd.name);
                         extrFile = 0;
                         errCount++;
                         exitCode = WARNING;
@@ -1467,23 +1455,23 @@ GET_NEXT_ARCHIVE:
                             continue;
                         }
                         if (skipSolid != 0) {
-                            System.err.printf(rb.getString("message.ExtrSkipDir"), arcFileName);
+                            Debug.printf(rb.getString("message.ExtrSkipDir"), newLhd.name);
                             continue;
                         }
                         fileCount++;
                         if (mainCommand == 'T') {
-                            System.err.printf(rb.getString("message.ExtrTestDir"), arcFileName);
+                            Debug.printf(rb.getString("message.ExtrTestDir"), newLhd.name);
                             continue;
                         }
                         if ((mDCode = new File(destFileName).mkdir()) == false) {
                             new File(destFileName).mkdirs();
                             if ((mDCode = new File(destFileName).mkdir()) == false) {
-                                System.err.printf(rb.getString("message.ExtrErrMkDir"), arcFileName);
+                                Debug.printf(rb.getString("message.ExtrErrMkDir"), newLhd.name);
                                 exitCode = WARNING;
                             }
                         }
                         if (mDCode == false) {
-                            System.err.printf(rb.getString("message.CreatDir"), arcFileName);
+                            Debug.printf(rb.getString("message.CreatDir"), newLhd.name);
                         }
                         continue;
                     } else {
@@ -1499,7 +1487,7 @@ GET_NEXT_ARCHIVE:
                             fileOutPtr = new FileOutputStream(destFileName, opt.overwrite > 0); // , userReject
                             } catch (IOException e) {
                                 if (userReject == 0) {
-                                    System.err.printf(rb.getString("message.CannotCreate"), destFileName);
+                                    Debug.printf(rb.getString("message.CannotCreate"), destFileName);
                                     errCount++;
                                     exitCode = WARNING;
                                 }
@@ -1520,26 +1508,26 @@ GET_NEXT_ARCHIVE:
                         }
                         totalFileCount++;
                         if (skipSolid != 0) {
-                            System.err.printf(rb.getString("message.ExtrSkipFile"), arcFileName);
+                            Debug.printf(rb.getString("message.ExtrSkipFile"), newLhd.name);
                         } else {
                             switch (mainCommand) {
                             case 'T':
-                                System.err.printf(rb.getString("message.ExtrTestFile"), arcFileName);
+                                Debug.printf(rb.getString("message.ExtrTestFile"), newLhd.name);
                                 break;
                             case 'P':
-                                System.err.printf(rb.getString("message.ExtrPrinting"), arcFileName);
+                                Debug.printf(rb.getString("message.ExtrPrinting"), newLhd.name);
                                 checkWriteSize = 0;
                                 break;
                             case 'X':
                             case 'E':
-                                System.err.printf(rb.getString("message.ExtrFile"), destFileName);
+                                Debug.printf(rb.getString("message.ExtrFile"), destFileName);
                                 break;
                             }
                         }
                         curExtrFile = (skipSolid != 0) ? "" : destFileName;
                         curUnpRead = curUnpWrite = 0;
-                        unpFileCRC = (arcFormat == OLD) ? 0 : 0xffffffffL;
-                        packedCRC = 0xffffffffL;
+                        unpFileCRC = (arcFormat == OLD) ? 0 : 0xffffffff;
+                        packedCRC = 0xffffffff;
                         if ((password != null) && ((newLhd.flags & LHD_PASSWORD) != 0)) {
                             encryption = newLhd.unpVer;
                         } else {
@@ -1583,14 +1571,14 @@ GET_NEXT_ARCHIVE:
                                 ((arcFormat == NEW) &&
                                 (unpFileCRC == ~newLhd.fileCRC))) {
                                 if (mainCommand != 'P') {
-                                    System.err.println(rb.getString("message.Ok"));
+                                    Debug.println(rb.getString("message.Ok"));
                                 }
                                 brokenFile = 0;
                             } else {
                                 if ((newLhd.flags & LHD_PASSWORD) != 0) {
-                                    System.err.printf(rb.getString("message.EncrBadCRC"), arcFileName);
+                                    Debug.printf(rb.getString("message.EncrBadCRC"), newLhd.name);
                                 } else {
-                                    System.err.printf("\n%-20s - %s", arcFileName, rb.getString("message.CRCFailed"));
+                                    Debug.printf("\n%-20s - %s", newLhd.name, rb.getString("message.CRCFailed"));
                                 }
                                 exitCode = CRC_ERROR;
                                 errCount++;
@@ -1632,13 +1620,13 @@ GET_NEXT_ARCHIVE:
             arcPtr.close();
         }
         if (fileCount == 0) {
-            System.err.println(rb.getString("message.ExtrNoFiles"));
+            Debug.println(rb.getString("message.ExtrNoFiles"));
             exitCode = WARNING;
         } else {
             if (errCount == 0) {
-                System.err.println(rb.getString("message.ExtrAllOk"));
+                Debug.println(rb.getString("message.ExtrAllOk"));
             } else {
-                System.err.printf(rb.getString("message.ExtrTotalErr"), new Long(errCount));
+                Debug.printf(rb.getString("message.ExtrTotalErr"), new Long(errCount));
             }
         }
         if (tmpPassword != 0) {
@@ -1646,10 +1634,8 @@ GET_NEXT_ARCHIVE:
         }
     }
 
-// list
-
-    /** */
-    private void listArchive() throws IOException {
+    /** list */
+    public void listArchive() throws IOException {
         long totalPackSize;
         long totalUnpSize;
         long fileCount;
@@ -1661,11 +1647,8 @@ GET_NEXT_ARCHIVE:
         int outHeader;
         archivesCount = sumPackSize = sumUnpSize = sumFileCount = 0;
         while (readArcName() != 0) {
-            try {
-                arcPtr = new RandomAccessFile(arcName, "r");
-            } catch (IOException e) {
-                continue;
-            }
+            arcPtr = new RandomAccessFile(arcName, "r");
+
             while (true) {
                 totalPackSize = totalUnpSize = fileCount = 0;
                 if (isArchive() != 0) {
@@ -1674,83 +1657,79 @@ GET_NEXT_ARCHIVE:
                     arcPtr.seek(newMhd.headSize - mainHeadSize);
                     System.err.println();
                     if (solidType != 0) {
-                        System.err.println(rb.getString("message.ListSolid"));
+                        Debug.println(rb.getString("message.ListSolid"));
                     }
                     if (sFXLen > 0) {
-                        System.err.println(rb.getString("message.ListSFX"));
+                        Debug.println(rb.getString("message.ListSFX"));
                     }
                     if (arcType == VOL) {
                         if (solidType != 0) {
-                            System.err.println(rb.getString("message.ListVol1"));
+                            Debug.println(rb.getString("message.ListVol1"));
                         } else {
-                            System.err.println(rb.getString("message.ListVol2"));
+                            Debug.println(rb.getString("message.ListVol2"));
                         }
                     } else {
                         if (solidType != 0) {
-                            System.err.println(rb.getString("message.ListArc1"));
+                            Debug.println(rb.getString("message.ListArc1"));
                         } else {
-                            System.err.println(rb.getString("message.ListArc2"));
+                            Debug.println(rb.getString("message.ListArc2"));
                         }
                     }
-                    System.err.printf(" %s\n", arcName);
+                    System.out.printf(" %s%n", arcName);
                     while (readBlock(FILE_HEAD) > 0) {
                         if (isProcessFile(NOT_COMPARE_PATH) != 0) {
                             if (outHeader == 0) {
                                 if (mainCommand == 'V') {
-                                    System.err.println(rb.getString("message.ListPathComm"));
+                                    System.out.printf(rb.getString("message.ListPathComm"));
                                 } else {
-                                    System.err.println(rb.getString("message.ListName"));
+                                    System.out.printf(rb.getString("message.ListName"));
                                 }
-                                System.err.println(rb.getString("message.ListTitle"));
+                                System.out.println(rb.getString("message.ListTitle"));
                                 for (i = 0; i < 79; i++) {
-                                    System.err.println("-");
+                                    System.out.print("-");
                                 }
                                 outHeader = 1;
                             }
 
-                            System.err.printf("\n%c", ((newLhd.flags & LHD_PASSWORD) != 0) ? "*" : " ");
+                            System.out.printf("%n%c", ((newLhd.flags & LHD_PASSWORD) != 0) ? '*' : ' ');
                             if ((mainCommand == 'V') ||
-                                (pointToName(arcFileName).length() >= 13)) {
-                                System.err.printf("%s", arcFileName);
+                                (pointToName(newLhd.name).length() >= 13)) {
+                                System.out.printf("%s", newLhd.name);
                                 viewFileComment();
-                                System.err.printf("\n%12s ", "");
+                                System.out.printf("%n%12s ", "");
                             } else {
-                                System.err.printf("%-12s", pointToName(arcFileName));
+                                System.out.printf("%-12s", pointToName(newLhd.name));
                             }
 
-                            System.err.printf(" %8lu %8lu ", newLhd.unpSize, newLhd.packSize);
+                            System.out.printf(" %8d %8d ", newLhd.unpSize, newLhd.packSize);
 
                             if (((newLhd.flags & LHD_SPLIT_BEFORE) != 0) &&
                                 ((newLhd.flags & LHD_SPLIT_AFTER) != 0)) {
-                                System.err.print(" <->");
+                                System.out.print(" <->");
                             } else {
                                 if ((newLhd.flags & LHD_SPLIT_BEFORE) != 0) {
-                                    System.err.print(" <--");
+                                    System.out.print(" <--");
                                 } else {
                                     if ((newLhd.flags & LHD_SPLIT_AFTER) != 0) {
-                                        System.err.print(" -->");
+                                        System.out.print(" -->");
                                     } else {
-                                        System.err.printf("%3d%%", toPercent(newLhd.packSize, newLhd.unpSize));
+                                        System.out.printf("%3d%%", toPercent(newLhd.packSize, newLhd.unpSize));
                                     }
                                 }
                             }
 
-                            convertDate(newLhd.fileTime);
-                            System.err.printf(" %2.2s-%2.2s-%2.2s %2.2s:%2.2s ",
-                                        dateStr, dateStr + 2, dateStr + 4,
-                                        dateStr + 6, dateStr + 8
-                            );
+                            System.out.printf(" %s ", newLhd.convertDate());
 
-                            showAttr();
+                            System.out.print(newLhd.showAttr());
 
-                            System.err.printf(" %8.8lX", newLhd.fileCRC);
-                            System.err.printf(" m%d", newLhd.method - 0x30);
+                            System.out.printf(" %16X", newLhd.fileCRC);
+                            System.out.printf(" m%d", newLhd.method - 0x30);
                             if ((newLhd.flags & LHD_WINDOWMASK) <= (4 * 32)) {
-                                System.err.print("" + ((newLhd.flags & LHD_WINDOWMASK) >> 5) + 'a');
+                                System.out.print("" + ((newLhd.flags & LHD_WINDOWMASK) >> 5) + 'a');
                             } else {
-                                System.err.print(" ");
+                                System.out.print(" ");
                             }
-                            System.err.printf(" %d.%d", newLhd.unpVer / 10, newLhd.unpVer % 10);
+                            System.out.printf(" %d.%d", newLhd.unpVer / 10, newLhd.unpVer % 10);
 
                             if ((newLhd.flags & LHD_SPLIT_BEFORE) == 0) {
                                 totalUnpSize += newLhd.unpSize;
@@ -1763,9 +1742,9 @@ GET_NEXT_ARCHIVE:
                     if (outHeader != 0) {
                         System.err.println();
                         for (i = 0; i < 79; i++) {
-                            System.err.print("-");
+                            System.out.print("-");
                         }
-                        System.err.printf("\n%5lu %16lu %8lu %3d%%\n",
+                        System.out.printf("\n%5d %16d %8d %3d%%\n",
                             fileCount, totalUnpSize,
                             totalPackSize,
                             toPercent(totalPackSize, totalUnpSize)
@@ -1774,7 +1753,7 @@ GET_NEXT_ARCHIVE:
                         sumUnpSize += totalUnpSize;
                         sumPackSize += totalPackSize;
                     } else {
-                        System.err.print(rb.getString("message.ListNoFiles"));
+                        Debug.print(rb.getString("message.ListNoFiles"));
                     }
 
                     archivesCount++;
@@ -1788,7 +1767,7 @@ GET_NEXT_ARCHIVE:
                     }
                 } else {
                     if (totalArcCount < 2) {
-                        System.err.printf(rb.getString("message.NotRAR"), arcName);
+                        Debug.printf(rb.getString("message.NotRAR"), arcName);
                     }
                     break;
                 }
@@ -1796,7 +1775,7 @@ GET_NEXT_ARCHIVE:
             arcPtr.close();
         }
         if (archivesCount > 1) {
-            System.err.printf("\n%5lu %16lu %8lu %3d%%\n", sumFileCount, sumUnpSize,
+            Debug.printf("\n%5lu %16lu %8lu %3d%%\n", sumFileCount, sumUnpSize,
                     sumPackSize, toPercent(sumPackSize, sumUnpSize));
         }
     }
@@ -1816,12 +1795,6 @@ GET_NEXT_ARCHIVE:
     private String getPswStr() throws IOException {
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
         return reader.readLine();
-    }
-
-    /** */
-    private void convertDate(long ft) {
-        DateFormat format = new SimpleDateFormat();
-        dateStr = format.format(new Date(DateUtil.filetimeToLong(ft)));
     }
 
     /** */
@@ -1852,38 +1825,6 @@ GET_NEXT_ARCHIVE:
     }
 
     /** */
-    private void showAttr() {
-        int a;
-        a = newLhd.fileAttr;
-        switch (newLhd.hostOS) {
-        case MS_DOS:
-        case OS2:
-        case WIN_32:
-            System.err.print("  " + (((a & 0x08) != 0) ? 'V' : '.') +
-                    (((a & 0x10) != 0) ? 'D' : '.') +
-                    (((a & 0x01) != 0) ? 'R' : '.') +
-                    (((a & 0x02) != 0) ? 'H' : '.') +
-                    (((a & 0x04) != 0) ? 'S' : '.') +
-                    (((a & 0x20) != 0) ? 'A' : '.') + "  ");
-            break;
-        case UNIX:
-            System.err.print("" + (((a & 0x4000) != 0) ? 'd' : '-') +
-                    (((a & 0x0100) != 0) ? 'r' : '-') +
-                    (((a & 0x0080) != 0) ? 'w' : '-') +
-                    (((a & 0x0040) != 0) ? (((a & 0x0800) != 0) ? 's' : 'x')
-                                         : (((a & 0x0800) != 0) ? 'S' : '-')) +
-                    (((a & 0x0020) != 0) ? 'r' : '-') +
-                    (((a & 0x0010) != 0) ? 'w' : '-') +
-                    (((a & 0x0008) != 0) ? (((a & 0x0400) != 0) ? 's' : 'x')
-                                         : (((a & 0x0400) != 0) ? 'S' : '-')) +
-                    (((a & 0x0004) != 0) ? 'r' : '-') +
-                    (((a & 0x0002) != 0) ? 'w' : '-') +
-                    (((a & 0x0001) != 0) ? 'x' : '-'));
-            break;
-        }
-    }
-
-    /** */
     private boolean isPathDiv(int ch) {
         if ((ch == '\\') || (ch == '/')) {
             return true;
@@ -1906,9 +1847,9 @@ GET_NEXT_ARCHIVE:
                 newLhd.fileAttr = 0x20;
             }
         }
-        for (int i = 0; i < arcFileName.length(); i++) {
-            if (isPathDiv(arcFileName.charAt(i))) {
-                arcFileName.replace(File.pathSeparator, "");
+        for (int i = 0; i < newLhd.name.length(); i++) {
+            if (isPathDiv(newLhd.name.charAt(i))) {
+                newLhd.name.replace(File.pathSeparator, "");
             }
         }
     }
@@ -1991,9 +1932,7 @@ Debug.println("mainCommand: " + mainCommand);
 
 // rdwrfn
 
-    /**
-     * @throws IOException
-     */
+    /** */
     private int unpRead(byte[] addr, int off, int count) throws IOException {
         int retCode = 0;
         int readSize;
@@ -2006,10 +1945,7 @@ Debug.println("mainCommand: " + mainCommand);
             }
             retCode = rdUnpPtr.read(readAddr, off, readSize);
             if ((newLhd.flags & LHD_SPLIT_AFTER) != 0) {
-                crc32.reset();
-                crc32.update((int) packedCRC);
-                crc32.update(readAddr, off, readSize);
-                packedCRC = crc32.getValue();
+                packedCRC = RarCRC.checkCrc(packedCRC, readAddr, off, readSize);
             }
             curUnpRead += retCode;
             totalRead += retCode;
@@ -2047,13 +1983,9 @@ Debug.println("mainCommand: " + mainCommand);
         curUnpWrite += count;
         if (skipUnpCRC == 0) {
             if (arcFormat == OLD) {
-                crc16.update((int) unpFileCRC);
-                crc16.update(addr, off, count);
-                unpFileCRC = crc16.getValue();
+                unpFileCRC = RarCRC.checkCrc(unpFileCRC, addr, off, count);
             } else {
-                crc32.update((int) unpFileCRC);
-                crc32.update(addr, off, count);
-                unpFileCRC = crc32.getValue();
+                unpFileCRC = RarCRC.checkCrc(unpFileCRC, addr, off, count);
             }
         }
     }
@@ -2086,7 +2018,7 @@ Debug.println("mainCommand: " + mainCommand);
                 break;
             }
             if (overwriteMode == ASK_OVERWR) {
-                System.err.printf(rb.getString("message.FileExists"), name);
+                Debug.printf(rb.getString("message.FileExists"), name);
                 ask(rb.getString("message.YesNoAllRenQ"));
                 if (choice == 1) {
                     break;
@@ -2102,7 +2034,7 @@ Debug.println("mainCommand: " + mainCommand);
                     break;
                 }
                 if (choice == 4) {
-                    System.err.print(rb.getString("message.AskNewName"));
+                    Debug.print(rb.getString("message.AskNewName"));
                     BufferedReader r = new BufferedReader(new InputStreamReader(System.in));
                     name = r.readLine();
                     continue;
@@ -2159,21 +2091,21 @@ Debug.println("mainCommand: " + mainCommand);
         String promptStr = rb.getString("message.AskPsw");
         if (askCount == 1) {
             promptStr += rb.getString("message.For");
-            promptStr += pointToName(arcFileName);
+            promptStr += pointToName(newLhd.name);
         }
-        System.err.printf("\n%s: ", promptStr);
+        System.out.printf("\n%s: ", promptStr);
         password = getPswStr();
         if (password.charAt(0) != 0) {
             if (askCount == 1) {
                 return 1;
             }
-            System.err.print(rb.getString("message.ReAskPsw"));
+            System.out.print(rb.getString("message.ReAskPsw"));
             cmpStr = getPswStr();
             if (cmpStr.charAt(0) == 0) {
                 retCode = -1;
             } else {
                 if (password.equals(cmpStr)) {
-                    System.err.print(rb.getString("message.NotMatchPsw"));
+                    System.out.print(rb.getString("message.NotMatchPsw"));
                     retCode = 0;
                 } else {
                     retCode = 1;
@@ -2207,11 +2139,11 @@ Debug.println("mainCommand: " + mainCommand);
             }
             numItems++;
         }
-        System.err.printf("  %s", item[0]);
+        System.out.printf("  %s", item[0]);
         for (i = 1; i < numItems; i++) {
-            System.err.printf("/%s", item[i]);
+            System.out.printf("/%s", item[i]);
         }
-        System.err.print(" ");
+        System.out.print(" ");
         ch = Character.toUpperCase(getKey());
         for (choice = 0, i = 1; i <= numItems; i++) {
             if (ch == item[i - 1].charAt(0)) {
@@ -2237,7 +2169,7 @@ Debug.println("mainCommand: " + mainCommand);
 
 //  somefn
 
-    /** */
+    /** archive files */
     private void getArcNames() {
         arcNamesSize = arcCount = 0;
         splitPath(arcName, findPath, findName, 0);
@@ -2246,7 +2178,7 @@ Debug.println("mainCommand: " + mainCommand);
         arcNamesSize = 0;
     }
 
-    /** */
+    /** archive files */
     private void findArchives() {
         File dir = new File(findPath);
 
@@ -2294,14 +2226,18 @@ Debug.println("mainCommand: " + mainCommand);
 
     /** */
     private int readArcName() {
-        arcFileName = nextArgName[argsUsed];
-Debug.println(arcFileName);
-        if (arcCount == 0) {
+        if (argsUsed < nextArgName.length) {
+            arcName = nextArgName[argsUsed++];
+Debug.println(arcName);
+//        if (arcCount == 0) {
+//            return 0;
+//        }
+        arcNamesSize = arcName.length();
+            arcCount--;
+            return 1;
+        } else {
             return 0;
         }
-        arcNamesSize += (arcName.length() + 1);
-        arcCount--;
-        return 1;
     }
 
     /** */
@@ -2315,6 +2251,7 @@ Debug.println(arcFileName);
         if (arcPtr.read(markHead.mark, 0, SIZEOF_MARKHEAD) != SIZEOF_MARKHEAD) {
             return 0;
         }
+Debug.println("markHead:\n" + StringUtil.getDump(markHead.mark));
 
         if ((markHead.mark[0] == 0x52) && (markHead.mark[1] == 0x45) &&
             (markHead.mark[2] == 0x7e) && (markHead.mark[3] == 0x5e)) {
@@ -2331,6 +2268,7 @@ Debug.println(arcFileName);
                 if (readHeader(MAIN_HEAD) != SIZEOF_NEWMHD) {
                     return 0;
                 }
+Debug.println("newMhd:\n" + StringUtil.paramString(newMhd));
 
                 if ((newMhd.flags & MHD_MULT_VOL) != 0) {
                     arcType = VOL;
@@ -2383,6 +2321,7 @@ Debug.println(arcFileName);
                     }
                 }
                 if (arcType == 0) {
+Debug.println("arcType: 0");
                     return 0;
                 }
             }
@@ -2394,8 +2333,8 @@ Debug.println(arcFileName);
             newMhd.headSize = oldMhd.headSize;
         } else {
             mainHeadSize = SIZEOF_NEWMHD;
-            if (~headerCRC != newMhd.headCRC) {
-                System.err.printf("\n\n%s\n", rb.getString("message.LogMainHead"));
+            if ((~headerCRC & 0xffff) != (newMhd.headCRC & 0xffff)) {
+                Debug.printf("\n\n%s %08x, %08x\n", rb.getString("message.LogMainHead"), ~((int) headerCRC), newMhd.headCRC);
                 brokenMhd = 1;
             }
         }
@@ -2411,12 +2350,11 @@ Debug.println(arcFileName);
         if ((newMhd.flags & MHD_AV) != 0) {
             aVType = 1;
         }
+Debug.println("arcType: " + arcType);
         return arcType;
     }
 
-// unpack
-
-    /** */
+    /** unpack */
     private static class Decode {
         int maxNum;
         int[] decodeLen = new int[16];
@@ -2468,9 +2406,8 @@ Debug.println(arcFileName);
 
     /** */
     private Decode[] md = {
-                      new Decode(MC), new Decode(MC), new Decode(MC),
-                      new Decode(MC)
-                  };
+        new Decode(MC), new Decode(MC), new Decode(MC), new Decode(MC)
+    };
 
     /** */
     private Decode bd = new Decode(BC);

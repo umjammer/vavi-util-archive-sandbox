@@ -6,17 +6,18 @@
 
 package vavi.util.archive.d88;
 
-import java.io.InputStream;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import vavi.util.archive.Entry;
+import vavi.util.properties.annotation.Property;
+import vavi.util.properties.annotation.PropsEntity;
 
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
 /**
@@ -25,21 +26,37 @@ import static org.junit.jupiter.api.Assertions.fail;
  * @author <a href="mailto:umjammer@gmail.com">Naohide Sano</a> (umjammer)
  * @version 0.00 2014/06/08 umjammer initial version <br>
  */
+@PropsEntity(url = "file://${user.dir}/local.properties")
 public class N88DiskBasicFileTest {
 
     @Test
-    @Disabled
-    public void test() {
-        fail("Not yet implemented");
+    public void test() throws IOException {
+        N88DiskBasicFile disk = new N88DiskBasicFile(N88DiskBasicFileTest.class.getResourceAsStream("/test.d88"));
+System.err.println(disk);
+
+        for (Entry e : disk.entries()) {
+            N88DiskBasicEntry entry = (N88DiskBasicEntry) e;
+            System.err.println(entry.getName());
+        }
+
+        assertEquals(19, disk.entries().length);
     }
 
-    //-------------------------------------------------------------------------
+    //----
+
+    @Property(name = "test.d88")
+    String file;
 
     /**
      * java N88DiskBasicFile file
      */
     public static void main(String[] args) throws Exception {
+        N88DiskBasicFileTest app = new N88DiskBasicFileTest();
+        PropsEntity.Util.bind(app);
+        app.t2(args);
+    }
 
+    void t1(String[] args) throws Exception {
         N88DiskBasicFile disk = new N88DiskBasicFile(args[0]);
 //System.err.println(disk);
 
@@ -49,12 +66,11 @@ public class N88DiskBasicFileTest {
         }
 
         for (Entry e : disk.entries()) {
-            N88DiskBasicEntry entry = (N88DiskBasicEntry) e;
-            String name = entry.getName();
+            String name = e.getName();
             if (name.endsWith(".IMG")) {
                 Path file = Paths.get(args[1], name);
 System.err.println(name + " -> " + file);
-                Files.copy(disk.getInputStream(entry), file);
+                Files.copy(disk.getInputStream(e), file);
             }
         }
     }
@@ -62,38 +78,25 @@ System.err.println(name + " -> " + file);
     /**
      * java N88DiskBasicFile file
      */
-    public static void main2(String[] args) throws Exception {
+    void t2(String[] args) throws Exception {
+        String tmp = "tmp";
 
-        N88DiskBasicFile disk = new N88DiskBasicFile(args[0]);
-//System.err.println(disk);
+        N88DiskBasicFile disk = new N88DiskBasicFile(file);
+System.err.println(disk);
+//if (true) { return; }
 
-        Path dir = Paths.get(args[1]);
+        Path dir = Paths.get(tmp);
         if (!Files.exists(dir)) {
             Files.createDirectories(dir);
         }
 
         for (Entry e : disk.entries()) {
-            int n = 0;
-            N88DiskBasicEntry entry = (N88DiskBasicEntry) e;
-            InputStream is = disk.getInputStream(entry);
-//Debug.dump(is);
-/*
-top:        while (true) {
-                System.err.println("---- " + n++ + " ----");
-                for (int y = 0; y < 16; y++) {
-                    for (int x = 0; x < 16; x++) {
-                        int c = is.read();
-                        if (c == -1) {
-                            break top;
-                        }
-                        String s = "0" + Integer.toHexString(c).toUpperCase();
-                        System.err.print(s.substring(s.length() - 2) + " ");
-                    }
-                    System.err.println();
-                }
-                System.err.println();
+            String name = e.getName();
+            if (name.equals("godzi.IMG")) {
+                Path file = Paths.get(tmp, name);
+System.err.println(name + " -> " + file);
+                Files.copy(disk.getInputStream(e), file);
             }
-*/
         }
     }
 }

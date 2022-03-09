@@ -16,13 +16,15 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.logging.Level;
 
+import vavi.util.Debug;
 import vavi.util.archive.Archive;
 import vavi.util.archive.Entry;
 
 
 /**
- * N88DiskBasic の {@link java.util.zip.ZipFile} みたいなものです．
+ * Represents the N88 Disk Basic disk.
  * 
  * @author <a href="mailto:umjammer@gmail.com">Naohide Sano</a> (nsano)
  * @version 0.00 010820 nsano initial version <br>
@@ -35,7 +37,7 @@ public class N88DiskBasicFile implements Archive {
     private static String encoding = "MS932";
 
     /** */
-    private Map<String, Entry<?>> entries = new HashMap<>();
+    private Map<String, Entry> entries = new HashMap<>();
     /** */
     private DiskImage diskImage;
     /** */
@@ -44,7 +46,7 @@ public class N88DiskBasicFile implements Archive {
     private String name;
 
     /**
-     *
+     * @param name filename
      */
     public N88DiskBasicFile(String name) throws IOException {
         this(new BufferedInputStream(new FileInputStream(name)));
@@ -60,19 +62,19 @@ public class N88DiskBasicFile implements Archive {
     }
 
     /**
-     *
+     * {@link File#separator} in entry name will be replaced by '_'; 
      */
-    private N88DiskBasicFile(InputStream is) throws IOException {
+    public N88DiskBasicFile(InputStream is) throws IOException {
 
         this.is = is;
         this.diskImage = DiskImage.Factory.readFrom(is);
 
 System.err.println("-fname----:aREP   m: SC");
-        // ディレクトリ
+        // Directory
         //  1D(5inch)    Track 18           Sector 1 - 12
         //  2D(5inch)    Track 18 Surface 1 Sector 1 - 12
         //  2D(8inch)    Track 35 Surface 0 Sector 1 - 22
-        // 2D のみ TODO その他
+        // currently deals only 2D TODO else 2D
         int t;
         int s;
         switch (diskImage.getDensity()) {
@@ -97,11 +99,12 @@ System.err.println("-fname----:aREP   m: SC");
                     System.err.println("killed");
                     break;
                 case (byte) 0xff:
-//System.err.println("not used");
+System.err.println("not used");
                     break;
                 default:
                     String name = new String(data, j * 16, 6, encoding) + "." +
                                   new String(data, j * 16 + 6, 3, encoding);
+                    name = name.replace(File.separator, "_");
                     N88DiskBasicEntry entry = new N88DiskBasicEntry(name,
                                                                     data[j * 16 + 9],
                                                                     data[j * 16 + 10] & 0xff);
@@ -116,12 +119,12 @@ System.err.println(entry);
         // 1D(5inch)  Track 18 Sector 13
         //  2D(5inch) Track 18 Surface 1 Sector 13
         //  2D(8inch) Track 35 Surface 0 Sector 23
-        // 0x00 ディスク全体の属性 @see Entry.attribte
-        // 0x01 一度に OPEN できるファイル数
+        // 0x00 disk total attribute @see Entry.attribte
+        // 0x01 number of files that is able to OPEN at the same time
         // 0x02 - 0xff BASIC Text
     }
 
-    /** */
+    @Override
     public String getName() {
         if (name == null) {
             return is.toString();
@@ -130,12 +133,10 @@ System.err.println(entry);
         }
     }
 
-    /**
-     *
-     */
-    public Entry<?>[] entries() {
-        Entry<?>[] result = new Entry[entries.size()];
-        Iterator<Entry<?>> i = entries.values().iterator();
+    @Override
+    public Entry[] entries() {
+        Entry[] result = new Entry[entries.size()];
+        Iterator<Entry> i = entries.values().iterator();
         int c = 0;
         while (i.hasNext()) {
             result[c++] = i.next(); 
@@ -143,25 +144,25 @@ System.err.println(entry);
         return result;
     }
 
-    /**
-     * ファイル中のエントリの数を返します。
-     */
+    @Override
     public int size() {
         return entries.size();
     }
 
-    /**
-     *
-     */
+    @Override
     public void close() throws IOException {
         is.close();
     }
 
-    /**
-     *
-     */
-    public Entry<?> getEntry(String name) {
-        return entries.get(name);
+    @Override
+    public Entry getEntry(String name) {
+        if (name == null || name.isEmpty()) {
+            return null;
+        }
+        String[] p = name.split("\\.", -1);
+        String normalized = String.format("%-6s.%-3s", p[0], p.length > 1 ? p[1] : "");
+//Debug.println(name + ", " + normalized);
+        return entries.get(normalized);
     }
 
     /**
@@ -179,7 +180,7 @@ System.err.println(entry);
      *              Surface = Cluster % 2
      *              Sector  = 1 [~ 26]
      * </pre>
-     * TODO 2D のみ
+     * TODO currently deals only 2D
      */
     private byte[][] readCluster(int cluster) {
         int track = cluster / 4;
@@ -190,21 +191,19 @@ System.err.println(entry);
 
         for (int i = 0; i < 8; i++) {
             data[i] = diskImage.readData(track, surface, sector + i);
-//System.err.println(Integer.toHexString(cluster)+": "+track+", "+surface+", "+(sector+i));
+Debug.printf(Level.FINE, "%08x: %d, %d, %d%n", cluster, track, surface, (sector + i));
         }
 
         return data;
     }
 
-    /**
-     * @param entry
-     */
-    public InputStream getInputStream(Entry<?> entry) {
+    @Override
+    public InputStream getInputStream(Entry entry) {
         // FAT
-        //  1D(5inch)    Track 18           Sector 14, 15, 16 (all same)
-        //  2D(5inch)    Track 18 Surface 1 Sector 14, 15, 16 (all same)
-        //  2D(8inch)    Track 35 Surface 0 Sector 24, 25, 26 (all same)
-        // TODO 2D のみ
+        //  1D(5inch)    Track 18           Sector 14, 15, 16 (the three are the same)
+        //  2D(5inch)    Track 18 Surface 1 Sector 14, 15, 16 (the three are the same)
+        //  2D(8inch)    Track 35 Surface 0 Sector 24, 25, 26 (the three are the same)
+        // TODO currently deals only 2D
         byte[] data = diskImage.readData(18, 1, 14);
 
         ByteArrayOutputStream os = new ByteArrayOutputStream();
@@ -218,7 +217,7 @@ System.err.println(entry);
 
             byte[][] tmp = readCluster(c);
 
-            // TODO 2D のみ
+            // TODO currently deals only 2D
             int max = (nc < 0xc1) ? 8 : nc & 0x1f;
             for (int i = 0; i < max; i++) {
                 os.write(tmp[i], 0, tmp[i].length);
@@ -233,6 +232,8 @@ System.err.println(entry);
             c = nc;
         }
 //System.err.println();
+
+        N88DiskBasicEntry.class.cast(entry).setSize(os.size());
 
         return new ByteArrayInputStream(os.toByteArray());
     }

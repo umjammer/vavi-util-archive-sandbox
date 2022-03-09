@@ -6,16 +6,18 @@
 
 package vavi.util.archive.d88;
 
+import java.util.Date;
+
 import vavi.util.archive.Entry;
 
 
 /**
- * N88 ディスクです．
+ * Represents a N88 disk.
  *
  * @author <a href="mailto:umjammer@gmail.com">Naohide Sano</a> (nsano)
  * @version 0.00 010820 nsano initial version <br>
  */
-public class N88DiskBasicEntry implements Entry<Void> {
+public class N88DiskBasicEntry implements Entry {
 
     /** */
     private static final int NOT_ASCII        = 0x80;
@@ -35,6 +37,8 @@ public class N88DiskBasicEntry implements Entry<Void> {
     /** @see #getExtra() */
     private int startCluster;
 
+    private long size;
+
     /** */
     protected N88DiskBasicEntry(String name, int attribute, int startCluster) {
         this.name = name;
@@ -42,13 +46,13 @@ public class N88DiskBasicEntry implements Entry<Void> {
         this.startCluster = startCluster;
     }
 
-    /** */
+    @Override
     public String getName() {
         String[] pair = name.split("\\.");
         return pair[0].trim() + (pair[1].trim().length() > 0 ? "." + pair[1].trim() : "");
     }
 
-    /** */
+    @Override
     public String toString() {
         return name + ":" +
                 ((attribute & NOT_ASCII)        != 0 ? "*" : ".") +
@@ -61,17 +65,17 @@ public class N88DiskBasicEntry implements Entry<Void> {
                 Integer.toHexString(startCluster);
     }
 
-    /** @throws UnsupportedOperationException このメソッドはサポートされていません。 */
+    @Override
     public String getComment() {
         throw new UnsupportedOperationException("non sense");
     }
 
-    /** @throws UnsupportedOperationException このメソッドはサポートされていません。 */
+    @Override
     public long getCompressedSize() {
         throw new UnsupportedOperationException("non sense");
     }
 
-    /** @see vavi.util.archive.Entry#getCrc() */
+    @Override
     public long getCrc() {
         // TODO Auto-generated method stub
         return 0;
@@ -84,39 +88,37 @@ public class N88DiskBasicEntry implements Entry<Void> {
         return new int[] { attribute, startCluster };
     }
 
-    /** @throws UnsupportedOperationException このメソッドはサポートされていません。 */
+    @Override
     public int getMethod() {
         throw new UnsupportedOperationException("non sense");
     }
 
-    /** @see vavi.util.archive.Entry#getSize() */
+    @Override
     public long getSize() {
-        // TODO ほすぃ～
-        throw new UnsupportedOperationException("not fixed until Archive#getInputStream(Entry)");
+        return size;
     }
 
-    /** @see vavi.util.archive.Entry#getTime() */
+    @Override
     public long getTime() {
-        // TODO Auto-generated method stub
-        return 0;
+        return new Date().getTime();
     }
 
-    /** @throws UnsupportedOperationException このメソッドはサポートされていません。 */
+    @Override
     public boolean isDirectory() {
-        throw new UnsupportedOperationException("non sense");
+        return false;
     }
 
-    /** @throws UnsupportedOperationException このメソッドはサポートされていません。 */
+    @Override
     public void setComment(String comment) {
         throw new UnsupportedOperationException("non sense");
     }
 
-    /** @throws UnsupportedOperationException このメソッドはサポートされていません。 */
+    @Override
     public void setCompressedSize(long csize) {
         throw new UnsupportedOperationException("non sense");
     }
 
-    /** @throws UnsupportedOperationException このメソッドはサポートされていません。 */
+    @Override
     public void setCrc(long crc) {
         throw new UnsupportedOperationException("non sense");
     }
@@ -129,24 +131,19 @@ public class N88DiskBasicEntry implements Entry<Void> {
         startCluster = ((int[]) extra)[1];
     }
 
-    /** @throws UnsupportedOperationException このメソッドはサポートされていません。 */
+    @Override
     public void setMethod(int method) {
         throw new UnsupportedOperationException("non sense");
     }
 
-    /** @see vavi.util.archive.Entry#setSize(long) */
+    @Override
     public void setSize(long size) {
-        // TODO Auto-generated method stub
+        this.size = size;
     }
 
-    /** @see vavi.util.archive.Entry#setTime(long) */
+    @Override
     public void setTime(long time) {
         // TODO Auto-generated method stub
-    }
-
-    /** @throws UnsupportedOperationException このメソッドはサポートされていません。 */
-    public Void getWrappedObject() {
-        throw new UnsupportedOperationException("non sense");
     }
 }
 
