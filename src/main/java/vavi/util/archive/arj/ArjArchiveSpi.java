@@ -11,6 +11,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
 
 import vavi.util.archive.spi.ArchiveSpi;
 
@@ -34,7 +35,7 @@ public abstract class ArjArchiveSpi implements ArchiveSpi {
         }
 
         InputStream is =
-            new BufferedInputStream(new FileInputStream((File) target));
+            new BufferedInputStream(Files.newInputStream(((File) target).toPath()));
 
         byte[] b = new byte[4];
 

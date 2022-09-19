@@ -7,9 +7,10 @@
 package vavi.util.archive.d88;
 
 import java.io.BufferedInputStream;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 import org.junit.jupiter.api.Test;
 
@@ -38,7 +39,7 @@ System.err.print(d88.getHeader());
     /** */
     public static void main(String[] args) throws Exception {
 
-        InputStream is = new BufferedInputStream(new FileInputStream(args[0]));
+        InputStream is = new BufferedInputStream(Files.newInputStream(Paths.get(args[0])));
 
         D88 d88 = D88.readFrom(is);
 System.err.print(d88.getHeader());

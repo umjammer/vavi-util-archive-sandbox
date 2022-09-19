@@ -52,7 +52,7 @@ public class AsarArchive implements Archive {
         for (VirtualFile e : archive) {
             entries.add(new AsarEntry(e));
         }
-        return entries.toArray(new Entry[entries.size()]);
+        return entries.toArray(new Entry[0]);
     }
 
     @Override

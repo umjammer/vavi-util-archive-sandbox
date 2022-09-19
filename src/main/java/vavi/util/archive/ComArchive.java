@@ -12,6 +12,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -69,7 +70,7 @@ public abstract class ComArchive implements Archive {
     protected File file;
 
     /**
-     * @throws IOException
+     * @throws IOException file not found
      */
     public ComArchive(File file, String type) throws IOException {
 
@@ -211,7 +212,7 @@ Debug.println("result: " + resultString);
         String temporaryFileName = getTemporaryFileName(entry);
         File temporaryFile = new File(temporaryFileName);
         if (temporaryFile.exists()) {
-            return new BufferedInputStream(new FileInputStream(temporaryFile));
+            return new BufferedInputStream(Files.newInputStream(temporaryFile.toPath()));
         } else {
             throw new IOException("cannot extract: " + temporaryFileName);
         }

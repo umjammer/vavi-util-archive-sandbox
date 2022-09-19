@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -45,7 +46,7 @@ public class ApacheArjArchive implements Archive {
     public ApacheArjArchive(File file) throws IOException {
         this.file = file;
 
-        try (ArchiveInputStream i = new ArjArchiveInputStream(new FileInputStream(file))) {
+        try (ArchiveInputStream i = new ArjArchiveInputStream(Files.newInputStream(file.toPath()))) {
             ArchiveEntry entry = null;
             while ((entry = i.getNextEntry()) != null) {
                 if (!i.canReadEntryData(entry)) {
@@ -73,19 +74,19 @@ Debug.println("entry: " + entry.getName() + ", " + entry.getSize());
 
     @Override
     public Entry getEntry(String name) {
-        return entries.stream().filter(e -> e.getName().equals(name)).findFirst().get();
+        return entries.stream().filter(e -> e.getName().equals(name)).findFirst().orElse(null);
     }
 
     @Override
     public InputStream getInputStream(Entry entry) throws IOException {
-        try (ArchiveInputStream i = new ArjArchiveInputStream(new FileInputStream(file))) {
+        try (ArchiveInputStream i = new ArjArchiveInputStream(Files.newInputStream(file.toPath()))) {
             ArchiveEntry e = null;
             while ((e = i.getNextEntry()) != null) {
                 if (!i.canReadEntryData(e)) {
 Debug.println("skip entry: " + entry.getName() + ", " + entry.getSize());
                     continue;
                 }
-                if (WrappedEntry.class.cast(entry).getWrappedObject().equals(e)) {
+                if (((WrappedEntry<?>) entry).getWrappedObject().equals(e)) {
                     return i;
                 }
             }

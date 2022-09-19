@@ -11,6 +11,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
 
 import vavi.util.archive.Archive;
 
@@ -30,8 +31,8 @@ public class ComCabArchiveSpi extends CabArchiveSpi {
         InputStream is;
         boolean needToClose = false;
 
-        if (File.class.isInstance(target)) {
-            is = new BufferedInputStream(new FileInputStream(File.class.cast(target)));
+        if (target instanceof File) {
+            is = new BufferedInputStream(Files.newInputStream(((File) target).toPath()));
             needToClose = true;
         } else {
             throw new IllegalArgumentException("not supported type " + target.getClass().getName());

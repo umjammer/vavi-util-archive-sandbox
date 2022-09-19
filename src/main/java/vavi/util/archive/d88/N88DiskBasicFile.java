@@ -13,6 +13,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -49,7 +51,7 @@ public class N88DiskBasicFile implements Archive {
      * @param name filename
      */
     public N88DiskBasicFile(String name) throws IOException {
-        this(new BufferedInputStream(new FileInputStream(name)));
+        this(new BufferedInputStream(Files.newInputStream(Paths.get(name))));
         this.name = name;
     }
 
@@ -57,7 +59,7 @@ public class N88DiskBasicFile implements Archive {
      *
      */
     public N88DiskBasicFile(File file) throws IOException {
-        this(new BufferedInputStream(new FileInputStream(file)));
+        this(new BufferedInputStream(Files.newInputStream(file.toPath())));
         this.name = file.getPath();
     }
 
@@ -233,7 +235,7 @@ Debug.printf(Level.FINE, "%08x: %d, %d, %d%n", cluster, track, surface, (sector 
         }
 //System.err.println();
 
-        N88DiskBasicEntry.class.cast(entry).setSize(os.size());
+        entry.setSize(os.size());
 
         return new ByteArrayInputStream(os.toByteArray());
     }

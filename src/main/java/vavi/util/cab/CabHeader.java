@@ -125,11 +125,11 @@ class CabHeader {
         if (hasReserved) {
             if (perCabinetReservedArea != null) {
                 ps.print("    per-cabinet reserved area     = ");
-                for (int i = 0; i < perCabinetReservedArea.length; i++) {
-                    ps.print((((perCabinetReservedArea[i] & 0xff) < 16)
-                              ? "0" : "") +
-                             Integer.toString(perCabinetReservedArea[i] &
-                                              0xff, 16) + " ");
+                for (byte b : perCabinetReservedArea) {
+                    ps.print((((b & 0xff) < 16)
+                            ? "0" : "") +
+                            Integer.toString(b &
+                                    0xff, 16) + " ");
                 }
                 ps.println();
             }

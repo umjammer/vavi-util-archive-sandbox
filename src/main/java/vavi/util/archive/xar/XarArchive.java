@@ -54,7 +54,7 @@ public class XarArchive implements Archive {
             for (com.sprylab.xar.XarEntry e : archive.getEntries()) {
                 entries.add(new XarEntry(e));
             }
-            return entries.toArray(new Entry[entries.size()]);
+            return entries.toArray(new Entry[0]);
         } catch (XarException e) {
             throw new IllegalStateException(e);
         }
