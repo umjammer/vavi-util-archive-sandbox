@@ -53,6 +53,16 @@ public class AsarArchiveSpi implements ArchiveSpi {
     public Archive createArchiveInstance(Object obj) throws IOException {
         return new AsarArchive((File) obj);
     }
+
+    @Override
+    public Class<?>[] getInputTypes() {
+        return new Class[] {File.class};
+    }
+
+    @Override
+    public String[] getFileSuffixes() {
+        return new String[] {"asar"};
+    }
 }
 
 /* */

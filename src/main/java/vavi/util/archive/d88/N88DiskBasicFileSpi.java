@@ -38,6 +38,16 @@ public class N88DiskBasicFileSpi implements ArchiveSpi {
     public Archive createArchiveInstance(Object obj) throws IOException {
         return new N88DiskBasicFile((File) obj);
     }
+
+    @Override
+    public Class<?>[] getInputTypes() {
+        return new Class[] {File.class};
+    }
+
+    @Override
+    public String[] getFileSuffixes() {
+        return new String[] {"d88", "D88"};
+    }
 }
 
 /* */

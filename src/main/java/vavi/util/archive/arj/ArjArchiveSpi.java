@@ -51,6 +51,16 @@ public abstract class ArjArchiveSpi implements ArchiveSpi {
                b[1] == 'R' &&
                b[2] == 'J';
     }
+
+    @Override
+    public Class<?>[] getInputTypes() {
+        return new Class[] {File.class};
+    }
+
+    @Override
+    public String[] getFileSuffixes() {
+        return new String[] {"arj", "ARJ"};
+    }
 }
 
 /* */

@@ -55,6 +55,16 @@ public class XarArchiveSpi implements ArchiveSpi {
     public Archive createArchiveInstance(Object obj) throws IOException {
         return new XarArchive((File) obj);
     }
+
+    @Override
+    public Class<?>[] getInputTypes() {
+        return new Class[] {File.class};
+    }
+
+    @Override
+    public String[] getFileSuffixes() {
+        return new String[] {"xar"};
+    }
 }
 
 /* */
