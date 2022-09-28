@@ -492,7 +492,7 @@ Debug.println("Directory name " + uname + " already in use");
 
         if (f_info != null && checkAccess(f_info) != -1) {
             try {
-                fp = new FileOutputStream(new String(f_info));
+                fp = new FileOutputStream(f_info);
             } catch (IOException e) {
                 Debug.println(e);
                 System.exit(1);
