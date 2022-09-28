@@ -8,7 +8,6 @@ package vavi.util.archive;
 
 import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -20,9 +19,7 @@ import com.jacob.activeX.ActiveXComponent;
 import com.jacob.com.ComThread;
 import com.jacob.com.Dispatch;
 import com.jacob.com.Variant;
-
 import vavi.util.Debug;
-
 import vavix.util.ComUtil;
 
 
@@ -33,6 +30,8 @@ import vavix.util.ComUtil;
  *
  * @author <a href="mailto:umjammer@gmail.com">Naohide Sano</a> (nsano)
  * @version 0.00 030211 nsano initial version <br>
+ * @see "https://www.madobe.net/archiver/lib/activex/kba.html"
+ * @see "https://github.com/freemansoft/jacob-project"
  */
 public abstract class ComArchive implements Archive {
 
