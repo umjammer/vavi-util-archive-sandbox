@@ -26,9 +26,11 @@ import vavi.util.archive.Entry;
 class AsarArchiveTest {
 
     @Test
-    @Disabled
+    @Disabled("tmp/app.asar works...")
     void test() throws Exception {
-        AsarArchive archive = new AsarArchive(new File("src/test/resources/test.asar"));
+//        String file = "src/test/resources/test.asar";
+        String file = "tmp/app.asar";
+        AsarArchive archive = new AsarArchive(new File(file));
         for (Entry e : archive.entries()) {
             System.err.println(e.getName());
         }
