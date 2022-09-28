@@ -140,6 +140,17 @@
       <artifactId>xar</artifactId>
       <version>0.9.9</version>
     </dependency>
+    <!-- https://mvnrepository.com/artifact/net.sf.sevenzipjbinding/sevenzipjbinding -->
+    <dependency>
+      <groupId>net.sf.sevenzipjbinding</groupId>
+      <artifactId>sevenzipjbinding</artifactId>
+      <version>16.02-2.01</version>
+    </dependency>
+    <dependency>
+      <groupId>net.sf.sevenzipjbinding</groupId>
+      <artifactId>sevenzipjbinding-mac-x86_64</artifactId>
+      <version>16.02-2.01</version>
+    </dependency>
 
     <dependency>
       <groupId>org.junit.jupiter</groupId>
