@@ -24,6 +24,7 @@ import vavi.util.Debug;
 import vavi.util.StringUtil;
 import vavi.util.archive.Archive;
 import vavi.util.archive.apache.ApacheCommonsArchiveSpi;
+import vavi.util.archive.arj.ApacheArjArchive;
 import vavi.util.archive.spi.ArchiveSpi;
 
 
@@ -38,12 +39,24 @@ public class JBinding7ZipArchiveSpi extends SevenZipArchiveSpi {
     @Override
     public boolean canExtractInput(Object target) throws IOException {
 
-        if (!(target instanceof File)) {
-            throw new IllegalArgumentException("not supported type " + target);
+        if (!isSupported(target)) {
+            return false;
         }
 
-        InputStream is =
-            new BufferedInputStream(Files.newInputStream(((File) target).toPath()));
+        InputStream is = null;
+        boolean needToClose = false;
+
+        if (target instanceof File) {
+            is = new BufferedInputStream(Files.newInputStream(((File) target).toPath()));
+            needToClose = true;
+        } else if (target instanceof InputStream) {
+            is = (InputStream) target;
+            if (!is.markSupported()) {
+                throw new IllegalArgumentException("InputStream should support #mark()");
+            }
+        } else {
+            assert false : target.getClass().getName();
+        }
 
         // TODO accepts all
         return true;
@@ -51,7 +64,13 @@ public class JBinding7ZipArchiveSpi extends SevenZipArchiveSpi {
 
     @Override
     public Archive createArchiveInstance(Object obj) throws IOException {
-        return new JBinding7ZipArchive((File) obj);
+        if (obj instanceof File) {
+            return new JBinding7ZipArchive((File) obj);
+        } else if (obj instanceof InputStream) {
+            return new JBinding7ZipArchive((InputStream) obj);
+        } else {
+            throw new IllegalArgumentException("not supported type " + obj.getClass().getName());
+        }
     }
 
     @Override
@@ -63,10 +82,10 @@ public class JBinding7ZipArchiveSpi extends SevenZipArchiveSpi {
     public String[] getFileSuffixes() {
         Set<String> suffixes = new HashSet<>();
         CompressorStreamFactory.findAvailableCompressorInputStreamProviders().forEach((name, provider) -> {
-            Debug.println(Level.FINER, name + ": " + StringUtil.paramString(provider));
+Debug.println(Level.FINER, name + ": " + StringUtil.paramString(provider));
             for (String compressorName : provider.getInputStreamCompressorNames()) {
                 String[] ss = props.getProperty(compressorName).split(",", -1);
-                Debug.println(Level.FINER, compressorName + ": " + Arrays.toString(ss));
+Debug.println(Level.FINER, compressorName + ": " + Arrays.toString(ss));
                 suffixes.addAll(Arrays.asList(ss));
             }
         });

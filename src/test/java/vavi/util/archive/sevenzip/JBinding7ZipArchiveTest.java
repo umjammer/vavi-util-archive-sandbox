@@ -7,11 +7,12 @@
 package vavi.util.archive.sevenzip;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
-import java.io.RandomAccessFile;
+import java.net.URL;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
 import java.util.Scanner;
 
@@ -24,15 +25,20 @@ import net.sf.sevenzipjbinding.ISequentialOutStream;
 import net.sf.sevenzipjbinding.PropID;
 import net.sf.sevenzipjbinding.SevenZip;
 import net.sf.sevenzipjbinding.SevenZipException;
-import net.sf.sevenzipjbinding.impl.RandomAccessFileInStream;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import vavi.util.Debug;
 import vavi.util.archive.Archive;
 import vavi.util.archive.Archives;
 import vavi.util.archive.Entry;
+import vavi.util.properties.annotation.Property;
+import vavi.util.properties.annotation.PropsEntity;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.fail;
 
 
 /**
@@ -41,7 +47,16 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  * @author <a href="mailto:umjammer@gmail.com">Naohide Sano</a> (umjammer)
  * @version 0.00 2020/05/12 umjammer initial version <br>
  */
+@PropsEntity(url = "file:local.properties")
 class JBinding7ZipArchiveTest {
+
+    @Property(name = "file.rar1")
+    String file1 = "src/test/resources/test.rar";
+
+    @BeforeEach
+    void setup() throws Exception {
+        PropsEntity.Util.bind(this);
+    }
 
     @Test
     void test0() throws Exception {
@@ -133,6 +148,55 @@ Debug.println(Arrays.toString(Archives.getReaderFileSuffixes()));
             }
         }
         assertEquals(2, c);
+    }
+
+    @Test
+    @DisplayName("extract")
+    public void test3() throws Exception {
+        Archive archive = new JBinding7ZipArchive(new File("src/test/resources/rar5.rar"));
+        // TODO JBinding7ZipArchive#entries() contains directory (this [0] is dir)
+        Entry entry = archive.entries()[0];
+Debug.println(entry.getName() + ", " + entry.getSize());
+        InputStream is = archive.getInputStream(entry);
+        Path out = Paths.get("tmp/out_jbinding7z/" + entry.getName());
+        Files.createDirectories(out.getParent());
+        Files.copy(is, out, StandardCopyOption.REPLACE_EXISTING);
+        assertEquals(Files.size(out), entry.getSize());
+    }
+
+    @Test
+    @DisplayName("extract large")
+    public void test31() throws Exception {
+        Archive archive = new JBinding7ZipArchive(new File(file1));
+        // TODO JBinding7ZipArchive#entries() contains directory (this [0] is dir)
+        Entry entry = archive.entries()[0];
+Debug.println(entry.getName() + ", " + entry.getSize());
+        InputStream is = archive.getInputStream(entry);
+        Path out = Paths.get("tmp/out_jbinding7z/" + entry.getName());
+        Files.createDirectories(out.getParent());
+        Files.copy(is, out, StandardCopyOption.REPLACE_EXISTING);
+        assertEquals(Files.size(out), entry.getSize());
+    }
+
+    @Test
+    @DisplayName("inputStream")
+    void test5() throws Exception {
+        Archive archive = new JBinding7ZipArchive(new URL("file:src/test/resources/rar5.rar").openStream());
+        for (Entry entry : archive.entries()) {
+            System.out.println(entry.getName() + ", " + entry.getSize());
+        }
+Debug.println("entries after loop: " + archive.size());
+        assertNotEquals(0, archive.size());
+        // TODO JBinding7ZipArchive#entries() contains directory (this [0] is dir)
+Debug.println("stream after loop: " + archive.entries()[0].getName() + ", firstByte: " + archive.getInputStream(archive.entries()[0]).read());
+        assertNotNull(archive.getInputStream(archive.entries()[0]));
+        for (Entry entry : archive.entries()) {
+            if (!entry.isDirectory() && archive.getInputStream(entry).read() > -1) {
+Debug.println("stream after loop: 2ndByte: " + archive.getInputStream(entry).read());
+                return;
+            }
+        }
+        fail("no file size > 0");
     }
 }
 

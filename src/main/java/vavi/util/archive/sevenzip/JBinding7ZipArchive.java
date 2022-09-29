@@ -25,6 +25,7 @@ import net.sf.sevenzipjbinding.simple.ISimpleInArchiveItem;
 import vavi.util.Debug;
 import vavi.util.archive.Archive;
 import vavi.util.archive.Entry;
+import vavi.util.archive.InputStreamSupport;
 
 
 /**
@@ -33,22 +34,32 @@ import vavi.util.archive.Entry;
  * @author <a href="mailto:umjammer@gmail.com">Naohide Sano</a> (umjammer)
  * @version 0.00 2020/10/07 umjammer initial version <br>
  */
-public class JBinding7ZipArchive implements Archive {
+public class JBinding7ZipArchive extends InputStreamSupport implements Archive {
 
     /** */
     private ISimpleInArchive archive;
 
+    /** */
     private String name;
 
-    private long size;
+    /** */
+    private Entry[] entries;
 
     /** */
     public JBinding7ZipArchive(File file) throws IOException {
         IInArchive archive_ = SevenZip.openInArchive(null,
                 new SeekableByteChannelInStream(Files.newByteChannel(file.toPath())));
         this.archive = archive_.getSimpleInterface();
-        this.name = file.getName();
-        this.size = file.length();
+        this.name = file.getPath();
+    }
+
+    /** */
+    public JBinding7ZipArchive(InputStream is) throws IOException {
+        super(is);
+        IInArchive archive_ = SevenZip.openInArchive(null,
+                new SeekableByteChannelInStream(Files.newByteChannel(archiveFileForInputStream.toPath())));
+        this.archive = archive_.getSimpleInterface();
+        this.name = archiveFileForInputStream.getPath();
     }
 
     @Override
@@ -57,30 +68,29 @@ public class JBinding7ZipArchive implements Archive {
 
     @Override
     public Entry[] entries() {
-        try {
-            List<Entry> entries = new ArrayList<>();
-            for (ISimpleInArchiveItem e : archive.getArchiveItems()) {
-                entries.add(new JBinding7ZipEntry(e));
+        if (entries == null) {
+            try {
+                List<Entry> entries = new ArrayList<>();
+                for (ISimpleInArchiveItem e : archive.getArchiveItems()) {
+                    entries.add(new JBinding7ZipEntry(e));
+                }
+                this.entries = entries.toArray(new Entry[0]);
+            } catch (SevenZipException e) {
+                throw new IllegalStateException(e);
             }
-            return entries.toArray(new Entry[0]);
-        } catch (SevenZipException e) {
-            throw new IllegalStateException(e);
         }
+        return entries;
     }
 
     @Override
     public Entry getEntry(String name) {
-        try {
-            for (ISimpleInArchiveItem e : archive.getArchiveItems()) {
-Debug.println("@@@: " + name + ", " + e.getPath());
-                if (name.equals(e.getPath())) {
-                    return new JBinding7ZipEntry(e);
-                }
+        for (Entry entry : entries()) {
+Debug.println("@@@: " + name + ", " + entry.getName());
+            if (name.equals(entry.getName())) {
+                return entry;
             }
-            return null;
-        } catch (SevenZipException e) {
-            throw new IllegalStateException(e);
         }
+        return null;
     }
 
     @Override
@@ -99,13 +109,20 @@ Debug.println("@@@: " + name + ", " + e.getPath());
                             return data.length;
                         });
 //Debug.println("extractSlow: " + result);
-                        done = true;
+                        deque.add(-1); // poison pill
                     }
                     @Override
                     public int read() throws IOException {
                         try {
-//Debug.println("read: " + (deque.peek() != null ? deque.peek() : "none") + ", " + (deque.peek() != null && deque.peek() == -1));
-                            return done ? -1 : deque.take();
+//Debug.println("read: " + (deque.peek() != null ? deque.peek() : "none"));
+                            int r = -1;
+                            if (!done) {
+                                r = deque.take();
+                            }
+                            if (r == -1) {
+                                done = true;
+                            }
+                            return r;
                         } catch (InterruptedException ex) {
 Debug.println(Level.FINE, "interrupted: who cad do this? i want to do this");
                             return -1;
@@ -124,7 +141,7 @@ Debug.println(Level.FINE, "interrupted: who cad do this? i want to do this");
 
     @Override
     public int size() {
-        return (int) size;
+        return entries().length;
     }
 }
 
