@@ -28,7 +28,11 @@ public class PureJavaCabArchiveSpi extends CabArchiveSpi {
      * @param target currently accepts {@link File}, {@link InputStream} only.
      */
     public boolean canExtractInput(Object target) throws IOException {
-        InputStream is;
+        if (!isSupported(target)) {
+            return false;
+        }
+
+        InputStream is = null;
         boolean needToClose = false;
 
         if (target instanceof File) {
@@ -40,7 +44,7 @@ public class PureJavaCabArchiveSpi extends CabArchiveSpi {
                 throw new IllegalArgumentException("InputStream should support #mark()");
             }
         } else {
-            throw new IllegalArgumentException("not supported type " + target.getClass().getName());
+            assert false : target.getClass().getName();
         }
 
         return canExtractInput(is, needToClose);
@@ -58,6 +62,11 @@ public class PureJavaCabArchiveSpi extends CabArchiveSpi {
         } else {
             throw new IllegalArgumentException("not supported type " + obj.getClass().getName());
         }
+    }
+
+    @Override
+    public Class<?>[] getInputTypes() {
+        return new Class[] {File.class, InputStream.class};
     }
 }
 

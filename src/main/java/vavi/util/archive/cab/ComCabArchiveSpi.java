@@ -25,17 +25,21 @@ import vavi.util.archive.Archive;
 public class ComCabArchiveSpi extends CabArchiveSpi {
 
     /**
-     * @param target currently accepts {@link File}, {@link InputStream} only.
+     * @param target currently accepts {@link File} only.
      */
     public boolean canExtractInput(Object target) throws IOException {
-        InputStream is;
+        if (!isSupported(target)) {
+            return false;
+        }
+
+        InputStream is = null;
         boolean needToClose = false;
 
         if (target instanceof File) {
             is = new BufferedInputStream(Files.newInputStream(((File) target).toPath()));
             needToClose = true;
         } else {
-            throw new IllegalArgumentException("not supported type " + target.getClass().getName());
+            assert false : target.getClass().getName();
         }
 
         return canExtractInput(is, needToClose);
@@ -44,6 +48,11 @@ public class ComCabArchiveSpi extends CabArchiveSpi {
     /* */
     public Archive createArchiveInstance(Object obj) throws IOException {
         return new ComCabArchive((File) obj);
+    }
+
+    @Override
+    public Class<?>[] getInputTypes() {
+        return new Class[] {File.class};
     }
 }
 

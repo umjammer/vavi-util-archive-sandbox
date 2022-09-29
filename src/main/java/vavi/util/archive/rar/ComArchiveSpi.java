@@ -31,14 +31,18 @@ public class ComArchiveSpi extends RarArchiveSpi {
      */
     @Override
     public boolean canExtractInput(Object target) throws IOException {
-        InputStream is;
+        if (!isSupported(target)) {
+            return false;
+        }
+
+        InputStream is = null;
         boolean needToClose = false;
 
         if (target instanceof File) {
             is = new BufferedInputStream(Files.newInputStream(((File) target).toPath()));
             needToClose = true;
         } else {
-            throw new IllegalArgumentException("not supported type " + target.getClass().getName());
+            assert false : target.getClass().getName();
         }
 
         return canExtractInput(is, needToClose);
@@ -47,6 +51,11 @@ public class ComArchiveSpi extends RarArchiveSpi {
     @Override
     public Archive createArchiveInstance(Object obj) throws IOException {
         return new ComRarArchive((File) obj);
+    }
+
+    @Override
+    public Class<?>[] getInputTypes() {
+        return new Class[] {File.class};
     }
 }
 
