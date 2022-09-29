@@ -24,8 +24,8 @@ public class N88DiskBasicFileSpi implements ArchiveSpi {
     @Override
     public boolean canExtractInput(Object target) throws IOException {
 
-        if (!(target instanceof File)) {
-            throw new IllegalArgumentException("not supported type " + target);
+        if (!isSupported(target)) {
+            return false;
         }
 
         String name = ((File) target).getName();
