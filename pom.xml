@@ -150,7 +150,6 @@
       <artifactId>algs4</artifactId>
       <version>master-SNAPSHOT</version>
     </dependency>
-    <!-- https://mvnrepository.com/artifact/net.sf.sevenzipjbinding/sevenzipjbinding -->
     <dependency>
       <groupId>net.sf.sevenzipjbinding</groupId>
       <artifactId>sevenzipjbinding</artifactId>
