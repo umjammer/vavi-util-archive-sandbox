@@ -16,9 +16,10 @@ import java.util.List;
 import com.sprylab.xar.FileXarSource;
 import com.sprylab.xar.XarException;
 import com.sprylab.xar.XarSource;
-
 import vavi.util.archive.Archive;
 import vavi.util.archive.Entry;
+import vavi.util.archive.InputStreamSupport;
+import vavi.util.archive.WrappedEntry;
 
 
 /**
@@ -27,20 +28,28 @@ import vavi.util.archive.Entry;
  * @author <a href="mailto:umjammer@gmail.com">Naohide Sano</a> (umjammer)
  * @version 0.00 2020/10/07 umjammer initial version <br>
  */
-public class XarArchive implements Archive {
+public class XarArchive extends InputStreamSupport implements Archive {
 
     /** */
     private XarSource archive;
 
+    /** */
     private String name;
 
-    private long size;
+    /** */
+    private Entry[] entries;
 
     /** */
-    public XarArchive(File file) throws IOException {
+    public XarArchive(File file) {
         this.archive = new FileXarSource(file);
         this.name = file.getName();
-        this.size = file.length();
+    }
+
+    /** */
+    public XarArchive(InputStream is) throws IOException {
+        super(is);
+        this.archive = new FileXarSource(archiveFileForInputStream);
+        this.name = archiveFileForInputStream.getPath();
     }
 
     @Override
@@ -49,37 +58,37 @@ public class XarArchive implements Archive {
 
     @Override
     public Entry[] entries() {
-        try {
-            List<Entry> entries = new ArrayList<>();
-            for (com.sprylab.xar.XarEntry e : archive.getEntries()) {
-                entries.add(new XarEntry(e));
+        if (entries == null) {
+            try {
+                List<Entry> entries = new ArrayList<>();
+                for (com.sprylab.xar.XarEntry e : archive.getEntries()) {
+                    entries.add(new XarEntry(e));
+                }
+                this.entries = entries.toArray(new Entry[0]);
+            } catch (XarException e) {
+                throw new IllegalStateException(e);
             }
-            return entries.toArray(new Entry[0]);
-        } catch (XarException e) {
-            throw new IllegalStateException(e);
         }
+        return this.entries;
     }
 
     @Override
     public Entry getEntry(String name) {
-        try {
-            for (com.sprylab.xar.XarEntry e : archive.getEntries()) {
+        for (Entry entry : entries()) {
 //Debug.println("@@@: " + name + ", " + e.getName());
-                if (name.equals(e.getName())) {
-                    return new XarEntry(e);
-                }
+            if (name.equals(entry.getName())) {
+                return entry;
             }
-            return null;
-        } catch (XarException e) {
-            throw new IllegalStateException(e);
         }
+        return null;
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public InputStream getInputStream(Entry entry) throws IOException {
-        for (com.sprylab.xar.XarEntry e : archive.getEntries()) {
+        for (Entry e : entries()) {
             if (entry.getName().equals(e.getName())) {
-                return new ByteArrayInputStream(e.getBytes());
+                return new ByteArrayInputStream(((WrappedEntry<com.sprylab.xar.XarEntry>) e).getWrappedObject().getBytes());
             }
         }
         return null;
@@ -92,7 +101,7 @@ public class XarArchive implements Archive {
 
     @Override
     public int size() {
-        return (int) size;
+        return entries().length;
     }
 }
 

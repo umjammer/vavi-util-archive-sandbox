@@ -59,7 +59,7 @@ public class XarArchiveSpi implements ArchiveSpi {
 
     @Override
     public Class<?>[] getInputTypes() {
-        return new Class[] {File.class};
+        return new Class[] {File.class, InputStream.class};
     }
 
     @Override
