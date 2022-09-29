@@ -1,41 +1,30 @@
 /*
- * Copyright (c) 2003 by Naohide Sano, All rights reserved.
+ * Copyright (c) 2022 by Naohide Sano, All rights reserved.
  *
  * Programmed by Naohide Sano
  */
 
 package vavi.util.archive.arj;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
 
 import vavi.util.archive.spi.ArchiveSpi;
 
 
 /**
- * The SPI for ARJ archived file.
+ * The SPI base for ARJ.
  *
  * @author <a href="mailto:umjammer@gmail.com">Naohide Sano</a> (nsano)
- * @version 0.00 041002 nsano initial version <br>
+ * @version 0.00 220929 nsano initial version <br>
  */
 public abstract class ArjArchiveSpi implements ArchiveSpi {
 
     /**
-     * @param target currently accepts {@link File} only.
+     *
+     * @param is need to support mark
      */
-    @Override
-    public boolean canExtractInput(Object target) throws IOException {
-
-        if (!(target instanceof File)) {
-            throw new IllegalArgumentException("not supported type " + target);
-        }
-
-        InputStream is =
-            new BufferedInputStream(Files.newInputStream(((File) target).toPath()));
+    protected boolean canExtractInput(InputStream is, boolean needToClose) throws IOException {
 
         byte[] b = new byte[4];
 
@@ -51,11 +40,6 @@ public abstract class ArjArchiveSpi implements ArchiveSpi {
         return b[0] == 'A' && // TODO
                b[1] == 'R' &&
                b[2] == 'J';
-    }
-
-    @Override
-    public Class<?>[] getInputTypes() {
-        return new Class[] {File.class};
     }
 
     @Override

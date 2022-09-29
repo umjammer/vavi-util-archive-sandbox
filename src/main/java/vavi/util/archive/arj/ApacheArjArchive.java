@@ -10,10 +10,13 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.logging.Level;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveException;
@@ -23,6 +26,7 @@ import org.apache.commons.compress.archivers.arj.ArjArchiveInputStream;
 import vavi.util.Debug;
 import vavi.util.archive.Archive;
 import vavi.util.archive.Entry;
+import vavi.util.archive.InputStreamSupport;
 import vavi.util.archive.WrappedEntry;
 import vavi.util.archive.apache.ApacheEntry;
 
@@ -34,31 +38,23 @@ import vavi.util.archive.apache.ApacheEntry;
  * @version 0.00 2021/11/16 umjammer initial version <br>
  * @see "https://commons.apache.org/proper/commons-compress/examples.html"
  */
-public class ApacheArjArchive implements Archive {
+public class ApacheArjArchive extends InputStreamSupport implements Archive {
 
     /** */
     private File file;
 
     /** */
-    private List<Entry> entries = new ArrayList<>();
+    private Entry[] entries;
 
     /** */
     public ApacheArjArchive(File file) throws IOException {
         this.file = file;
+    }
 
-        try (ArchiveInputStream i = new ArjArchiveInputStream(Files.newInputStream(file.toPath()))) {
-            ArchiveEntry entry = null;
-            while ((entry = i.getNextEntry()) != null) {
-                if (!i.canReadEntryData(entry)) {
-Debug.println("skip entry: " + entry.getName() + ", " + entry.getSize());
-                    continue;
-                }
-                entries.add(new ApacheEntry(entry));
-Debug.println("entry: " + entry.getName() + ", " + entry.getSize());
-            }
-        } catch (ArchiveException e) {
-            throw new IOException(e);
-        }
+    /** */
+    public ApacheArjArchive(InputStream is) throws IOException {
+        super(is);
+        this.file = archiveFileForInputStream;
     }
 
     @Override
@@ -67,19 +63,36 @@ Debug.println("entry: " + entry.getName() + ", " + entry.getSize());
 
     @Override
     public Entry[] entries() {
-        Entry[] results = new Entry[entries.size()];
-        entries.toArray(results);
-        return results;
+        if (entries == null) {
+            try (ArchiveInputStream i = new ArjArchiveInputStream(Files.newInputStream(file.toPath()))) {
+                List<ApacheEntry> entries = new ArrayList<>();
+                ArchiveEntry entry;
+                while ((entry = i.getNextEntry()) != null) {
+                    if (!i.canReadEntryData(entry)) {
+Debug.println("skip entry: " + entry.getName() + ", " + entry.getSize());
+                        continue;
+                    }
+                    entries.add(new ApacheEntry(entry));
+Debug.println(Level.FINE, "entry: " + entry.getName() + ", " + entry.getSize());
+                }
+                this.entries = entries.toArray(new ApacheEntry[0]);
+            } catch (ArchiveException | IOException e) {
+                throw new IllegalStateException(e);
+            }
+        }
+        return entries;
     }
 
     @Override
     public Entry getEntry(String name) {
-        return entries.stream().filter(e -> e.getName().equals(name)).findFirst().orElse(null);
+        return Arrays.stream(entries()).filter(e -> e.getName().equals(name)).findFirst().orElse(null);
     }
 
+    /** WARNING: available does not work */
     @Override
     public InputStream getInputStream(Entry entry) throws IOException {
-        try (ArchiveInputStream i = new ArjArchiveInputStream(Files.newInputStream(file.toPath()))) {
+        try {
+            ArchiveInputStream i = new ArjArchiveInputStream(Files.newInputStream(file.toPath()));
             ArchiveEntry e = null;
             while ((e = i.getNextEntry()) != null) {
                 if (!i.canReadEntryData(e)) {
@@ -93,7 +106,7 @@ Debug.println("skip entry: " + entry.getName() + ", " + entry.getSize());
         } catch (ArchiveException e) {
             throw new IOException(e);
         }
-        throw new NoSuchElementException(entry.getName()); // TODO
+        throw new IllegalArgumentException(entry.getName());
     }
 
     @Override
@@ -103,7 +116,7 @@ Debug.println("skip entry: " + entry.getName() + ", " + entry.getSize());
 
     @Override
     public int size() {
-        return entries.size();
+        return entries().length;
     }
 }
 

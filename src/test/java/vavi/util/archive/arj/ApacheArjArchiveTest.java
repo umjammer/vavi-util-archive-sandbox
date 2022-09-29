@@ -8,11 +8,25 @@ package vavi.util.archive.arj;
 
 import java.io.File;
 import java.io.InputStream;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import vavi.util.Debug;
+import vavi.util.archive.Archive;
 import vavi.util.archive.Entry;
+import vavi.util.archive.sevenzip.JBinding7ZipArchive;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.fail;
 
 
 /**
@@ -32,6 +46,41 @@ System.err.println("size: " + arj.size());
 System.err.println("entry: " + entry.getSize());
         InputStream is = arj.getInputStream(entry);
 System.err.println("is: " + is.available());
+    }
+
+    @Test
+    @DisplayName("extract")
+    public void test3() throws Exception {
+        Archive archive = new ApacheArjArchive(new File("src/test/resources/test.arj"));
+        Entry entry = archive.entries()[0];
+Debug.println(entry.getName() + ", " + entry.getSize());
+        InputStream is = archive.getInputStream(entry);
+Debug.println(is.available());
+        Path out = Paths.get("tmp/out_jbinding7z/" + entry.getName());
+        Files.createDirectories(out.getParent());
+        Files.copy(is, out, StandardCopyOption.REPLACE_EXISTING);
+        assertEquals(Files.size(out), entry.getSize());
+    }
+
+    @Test
+    @DisplayName("inputStream")
+    void test5() throws Exception {
+        Archive archive = new ApacheArjArchive(new URL("file:src/test/resources/test.arj").openStream());
+        for (Entry entry : archive.entries()) {
+            System.out.println(entry.getName() + ", " + entry.getSize());
+        }
+Debug.println("entries after loop: " + archive.size());
+        assertNotEquals(0, archive.size());
+        // TODO available is 0
+Debug.println("stream after loop: " + archive.entries()[0].getName() + ", first byte: " + archive.getInputStream(archive.entries()[0]).read());
+        assertNotNull(archive.getInputStream(archive.entries()[0]));
+        for (Entry entry : archive.entries()) {
+            if (!entry.isDirectory() && archive.getInputStream(entry).read() > 0) {
+Debug.println("stream after loop: 2nd byte: " + archive.getInputStream(entry).read());
+                return;
+            }
+        }
+        fail("no file size > 0");
     }
 }
 
