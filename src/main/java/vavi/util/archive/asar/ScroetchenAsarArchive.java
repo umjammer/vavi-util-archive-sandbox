@@ -25,7 +25,7 @@ import asar.VirtualFile;
  * @author <a href="mailto:umjammer@gmail.com">Naohide Sano</a> (umjammer)
  * @version 0.00 2019/09/14 umjammer initial version <br>
  */
-public class AsarArchive implements Archive {
+public class ScroetchenAsarArchive implements Archive {
 
     /** */
     private asar.AsarArchive archive;
@@ -35,7 +35,7 @@ public class AsarArchive implements Archive {
     private long size;
 
     /** */
-    public AsarArchive(File file) throws IOException {
+    public ScroetchenAsarArchive(File file) throws IOException {
         this.archive = new asar.AsarArchive(file);
         this.name = file.getName();
         this.size = file.length();
@@ -50,7 +50,7 @@ public class AsarArchive implements Archive {
     public Entry[] entries() {
         List<Entry> entries = new ArrayList<>();
         for (VirtualFile e : archive) {
-            entries.add(new AsarEntry(e));
+            entries.add(new ScroetchenAsarEntry(e));
         }
         return entries.toArray(new Entry[0]);
     }
@@ -59,7 +59,7 @@ public class AsarArchive implements Archive {
     public Entry getEntry(String name) {
         for (VirtualFile e : archive) {
             if (name.equals(e.getPath())) {
-                return new AsarEntry(e);
+                return new ScroetchenAsarEntry(e);
             }
         }
         return null;

@@ -45,7 +45,7 @@
               </execution>
             </executions>
             <configuration>
-              <mainClass>vavi.util.archive.asar.AsarArchiveTest</mainClass>
+              <mainClass>vavi.util.archive.asar.ScroetchenAsarArchiveTest</mainClass>
               <classpathScope>test</classpathScope>
             </configuration>
           </plugin>
