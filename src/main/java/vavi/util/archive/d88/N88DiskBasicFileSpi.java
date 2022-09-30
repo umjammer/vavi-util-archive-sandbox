@@ -8,6 +8,7 @@ package vavi.util.archive.d88;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Map;
 
 import vavi.util.archive.Archive;
 import vavi.util.archive.spi.ArchiveSpi;
@@ -35,7 +36,7 @@ public class N88DiskBasicFileSpi implements ArchiveSpi {
     }
 
     @Override
-    public Archive createArchiveInstance(Object obj) throws IOException {
+    public Archive createArchiveInstance(Object obj, Map<String, ?> env) throws IOException {
         return new N88DiskBasicFile((File) obj);
     }
 

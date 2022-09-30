@@ -14,6 +14,7 @@ import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.logging.Level;
@@ -63,7 +64,7 @@ public class JBinding7ZipArchiveSpi extends SevenZipArchiveSpi {
     }
 
     @Override
-    public Archive createArchiveInstance(Object obj) throws IOException {
+    public Archive createArchiveInstance(Object obj, Map<String, ?> env) throws IOException {
         if (obj instanceof File) {
             return new JBinding7ZipArchive((File) obj);
         } else if (obj instanceof InputStream) {

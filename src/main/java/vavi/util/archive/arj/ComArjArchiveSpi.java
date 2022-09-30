@@ -11,6 +11,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.util.Map;
 
 import vavi.util.archive.Archive;
 
@@ -38,7 +39,7 @@ public class ComArjArchiveSpi extends ArjArchiveSpi {
     }
 
     @Override
-    public Archive createArchiveInstance(Object obj) throws IOException {
+    public Archive createArchiveInstance(Object obj, Map<String, ?> env) throws IOException {
         return new ComArjArchive((File) obj);
     }
 
