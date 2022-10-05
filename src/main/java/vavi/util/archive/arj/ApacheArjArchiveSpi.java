@@ -14,7 +14,6 @@ import java.nio.file.Files;
 import java.util.Map;
 
 import vavi.util.archive.Archive;
-import vavi.util.archive.zip.JdkZipArchive;
 
 
 /**

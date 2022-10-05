@@ -2128,7 +2128,7 @@ Debug.println("mainCommand: " + mainCommand);
 
         String askString = askStr;
         while ((chPtr = askString.indexOf('_')) != -1) {
-            item[numItems] = askString.substring(chPtr + 1, askString.length());
+            item[numItems] = askString.substring(chPtr + 1);
             item[numItems] += ' ';
             if ((chPtr = item[numItems].indexOf('_')) != -1) {
                 chPtr = 0;
@@ -3205,7 +3205,6 @@ Debug.println("arcType: " + arcType);
         lastLength = length;
         lastDist = distance;
         oldCopyString(distance, length);
-        return;
     }
 
     /** */

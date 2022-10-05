@@ -19,14 +19,11 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.logging.Level;
 
-import net.sf.sevenzipjbinding.SevenZip;
 import org.apache.commons.compress.compressors.CompressorStreamFactory;
 import vavi.util.Debug;
 import vavi.util.StringUtil;
 import vavi.util.archive.Archive;
 import vavi.util.archive.apache.ApacheCommonsArchiveSpi;
-import vavi.util.archive.arj.ApacheArjArchive;
-import vavi.util.archive.spi.ArchiveSpi;
 
 
 /**

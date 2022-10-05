@@ -12,7 +12,6 @@ import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.NoSuchElementException;
 
 import vavi.io.InputEngine;
 import vavi.io.InputEngineOutputStream;

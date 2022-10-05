@@ -68,7 +68,7 @@ class CabFolderInputStream extends InputStream {
             i.inflate(uncompressed, 0, uncompressed.length);
         } catch (DataFormatException e) {
 e.printStackTrace(System.err);
-            throw (IOException) new IOException().initCause(e);
+            throw (IOException) new IOException(e);
         }
         return new ByteArrayInputStream(uncompressed, 0, unCompressedBytes);
     }

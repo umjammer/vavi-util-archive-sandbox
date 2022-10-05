@@ -7,7 +7,6 @@
 package vavi.util.archive.cab;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -66,7 +65,7 @@ Debug.println(cab.getFolders().size());
         for (CabFolder folder : cab.getFolders()) {
             for (CabFile cabFile : folder.getFiles()) {
                 CommonEntry entry = new CommonEntry();
-                entry.setName(folder.toString() + File.separator + cabFile.getFileName());
+                entry.setName(folder + File.separator + cabFile.getFileName());
                 // TODO entry.set...
                 entries.add(entry);
             }

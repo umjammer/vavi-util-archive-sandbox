@@ -7,7 +7,6 @@
 package vavi.util.stuffit;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -427,7 +426,7 @@ Debug.println("Directory name " + uname + " already in use");
                     name = parent + ":" + new String(uname);
                 }
                 depth++;
-                status = extract(new String(name), skipit);
+                status = extract(name, skipit);
                 depth--;
                 if (status != 1) {
                     break;        // problem with folder
@@ -727,7 +726,7 @@ Debug.printf("Header CRC mismatch: got 0x%04x, need 0x%04x%n", f.hdrCRC, crc);
         int crc = INIT_CRC;
         chkcrc = true;        // usually can check the CRC
 
-        if (checkAccess(new String(fname)) == -1) {
+        if (checkAccess(fname) == -1) {
             infp.skip(ibytes);    // SEEK_CUR
             chkcrc = false;    // inhibit crc check if file not written
             return -1;
@@ -794,7 +793,7 @@ Debug.printf("Header CRC mismatch: got 0x%04x, need 0x%04x%n", f.hdrCRC, crc);
                 chkcrc = false;        // can't check CRC in this case
             }
             temp += "> '";
-            temp += new String(fname);
+            temp += fname;
             temp += "'";
             try {
                 outf = Files.newOutputStream(Paths.get(temp));

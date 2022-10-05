@@ -7,15 +7,12 @@
 package vavi.util.archive.arj;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.logging.Level;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
