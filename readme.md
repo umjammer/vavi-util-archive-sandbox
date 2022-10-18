@@ -34,8 +34,8 @@ and [vavi-net-fuse](https://github.com/umjammer/vavi-apps-fuse/tree/master/vavi-
 ## Usage
 
 ```java
-    Path inXar = Paths.get("foo/baa.xar");
-    Path outDir = Paths.get("foo/baa");
+    Path inXar = Paths.get("foo/bar.xar");
+    Path outDir = Paths.get("foo/bar");
     Archive archive = Archives.getArchive(inXar.toFile());
     for (Entry entry : archive.entries()) {
         Files.copy(archive.getInputStream(entry), outDir.resolve(entry.getName()));
