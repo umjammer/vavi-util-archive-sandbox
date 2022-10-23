@@ -50,12 +50,18 @@ import static org.junit.jupiter.api.Assertions.fail;
 @PropsEntity(url = "file:local.properties")
 class JBinding7ZipArchiveTest {
 
+    static boolean localPropertiesExists() {
+        return Files.exists(Paths.get("local.properties"));
+    }
+
     @Property(name = "file.rar1")
     String file1 = "src/test/resources/test.rar";
 
     @BeforeEach
     void setup() throws Exception {
-        PropsEntity.Util.bind(this);
+        if (localPropertiesExists()) {
+            PropsEntity.Util.bind(this);
+        }
     }
 
     @Test
