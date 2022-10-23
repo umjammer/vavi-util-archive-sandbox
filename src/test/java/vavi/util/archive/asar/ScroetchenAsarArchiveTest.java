@@ -18,17 +18,19 @@ import vavi.util.archive.Entry;
 
 
 /**
- * AsarArchiveTest.
+ * ScroetchenAsarArchiveTest.
  *
  * @author <a href="mailto:umjammer@gmail.com">Naohide Sano</a> (umjammer)
  * @version 0.00 2019/09/16 umjammer initial version <br>
  */
-class AsarArchiveTest {
+class ScroetchenAsarArchiveTest {
 
     @Test
-    @Disabled
+    @Disabled("tmp/app.asar works...")
     void test() throws Exception {
-        AsarArchive archive = new AsarArchive(new File("src/test/resources/test.asar"));
+//        String file = "src/test/resources/test.asar";
+        String file = "tmp/app.asar";
+        ScroetchenAsarArchive archive = new ScroetchenAsarArchive(new File(file));
         for (Entry e : archive.entries()) {
             System.err.println(e.getName());
         }
@@ -38,7 +40,7 @@ class AsarArchiveTest {
      * @param args archive output_directory
      */
     public static void main(String[] args) throws Exception {
-        AsarArchive archive = new AsarArchive(new File(args[0]));
+        ScroetchenAsarArchive archive = new ScroetchenAsarArchive(new File(args[0]));
         for (Entry e : archive.entries()) {
             String name = e.getName();
             Path file = Paths.get(args[1], name);

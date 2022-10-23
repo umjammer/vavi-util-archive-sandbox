@@ -8,10 +8,10 @@ package vavi.util.archive;
 
 import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,9 +19,7 @@ import com.jacob.activeX.ActiveXComponent;
 import com.jacob.com.ComThread;
 import com.jacob.com.Dispatch;
 import com.jacob.com.Variant;
-
 import vavi.util.Debug;
-
 import vavix.util.ComUtil;
 
 
@@ -32,6 +30,8 @@ import vavix.util.ComUtil;
  *
  * @author <a href="mailto:umjammer@gmail.com">Naohide Sano</a> (nsano)
  * @version 0.00 030211 nsano initial version <br>
+ * @see "https://www.madobe.net/archiver/lib/activex/kba.html"
+ * @see "https://github.com/freemansoft/jacob-project"
  */
 public abstract class ComArchive implements Archive {
 
@@ -69,7 +69,7 @@ public abstract class ComArchive implements Archive {
     protected File file;
 
     /**
-     * @throws IOException
+     * @throws IOException file not found
      */
     public ComArchive(File file, String type) throws IOException {
 
@@ -211,7 +211,7 @@ Debug.println("result: " + resultString);
         String temporaryFileName = getTemporaryFileName(entry);
         File temporaryFile = new File(temporaryFileName);
         if (temporaryFile.exists()) {
-            return new BufferedInputStream(new FileInputStream(temporaryFile));
+            return new BufferedInputStream(Files.newInputStream(temporaryFile.toPath()));
         } else {
             throw new IOException("cannot extract: " + temporaryFileName);
         }

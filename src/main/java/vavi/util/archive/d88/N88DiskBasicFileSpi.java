@@ -8,6 +8,7 @@ package vavi.util.archive.d88;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Map;
 
 import vavi.util.archive.Archive;
 import vavi.util.archive.spi.ArchiveSpi;
@@ -24,8 +25,8 @@ public class N88DiskBasicFileSpi implements ArchiveSpi {
     @Override
     public boolean canExtractInput(Object target) throws IOException {
 
-        if (!(target instanceof File)) {
-            throw new IllegalArgumentException("not supported type " + target);
+        if (!isSupported(target)) {
+            return false;
         }
 
         String name = ((File) target).getName();
@@ -35,8 +36,18 @@ public class N88DiskBasicFileSpi implements ArchiveSpi {
     }
 
     @Override
-    public Archive createArchiveInstance(Object obj) throws IOException {
+    public Archive createArchiveInstance(Object obj, Map<String, ?> env) throws IOException {
         return new N88DiskBasicFile((File) obj);
+    }
+
+    @Override
+    public Class<?>[] getInputTypes() {
+        return new Class[] {File.class};
+    }
+
+    @Override
+    public String[] getFileSuffixes() {
+        return new String[] {"d88", "D88"};
     }
 }
 

@@ -14,6 +14,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.RandomAccessFile;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -428,8 +430,7 @@ public class UnRar {
         shutDown(SD_MEMORY);
     }
 
-    /**
-     * @throws IOException */
+    /** */
     private void errExit(int errCode, int code) throws IOException {
         String errMsg = null;
         switch (errCode) {
@@ -1463,14 +1464,14 @@ Debug.println("allArgsUsed");
                             Debug.printf(rb.getString("message.ExtrTestDir"), newLhd.name);
                             continue;
                         }
-                        if ((mDCode = new File(destFileName).mkdir()) == false) {
+                        if (!(mDCode = new File(destFileName).mkdir())) {
                             new File(destFileName).mkdirs();
-                            if ((mDCode = new File(destFileName).mkdir()) == false) {
+                            if (!(mDCode = new File(destFileName).mkdir())) {
                                 Debug.printf(rb.getString("message.ExtrErrMkDir"), newLhd.name);
                                 exitCode = WARNING;
                             }
                         }
-                        if (mDCode == false) {
+                        if (!mDCode) {
                             Debug.printf(rb.getString("message.CreatDir"), newLhd.name);
                         }
                         continue;
@@ -1626,7 +1627,7 @@ Debug.println("allArgsUsed");
             if (errCount == 0) {
                 Debug.println(rb.getString("message.ExtrAllOk"));
             } else {
-                Debug.printf(rb.getString("message.ExtrTotalErr"), new Long(errCount));
+                Debug.printf(rb.getString("message.ExtrTotalErr"), errCount);
             }
         }
         if (tmpPassword != 0) {
@@ -2045,10 +2046,10 @@ Debug.println("mainCommand: " + mainCommand);
             }
         }
         try {
-            return new FileOutputStream(name);
+            return Files.newOutputStream(Paths.get(name));
         } catch (IOException e) {
             new File(name).mkdirs();
-            return new FileOutputStream(name);
+            return Files.newOutputStream(Paths.get(name));
         }
     }
 
@@ -2127,7 +2128,7 @@ Debug.println("mainCommand: " + mainCommand);
 
         String askString = askStr;
         while ((chPtr = askString.indexOf('_')) != -1) {
-            item[numItems] = askString.substring(chPtr + 1, askString.length());
+            item[numItems] = askString.substring(chPtr + 1);
             item[numItems] += ' ';
             if ((chPtr = item[numItems].indexOf('_')) != -1) {
                 chPtr = 0;
@@ -2968,52 +2969,52 @@ Debug.println("arcType: " + arcType);
     private int nlzb;
     private int maxDist3;
     private int buf60;
-    private static int[] shortLen1 = { 1, 3, 4, 4, 5, 6, 7, 8, 8, 4, 4, 5, 6, 6, 4, 0 };
-    private static int[] shortXor1 = {
+    private static final int[] shortLen1 = { 1, 3, 4, 4, 5, 6, 7, 8, 8, 4, 4, 5, 6, 6, 4, 0 };
+    private static final int[] shortXor1 = {
         0, 0xa0, 0xd0, 0xe0, 0xf0, 0xf8, 0xfc, 0xfe,
         0xff, 0xc0, 0x80, 0x90, 0x98, 0x9c, 0xb0
     };
-    private static int[] shortLen2 = { 2, 3, 3, 3, 4, 4, 5, 6, 6, 4, 4, 5, 6, 6, 4, 0 };
-    private static int[] shortXor2 = {
+    private static final int[] shortLen2 = { 2, 3, 3, 3, 4, 4, 5, 6, 6, 4, 4, 5, 6, 6, 4, 0 };
+    private static final int[] shortXor2 = {
         0, 0x40, 0x60, 0xa0, 0xd0, 0xe0, 0xf0, 0xf8,
         0xfc, 0xc0, 0x80, 0x90, 0x98, 0x9c, 0xb0
     };
     private static final int STARTL1 = 2;
-    private static int[] decL1 = {
+    private static final int[] decL1 = {
         0x8000, 0xa000, 0xc000, 0xd000, 0xe000, 0xea00,
         0xee00, 0xf000, 0xf200, 0xf200, 0xffff
     };
-    private static int[] posL1 = { 0, 0, 0, 2, 3, 5, 7, 11, 16, 20, 24, 32, 32 };
+    private static final int[] posL1 = { 0, 0, 0, 2, 3, 5, 7, 11, 16, 20, 24, 32, 32 };
     private static final int STARTL2 = 3;
-    private static int[] decL2 = {
+    private static final int[] decL2 = {
         0xa000, 0xc000, 0xd000, 0xe000, 0xea00, 0xee00,
         0xf000, 0xf200, 0xf240, 0xffff
     };
-    private static int[] posL2 = { 0, 0, 0, 0, 5, 7, 9, 13, 18, 22, 26, 34, 36 };
+    private static final int[] posL2 = { 0, 0, 0, 0, 5, 7, 9, 13, 18, 22, 26, 34, 36 };
     private static final int STARTHF0 = 4;
-    private static int[] decHf0 = {
+    private static final int[] decHf0 = {
         0x8000, 0xc000, 0xe000, 0xf200, 0xf200, 0xf200,
         0xf200, 0xf200, 0xffff
     };
-    private static int[] posHf0 = { 0, 0, 0, 0, 0, 8, 16, 24, 33, 33, 33, 33, 33 };
+    private static final int[] posHf0 = { 0, 0, 0, 0, 0, 8, 16, 24, 33, 33, 33, 33, 33 };
     private static final int STARTHF1 = 5;
-    private static int[] decHf1 = {
+    private static final int[] decHf1 = {
         0x2000, 0xc000, 0xe000, 0xf000, 0xf200, 0xf200,
         0xf7e0, 0xffff
     };
-    private static int[] posHf1 = { 0, 0, 0, 0, 0, 0, 4, 44, 60, 76, 80, 80, 127 };
+    private static final int[] posHf1 = { 0, 0, 0, 0, 0, 0, 4, 44, 60, 76, 80, 80, 127 };
     private static final int STARTHF2 = 5;
-    private static int[] decHf2 = {
+    private static final int[] decHf2 = {
         0x1000, 0x2400, 0x8000, 0xc000, 0xfa00, 0xffff,
         0xffff, 0xffff
     };
-    private static int[] posHf2 = { 0, 0, 0, 0, 0, 0, 2, 7, 53, 117, 233, 0, 0 };
+    private static final int[] posHf2 = { 0, 0, 0, 0, 0, 0, 2, 7, 53, 117, 233, 0, 0 };
     private static final int STARTHF3 = 6;
-    private static int[] decHf3 = { 0x800, 0x2400, 0xee00, 0xfe80, 0xffff, 0xffff, 0xffff };
-    private static int[] posHf3 = { 0, 0, 0, 0, 0, 0, 0, 2, 16, 218, 251, 0, 0 };
+    private static final int[] decHf3 = { 0x800, 0x2400, 0xee00, 0xfe80, 0xffff, 0xffff, 0xffff };
+    private static final int[] posHf3 = { 0, 0, 0, 0, 0, 0, 0, 2, 16, 218, 251, 0, 0 };
     private static final int STARTHF4 = 8;
-    private static int[] decHf4 = { 0xff00, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff };
-    private static int[] posHf4 = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 255, 0, 0, 0 };
+    private static final int[] decHf4 = { 0xff00, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff };
+    private static final int[] posHf4 = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 255, 0, 0, 0 };
     private static final int MAXWINMASK = 0;
 
     /** */
@@ -3204,7 +3205,6 @@ Debug.println("arcType: " + arcType);
         lastLength = length;
         lastDist = distance;
         oldCopyString(distance, length);
-        return;
     }
 
     /** */

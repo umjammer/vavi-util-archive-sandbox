@@ -8,9 +8,10 @@ package vavi.util.archive.xar;
 
 import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.util.Map;
 
 import vavi.util.archive.Archive;
 import vavi.util.archive.spi.ArchiveSpi;
@@ -32,7 +33,7 @@ public class XarArchiveSpi implements ArchiveSpi {
         }
 
         InputStream is =
-            new BufferedInputStream(new FileInputStream((File) target));
+            new BufferedInputStream(Files.newInputStream(((File) target).toPath()));
 
         byte[] b = new byte[4];
 
@@ -52,8 +53,18 @@ public class XarArchiveSpi implements ArchiveSpi {
     }
 
     @Override
-    public Archive createArchiveInstance(Object obj) throws IOException {
+    public Archive createArchiveInstance(Object obj, Map<String, ?> env) throws IOException {
         return new XarArchive((File) obj);
+    }
+
+    @Override
+    public Class<?>[] getInputTypes() {
+        return new Class[] {File.class, InputStream.class};
+    }
+
+    @Override
+    public String[] getFileSuffixes() {
+        return new String[] {"xar"};
     }
 }
 

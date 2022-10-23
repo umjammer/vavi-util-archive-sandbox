@@ -7,9 +7,9 @@
 package vavi.util.archive.cab;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,7 +46,7 @@ public class PureJavaCabArchive implements Archive {
     public PureJavaCabArchive(File file) throws IOException {
         this.size = (int) file.length();
         this.name = file.getName();
-        init(new FileInputStream(file));
+        init(Files.newInputStream(file.toPath()));
     }
 
     /** */
@@ -57,7 +57,7 @@ public class PureJavaCabArchive implements Archive {
     }
 
     /** */
-    private final void init(InputStream is) throws IOException {
+    private void init(InputStream is) throws IOException {
         this.is = is;
         this.cab = new Cab(is, 1);
 
@@ -65,7 +65,7 @@ Debug.println(cab.getFolders().size());
         for (CabFolder folder : cab.getFolders()) {
             for (CabFile cabFile : folder.getFiles()) {
                 CommonEntry entry = new CommonEntry();
-                entry.setName(folder.toString() + File.separator + cabFile.getFileName());
+                entry.setName(folder + File.separator + cabFile.getFileName());
                 // TODO entry.set...
                 entries.add(entry);
             }

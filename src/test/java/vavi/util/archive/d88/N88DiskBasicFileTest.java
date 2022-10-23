@@ -10,14 +10,21 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.stream.Stream;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+import vavi.util.archive.Archive;
 import vavi.util.archive.Entry;
 import vavi.util.properties.annotation.Property;
 import vavi.util.properties.annotation.PropsEntity;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 
 /**
@@ -97,6 +104,26 @@ System.err.println(disk);
 System.err.println(name + " -> " + file);
                 Files.copy(disk.getInputStream(e), file);
             }
+        }
+    }
+
+    static Stream<Arguments> sources() throws IOException {
+        return Files.list(Paths.get("/Users/nsano/src/java/mucomDotNET/tmp/MCM_sample_20190124")).filter(p -> p.toString().endsWith(".d88")).map(p -> arguments(p));
+    }
+
+    @Disabled("this is application, cause fuckin' intellij doesn't support run w/ test classpath")
+    @ParameterizedTest
+    @MethodSource("sources")
+    public void testX(Path p) throws IOException {
+        Path outDir = Paths.get("/Users/nsano/src/java/mucomDotNET/tmp/kodai", p.getFileName().toString().replaceFirst("\\.d88$", ""));
+        Files.createDirectories(outDir);
+
+System.err.println("---- " + p);
+        Archive disk = new N88DiskBasicFile(p.toAbsolutePath().toString());
+        for (Entry e : disk.entries()) {
+            Path file = outDir.resolve(e.getName());
+System.err.println(e.getName() + " -> " + file);
+            Files.copy(disk.getInputStream(e), file);
         }
     }
 }

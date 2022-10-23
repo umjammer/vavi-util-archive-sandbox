@@ -67,7 +67,7 @@ public class XarEntry implements WrappedEntry<com.sprylab.xar.XarEntry> {
 
     @Override
     public boolean isDirectory() {
-        return false;
+        return entry.isDirectory();
     }
 
     @Override

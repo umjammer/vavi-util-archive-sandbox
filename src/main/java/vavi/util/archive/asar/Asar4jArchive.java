@@ -1,42 +1,41 @@
 /*
- * Copyright (c) 2019 by Naohide Sano, All rights reserved.
+ * Copyright (c) 2022 by Naohide Sano, All rights reserved.
  *
  * Programmed by Naohide Sano
  */
 
 package vavi.util.archive.asar;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.anatawa12.asar4j.AsarEntry;
+import com.anatawa12.asar4j.AsarFile;
 import vavi.util.archive.Archive;
 import vavi.util.archive.Entry;
-
-import asar.VirtualFile;
 
 
 /**
  * Represents ASAR archived file.
  *
  * @author <a href="mailto:umjammer@gmail.com">Naohide Sano</a> (umjammer)
- * @version 0.00 2019/09/14 umjammer initial version <br>
+ * @version 0.00 2022/09/24 umjammer initial version <br>
  */
-public class AsarArchive implements Archive {
+public class Asar4jArchive implements Archive {
 
     /** */
-    private asar.AsarArchive archive;
+    private AsarFile archive;
 
     private String name;
 
     private long size;
 
     /** */
-    public AsarArchive(File file) throws IOException {
-        this.archive = new asar.AsarArchive(file);
+    public Asar4jArchive(File file) throws IOException {
+        this.archive = new AsarFile(file);
         this.name = file.getName();
         this.size = file.length();
     }
@@ -49,17 +48,17 @@ public class AsarArchive implements Archive {
     @Override
     public Entry[] entries() {
         List<Entry> entries = new ArrayList<>();
-        for (VirtualFile e : archive) {
-            entries.add(new AsarEntry(e));
+        for (AsarEntry e : archive.iterable()) {
+            entries.add(new Asar4jEntry(e));
         }
-        return entries.toArray(new Entry[entries.size()]);
+        return entries.toArray(new Entry[0]);
     }
 
     @Override
     public Entry getEntry(String name) {
-        for (VirtualFile e : archive) {
-            if (name.equals(e.getPath())) {
-                return new AsarEntry(e);
+        for (AsarEntry e : archive.iterable()) {
+            if (name.equals(e.getName())) {
+                return new Asar4jEntry(e);
             }
         }
         return null;
@@ -67,9 +66,9 @@ public class AsarArchive implements Archive {
 
     @Override
     public InputStream getInputStream(Entry entry) throws IOException {
-        for (VirtualFile e : archive) {
-            if (entry.getName().equals(e.getPath())) {
-                return new ByteArrayInputStream(e.read());
+        for (AsarEntry e : archive.iterable()) {
+            if (entry.getName().equals(e.getName())) {
+                return archive.getInputStream(e);
             }
         }
         return null;

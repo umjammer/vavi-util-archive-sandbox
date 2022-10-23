@@ -21,7 +21,7 @@ public interface DiskImage {
     /** */
     byte[] readData(int track, int surface, int sector);
 
-    public enum Density {
+    enum Density {
         _2D,
         _2DD,
         _2HD,
@@ -31,7 +31,7 @@ public interface DiskImage {
     Density getDensity();
 
     /** */
-    static class Factory {
+    class Factory {
         /**
          * TODO read header and dispatch image type.
          */

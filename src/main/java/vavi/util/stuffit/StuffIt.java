@@ -7,11 +7,12 @@
 package vavi.util.stuffit;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 import jp.gr.java_conf.dangan.util.lha.CRC16;
 
@@ -86,7 +87,7 @@ import vavi.util.StringUtil;
 public class StuffIt {
 
     /** 22 bytes */
-    class SitHdr {
+    static class SitHdr {
         /** = 'SIT!' -- for verification */
         String signature;
         /** number of files in archive */
@@ -104,7 +105,7 @@ public class StuffIt {
     }
 
     /** 112 bytes */
-    class FileHdr {
+    static class FileHdr {
         /** rsrc fork compression method */
         byte compRMethod;
         /** data fork compression method */
@@ -252,7 +253,7 @@ public class StuffIt {
     private static final int H_WRITE = 1;
     private static final int H_SKIP = 2;
 
-    class Node {
+    static class Node {
         int flag;
         int byte_;
         Node one;
@@ -346,7 +347,7 @@ public class StuffIt {
         }
 
         try {
-            infp = new FileInputStream(cl.getArgs()[0]);
+            infp = Files.newInputStream(Paths.get(cl.getArgs()[0]));
         } catch (IOException e) {
 Debug.println("Can't open input file \"" + cl.getArgs()[0] + "\"");
             return;
@@ -425,7 +426,7 @@ Debug.println("Directory name " + uname + " already in use");
                     name = parent + ":" + new String(uname);
                 }
                 depth++;
-                status = extract(new String(name), skipit);
+                status = extract(name, skipit);
                 depth--;
                 if (status != 1) {
                     break;        // problem with folder
@@ -490,7 +491,7 @@ Debug.println("Directory name " + uname + " already in use");
 
         if (f_info != null && checkAccess(f_info) != -1) {
             try {
-                fp = new FileOutputStream(new String(f_info));
+                fp = new FileOutputStream(f_info);
             } catch (IOException e) {
                 Debug.println(e);
                 System.exit(1);
@@ -725,7 +726,7 @@ Debug.printf("Header CRC mismatch: got 0x%04x, need 0x%04x%n", f.hdrCRC, crc);
         int crc = INIT_CRC;
         chkcrc = true;        // usually can check the CRC
 
-        if (checkAccess(new String(fname)) == -1) {
+        if (checkAccess(fname) == -1) {
             infp.skip(ibytes);    // SEEK_CUR
             chkcrc = false;    // inhibit crc check if file not written
             return -1;
@@ -734,7 +735,7 @@ Debug.printf("Header CRC mismatch: got 0x%04x, need 0x%04x%n", f.hdrCRC, crc);
         switch (type) {
         case noComp:         // no compression
             try {
-                outf = new FileOutputStream(new String(fname));
+                outf = Files.newOutputStream(Paths.get(fname));
             } catch (IOException e) {
                 Debug.println(e);
                 System.exit(1);
@@ -753,7 +754,7 @@ Debug.printf("Header CRC mismatch: got 0x%04x, need 0x%04x%n", f.hdrCRC, crc);
             break;
         case rleComp:         // run length encoding
             try {
-                outf = new FileOutputStream(new String(fname));
+                outf = Files.newOutputStream(Paths.get(fname));
             } catch (IOException e) {
                 Debug.println(e);
                 System.exit(1);
@@ -792,10 +793,10 @@ Debug.printf("Header CRC mismatch: got 0x%04x, need 0x%04x%n", f.hdrCRC, crc);
                 chkcrc = false;        // can't check CRC in this case
             }
             temp += "> '";
-            temp += new String(fname);
+            temp += fname;
             temp += "'";
             try {
-                outf = new FileOutputStream(temp);
+                outf = Files.newOutputStream(Paths.get(temp));
             } catch (IOException e) {
                 Debug.println(e);
                 System.exit(1);
@@ -814,7 +815,7 @@ Debug.printf("Header CRC mismatch: got 0x%04x, need 0x%04x%n", f.hdrCRC, crc);
                 InputStream is = null;
                 try {
                     // read the file to get CRC value
-                    is = new FileInputStream(new String(fname));
+                    is = Files.newInputStream(Paths.get(fname));
                 } catch (IOException e) {
                     Debug.println(e);
                     System.exit(1);
@@ -831,7 +832,7 @@ Debug.printf("Header CRC mismatch: got 0x%04x, need 0x%04x%n", f.hdrCRC, crc);
             break;
         case hufComp:         // Huffman compression
             try {
-                outf = new FileOutputStream(new String(fname));
+                outf = Files.newOutputStream(Paths.get(fname));
             } catch (IOException e) {
                 Debug.println(e);
                 System.exit(1);

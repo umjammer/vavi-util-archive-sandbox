@@ -8,9 +8,10 @@ package vavi.util.archive.cab;
 
 import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.util.Map;
 
 import vavi.util.archive.Archive;
 
@@ -24,25 +25,34 @@ import vavi.util.archive.Archive;
 public class ComCabArchiveSpi extends CabArchiveSpi {
 
     /**
-     * @param target currently accepts {@link File}, {@link InputStream} only.
+     * @param target currently accepts {@link File} only.
      */
     public boolean canExtractInput(Object target) throws IOException {
-        InputStream is;
+        if (!isSupported(target)) {
+            return false;
+        }
+
+        InputStream is = null;
         boolean needToClose = false;
 
-        if (File.class.isInstance(target)) {
-            is = new BufferedInputStream(new FileInputStream(File.class.cast(target)));
+        if (target instanceof File) {
+            is = new BufferedInputStream(Files.newInputStream(((File) target).toPath()));
             needToClose = true;
         } else {
-            throw new IllegalArgumentException("not supported type " + target.getClass().getName());
+            assert false : target.getClass().getName();
         }
 
         return canExtractInput(is, needToClose);
     }
 
     /* */
-    public Archive createArchiveInstance(Object obj) throws IOException {
+    public Archive createArchiveInstance(Object obj, Map<String, ?> env) throws IOException {
         return new ComCabArchive((File) obj);
+    }
+
+    @Override
+    public Class<?>[] getInputTypes() {
+        return new Class[] {File.class};
     }
 }
 

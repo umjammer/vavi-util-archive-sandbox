@@ -133,7 +133,7 @@ public class D88 implements DiskImage {
             LittleEndianDataInputStream ledis = new LittleEndianDataInputStream(in);
 
             byte[] buf = new byte[17];
-            ledis.read(buf, 0, 17);
+            ledis.readFully(buf, 0, 17);
             header.name = new String(buf, 0, 16, Charset.forName("MS932"));
             for (int i = 0; i < 9; i++) {
                 header.reserved[i] = ledis.read();
@@ -168,9 +168,9 @@ if (i == 0) {
         }
 
         public Sector getSector(int number) {
-            for (int i = 0; i < sectors.length; i++) {
-                if (sectors[i].R == number) {
-                    return sectors[i];
+            for (Sector sector : sectors) {
+                if (sector.R == number) {
+                    return sector;
                 }
             }
             return null;

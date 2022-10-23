@@ -6,8 +6,12 @@
 
 package vavi.util.archive.arj;
 
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.util.Map;
 
 import vavi.util.archive.Archive;
 
@@ -20,9 +24,28 @@ import vavi.util.archive.Archive;
  */
 public class ComArjArchiveSpi extends ArjArchiveSpi {
 
+    /**
+     * @param target currently accepts {@link File} only.
+     */
     @Override
-    public Archive createArchiveInstance(Object obj) throws IOException {
+    public boolean canExtractInput(Object target) throws IOException {
+        if (!isSupported(target)) {
+            return false;
+        }
+
+        InputStream is = new BufferedInputStream(Files.newInputStream(((File) target).toPath()));
+
+        return super.canExtractInput(is, false);
+    }
+
+    @Override
+    public Archive createArchiveInstance(Object obj, Map<String, ?> env) throws IOException {
         return new ComArjArchive((File) obj);
+    }
+
+    @Override
+    public Class<?>[] getInputTypes() {
+        return new Class[] {File.class};
     }
 }
 
