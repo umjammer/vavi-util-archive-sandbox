@@ -8,7 +8,7 @@
 
   <groupId>vavi</groupId>
   <artifactId>vavi-util-archive-sandbox</artifactId>
-  <version>1.0.5-SNAPSHOT</version>
+  <version>1.0.5</version>
 
   <name>Vavi Archiving Sandbox API</name>
   <url>https://github.com/umjammer/vavi-util-archive-sandbox</url>
@@ -21,6 +21,19 @@
   <description>Vavi Archiving Sandbox API</description>
 
   <profiles>
+    <profile>
+      <id>mac</id>
+      <activation>
+        <os>
+          <family>mac</family>
+          <arch>x86_64</arch>
+        </os>
+      </activation>
+      <properties>
+        <sevenzipjbinding.platform>mac-x86_64</sevenzipjbinding.platform>
+      </properties>
+    </profile>
+
     <profile>
       <id>asar</id>
       <activation>
@@ -107,7 +120,7 @@
       <dependency>
         <groupId>org.junit</groupId>
         <artifactId>junit-bom</artifactId>
-        <version>5.8.2</version>
+        <version>5.9.0</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
@@ -116,9 +129,9 @@
 
   <dependencies>
     <dependency>
-      <groupId>vavi</groupId>
+      <groupId>com.github.umjammer</groupId>
       <artifactId>vavi-util-archive</artifactId>
-      <version>1.1.1-SNAPSHOT</version>
+      <version>1.1.1</version>
     </dependency>
     <dependency>
       <groupId>com.github.umjammer</groupId>
@@ -138,12 +151,18 @@
     <dependency>
       <groupId>com.github.umjammer</groupId>
       <artifactId>vavi-commons-sandbox</artifactId>
-      <version>0.4.1</version>
+      <version>0.4.2</version>
     </dependency>
     <dependency>
       <groupId>com.github.sprylab</groupId>
       <artifactId>xar</artifactId>
       <version>0.9.9</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.slf4j</groupId>
+          <artifactId>slf4j-simple</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>com.github.kevin-wayne</groupId>
@@ -157,7 +176,7 @@
     </dependency>
     <dependency>
       <groupId>net.sf.sevenzipjbinding</groupId>
-      <artifactId>sevenzipjbinding-mac-x86_64</artifactId>
+      <artifactId>sevenzipjbinding-${sevenzipjbinding.platform}</artifactId>
       <version>16.02-2.01</version>
     </dependency>
 
