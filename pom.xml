@@ -20,6 +20,10 @@
   </issueManagement>
   <description>Vavi Archiving Sandbox API</description>
 
+  <properties>
+    <sevenzipjbinding.platform>mac-x86_64</sevenzipjbinding.platform>
+  </properties>
+
   <profiles>
     <profile>
       <id>mac</id>
