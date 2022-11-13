@@ -66,6 +66,7 @@ import vavi.util.Debug;
  *
  * @author <a href="mailto:umjammer@gmail.com">Naohide Sano</a> (nsano)
  * @version 0.00 010819 nsano initial version <br>
+ * @see "https://www.pc98.org/project/doc/d88.html"
  */
 public class D88 implements DiskImage {
 

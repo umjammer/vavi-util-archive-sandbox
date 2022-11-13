@@ -12,9 +12,11 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.stream.Stream;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
+import org.junit.jupiter.api.condition.DisabledIfEnvironmentVariable;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -33,8 +35,22 @@ import static org.junit.jupiter.params.provider.Arguments.arguments;
  * @author <a href="mailto:umjammer@gmail.com">Naohide Sano</a> (umjammer)
  * @version 0.00 2014/06/08 umjammer initial version <br>
  */
-@PropsEntity(url = "file://${user.dir}/local.properties")
+@PropsEntity(url = "file:local.properties")
 public class N88DiskBasicFileTest {
+
+    static boolean localPropertiesExists() {
+        return Files.exists(Paths.get("local.properties"));
+    }
+
+    @Property(name = "test.d88")
+    String file;
+
+    @BeforeEach
+    void setup() throws IOException {
+        if (localPropertiesExists()) {
+            PropsEntity.Util.bind(this);
+        }
+    }
 
     @Test
     public void test() throws IOException {
@@ -48,11 +64,6 @@ System.err.println(disk);
 
         assertEquals(19, disk.entries().length);
     }
-
-    //----
-
-    @Property(name = "test.d88")
-    String file;
 
     /**
      * java N88DiskBasicFile file
@@ -107,15 +118,11 @@ System.err.println(name + " -> " + file);
         }
     }
 
-    static Stream<Arguments> sources() throws IOException {
-        return Files.list(Paths.get("/Users/nsano/src/java/mucomDotNET/tmp/MCM_sample_20190124")).filter(p -> p.toString().endsWith(".d88")).map(p -> arguments(p));
-    }
-
-    @Disabled("this is application, cause fuckin' intellij doesn't support run w/ test classpath")
-    @ParameterizedTest
-    @MethodSource("sources")
-    public void testX(Path p) throws IOException {
-        Path outDir = Paths.get("/Users/nsano/src/java/mucomDotNET/tmp/kodai", p.getFileName().toString().replaceFirst("\\.d88$", ""));
+    @Test
+    @DisabledIfEnvironmentVariable(named = "vavi.test", matches = "ide")
+    void testX() throws IOException {
+        Path p = Paths.get(file);
+        Path outDir = Paths.get("tmp", p.getFileName().toString().replaceFirst("\\.d88$", ""));
         Files.createDirectories(outDir);
 
 System.err.println("---- " + p);

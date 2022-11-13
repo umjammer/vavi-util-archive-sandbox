@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.logging.Level;
 
 import vavi.util.Debug;
+import vavi.util.StringUtil;
 import vavi.util.archive.Archive;
 import vavi.util.archive.Entry;
 
@@ -93,7 +94,7 @@ System.err.println("-fname----:aREP   m: SC");
 
         for (int i = 0; i < 12; i++) {
             byte[] data = diskImage.readData(t, s, i + 1);
-//System.err.println(StringUtil.getDump(data));
+System.err.println(StringUtil.getDump(data));
             for (int j = 0; j < 16; j++) {
                 switch (data[j * 16]) {
                 case 0x00:
