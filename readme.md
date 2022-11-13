@@ -8,6 +8,7 @@
 
 🌏 Extract the world more!
 
+extract all archive types in the same way!</br>
 archives are able to mount as fuse also using [vavi-nio-file-archive](https://github.com/umjammer/vavi-apps-fuse/tree/master/vavi-nio-file-archive)
 and [vavi-net-fuse](https://github.com/umjammer/vavi-apps-fuse/tree/master/vavi-net-fuse)
 
@@ -15,7 +16,7 @@ and [vavi-net-fuse](https://github.com/umjammer/vavi-apps-fuse/tree/master/vavi-
 
 | name       | mathod     | read | write | comment                                | library                                                                                                                         |
 |------------|------------|------|-------|----------------------------------------|---------------------------------------------------------------------------------------------------------------------------------|
-| d88        | filesystem | ✅    | -     |                                        |                                                                                                                                 |
+| d88        | archiving  | ✅    | -     |                                        |                                                                                                                                 |
 | rar        | archiving  | -    | -     | COM                                    | [jacob](https://github.com/freemansoft/jacob-project)                                                                           |
 | rar        | archiving  | 🚧   | -     |                                        | [unrar](https://github.com/Lesik/unrar-free) c port                                                                             |
 | stuffit    | archiving  | 🚧   | -     |                                        | [unsit](https://github.com/deadw00d/contrib/blob/1c4ab445a23fb0d0baf33aeb13284ccbfc26ff9f/aminet/util/arc/unsit/unsit.c) c port |
@@ -30,6 +31,8 @@ and [vavi-net-fuse](https://github.com/umjammer/vavi-apps-fuse/tree/master/vavi-
 | arj        | archiving  | ✅*   | -     | unsupported files exist                | [commons-compress](https://commons.apache.org/proper/commons-compress/)                                                         |
 | archiveR   | streaming  | 🚧   | -     | TODO engine.io-nize                    | [ArchiveR](https://github.com/prog-ai/ArchivR)                                                                                  |
 | sevenzip   | archiving  | ✅    | -     | multi                                  | [sevenzipjbinding](https://github.com/borisbrodski/sevenzipjbinding)                                                            |
+
+<sub>* chosen as spi</sub>
 
 ## Usage
 
