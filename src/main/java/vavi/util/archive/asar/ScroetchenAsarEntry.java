@@ -12,7 +12,7 @@ import asar.VirtualFile;
 
 
 /**
- * Wrapper for ASAR archived file entry.
+ * Represents an ASAR archive file entry.
  *
  * @author <a href="mailto:umjammer@gmail.com">Naohide Sano</a> (umjammer)
  * @version 0.00 2019/09/14 umjammer initial version <br>

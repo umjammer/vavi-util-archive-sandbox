@@ -17,7 +17,7 @@ import vavi.util.archive.Archive;
 
 
 /**
- * The SPI for RAR archived file.
+ * A service provider for RAR archive file.
  *
  * @author <a href="mailto:umjammer@gmail.com">Naohide Sano</a> (nsano)
  * @version 0.00 021222 nsano initial version <br>

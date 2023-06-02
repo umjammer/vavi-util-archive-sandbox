@@ -26,7 +26,7 @@ import vavi.util.archive.Entry;
 
 
 /**
- * Represents the N88 Disk Basic disk.
+ * Represents a file entry in a N88 disk basic disk.
  * 
  * @author <a href="mailto:umjammer@gmail.com">Naohide Sano</a> (nsano)
  * @version 0.00 010820 nsano initial version <br>

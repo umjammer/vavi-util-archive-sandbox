@@ -24,9 +24,7 @@ import vavix.util.ComUtil;
 
 
 /**
- * KBA front end．
- *
- * @target 1.1
+ * Represents a KBA front end．
  *
  * @author <a href="mailto:umjammer@gmail.com">Naohide Sano</a> (nsano)
  * @version 0.00 030211 nsano initial version <br>

@@ -17,7 +17,7 @@ import vavi.util.Debug;
 
 
 /**
- * Represents D88 formatted disc image.
+ * Represents D88 format disc image.
  *
  * <pre>
  *  * disk image 1

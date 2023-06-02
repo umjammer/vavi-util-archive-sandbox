@@ -16,10 +16,7 @@ import vavi.util.archive.Entry;
 
 
 /**
- * The SPI for CAB archived file.
- * COM version.
- *
- * @target 1.1
+ * A service provider for CAB archive file using windows COM.
  *
  * @author <a href="mailto:umjammer@gmail.com">Naohide Sano</a> (nsano)
  * @version 0.00 041002 nsano initial version <br>

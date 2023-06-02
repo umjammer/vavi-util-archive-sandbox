@@ -86,10 +86,8 @@ class JBinding7ZipArchiveTest {
                 return null;
             }
 Debug.println("[" + index + "]: " + archive.getProperty(index, PropID.PATH));
-            return new ISequentialOutStream() {
-                public int write(byte[] data) throws SevenZipException {
-                    return data.length; // Return amount of proceed data
-                }
+            return data -> {
+                return data.length; // Return amount of proceed data
             };
         }
 

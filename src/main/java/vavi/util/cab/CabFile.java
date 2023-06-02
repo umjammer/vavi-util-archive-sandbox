@@ -1,7 +1,8 @@
 /*
- * Copyright (c) 2004 by Naohide Sano, All rights reserved.
- *
- * Programmed by Naohide Sano
+ * You may modify, copy, and redistribute this code under the terms of
+ * the GNU Library Public License version 2.1, with the exception of
+ * the portion of clause 6a after the semicolon (aka the "obnoxious
+ * relink clause")
  */
 
 package vavi.util.cab;
@@ -16,10 +17,9 @@ import vavi.util.win32.DateUtil;
 
 
 /**
- * Encapsulates a CFFILE entry
- * 
- * @author <a href="mailto:umjammer@gmail.com">Naohide Sano</a> (nsano)
- * @version 0.00 040929 nsano initial version <br>
+ * Encapsulates a CFFILE entry.
+ *
+ * @author Adam Megacz <adam@ibex.org>
  */
 public class CabFile {
     /** size of this file */

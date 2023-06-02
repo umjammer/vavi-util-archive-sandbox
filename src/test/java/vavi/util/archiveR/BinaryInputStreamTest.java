@@ -40,7 +40,7 @@ public class BinaryInputStreamTest {
      *
      * @param args the command-line arguments
      */
-    public void main(String[] args) {
+    public static void main(String[] args) {
         BinaryInputStream in = new BinaryInputStream(System.in);
         BinaryOutputStream out = new BinaryOutputStream(System.out);
         // read one 8-bit char at a time

@@ -44,7 +44,7 @@ Debug.println(baos.size() + "\n" + StringUtil.getDump(baos.toByteArray()));
      *
      * @param args the command-line arguments
      */
-    public void main(String[] args) {
+    public static void main(String[] args) {
         int m = Integer.parseInt(args[0]);
         BinaryOutputStream out = new BinaryOutputStream(System.out);
         // write n integers to binary standard output

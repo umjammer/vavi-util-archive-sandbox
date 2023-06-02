@@ -16,8 +16,7 @@ import vavi.util.archive.Entry;
 
 
 /**
- * The SPI ARJ archived file.
- * COM version.
+ * Represents an ARJ archive file using windows COM.
  * 
  * @author <a href="mailto:umjammer@gmail.com">Naohide Sano</a> (nsano)
  * @version 0.00 041002 nsano initial version <br>

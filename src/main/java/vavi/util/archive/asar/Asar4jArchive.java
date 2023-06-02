@@ -19,7 +19,7 @@ import vavi.util.archive.Entry;
 
 
 /**
- * Represents ASAR archived file.
+ * Represents an ASAR archive file.
  *
  * @author <a href="mailto:umjammer@gmail.com">Naohide Sano</a> (umjammer)
  * @version 0.00 2022/09/24 umjammer initial version <br>

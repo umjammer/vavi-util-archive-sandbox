@@ -13,6 +13,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Arrays;
 
 import jp.gr.java_conf.dangan.util.lha.CRC16;
 
@@ -57,7 +58,7 @@ import vavi.util.StringUtil;
  * and creators of the files it is writing.  The -q flag causes it to
  * list the name, type and size of each file and wait for a 'y' or 'n'
  * for either writing that file or skipping it, respectively.  The -m
- * flag is used when the input file in in the MacBinary format instead of
+ * flag is used when the input file in the MacBinary format instead of
  * three separate .data, .info, and .rsrc files.  It causes the program
  * to skip the 128 byte MacBinary header before looking for the StuffIt
  * header.
@@ -167,7 +168,7 @@ public class StuffIt {
     /** Huffman compression */
     private static final int hufComp = 3;
 
-    /** bit set if encrypted.  ex: encrypted+lpzComp */
+//    /** bit set if encrypted.  ex: encrypted+lpzComp */
 //  private static final int encrypted = 16;
 
     /** marks start of a new folder */
@@ -219,7 +220,7 @@ public class StuffIt {
     private static final int FILEHDRSIZE = 112;
 
     private static final int F_NAMELEN = 63;
-    /** 63 + strlen(".info") + 1 */
+//    /** 63 + strlen(".info") + 1 */
 //  private static final int I_NAMELEN = 69;
 
     /** The following are copied out of macput.c/macget.c */
@@ -234,7 +235,7 @@ public class StuffIt {
     private static final int I_CTIMOFF = 91;
     private static final int I_MTIMOFF = 95;
 
-    /** offset to byte with Inited flag */
+//    /** offset to byte with Inited flag */
 //  private static final int INITED_OFF    = I_FLAGOFF;
     /** mask to '&' with byte to reset it */
 //  private static final int INITED_MASK = ~1;
@@ -410,12 +411,12 @@ Debug.println("Can't read file header");
                     File file = new File(new String(uname));
                     if (!file.exists()) {    // directory doesn't exist
                         if (!file.mkdirs()) {
-Debug.println("Can't create subdirectory " + uname);
+Debug.println("Can't create subdirectory " + Arrays.toString(uname));
                             return -1;
                         }
                     } else {        // something exists with this name
                         if (!file.isDirectory()) {
-Debug.println("Directory name " + uname + " already in use");
+Debug.println("Directory name " + Arrays.toString(uname) + " already in use");
                             return -1;
                         }
                     }
@@ -638,7 +639,7 @@ Debug.printf("Header CRC mismatch: got 0x%04x, need 0x%04x%n", f.hdrCRC, crc);
         f.rsrcCRC = get2(hdr, F_RSRCCRC);
         f.dataCRC = get2(hdr, F_DATACRC);
 
-        // if it's an end folder record, don't need to do any more
+        // if it's an end folder record, don't need to do anymore
         if (f.compRMethod == endFolder && f.compDMethod == endFolder) {
             return H_WRITE;
         }
@@ -665,9 +666,9 @@ Debug.printf("Header CRC mismatch: got 0x%04x, need 0x%04x%n", f.hdrCRC, crc);
                     System.out.print(' ');
                 }
                 if (isfolder) {
-                    System.out.println("Folder: \"" + uname + "\"");
+                    System.out.println("Folder: \"" + Arrays.toString(uname) + "\"");
                 } else {
-                    System.out.println("name=\"" + uname +
+                    System.out.println("name=\"" + Arrays.toString(uname) +
                                        "\", type=" + new String(hdr, F_FTYPE, 4) +
                                        ", author=" + new String(hdr, F_CREATOR, 4) +
                                        ", data=" + f.dataLength +
@@ -762,10 +763,10 @@ Debug.printf("Header CRC mismatch: got 0x%04x, need 0x%04x%n", f.hdrCRC, crc);
             while (ibytes > 0) {
                 ch = infp.read();
                 ibytes--;
-                if (ch == 0x90) {    // see if its the repeat marker
+                if (ch == 0x90) {    // see if it's the repeat marker
                     n = infp.read();    // get the repeat count
                     ibytes--;
-                    if (n == 0) {    // 0x90 was really an 0x90
+                    if (n == 0) {    // 0x90 was really a 0x90
                         iobuf[0] = (byte) 0x90;
                         crc = updateCrc(crc, iobuf, 1);
                         outc(iobuf, 1, outf);

@@ -18,7 +18,7 @@ import vavi.util.archive.spi.ArchiveSpi;
 
 
 /**
- * A service provider which is processing XAR archive.
+ * A service provider for XAR archive.
  *
  * @author <a href="mailto:umjammer@gmail.com">Naohide Sano</a> (umjammer)
  * @version 0.00 2020/10/07 umjammer initial version <br>

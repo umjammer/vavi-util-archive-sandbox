@@ -16,11 +16,12 @@ import vavi.util.Debug;
 
 
 /**
- * CAB file structure.
+ * Represents a CAB file structure.
  *
  * @author Adam Megacz <adam@ibex.org>
  */
 public class Cab {
+
     /** */
     private CabHeader header;
 

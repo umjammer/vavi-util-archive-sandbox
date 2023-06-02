@@ -11,7 +11,7 @@ import vavi.util.archive.WrappedEntry;
 
 
 /**
- * Wrapper for ASAR archived file entry.
+ * Represents an ASAR archive file entry using asar4j.
  *
  * @author <a href="mailto:umjammer@gmail.com">Naohide Sano</a> (umjammer)
  * @version 0.00 2022/09/24 umjammer initial version <br>

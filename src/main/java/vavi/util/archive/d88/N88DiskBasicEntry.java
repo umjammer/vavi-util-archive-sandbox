@@ -98,6 +98,7 @@ public class N88DiskBasicEntry implements Entry {
         return size;
     }
 
+    // TODO fat8 doesn't have last modified?
     @Override
     public long getTime() {
         return new Date().getTime();
@@ -136,6 +137,7 @@ public class N88DiskBasicEntry implements Entry {
         throw new UnsupportedOperationException("non sense");
     }
 
+    // TODO size is not set until getInputStream
     @Override
     public void setSize(long size) {
         this.size = size;

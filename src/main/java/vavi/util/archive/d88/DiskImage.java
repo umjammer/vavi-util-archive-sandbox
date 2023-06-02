@@ -11,7 +11,7 @@ import java.io.InputStream;
 
 
 /**
- * Represents Disk image.
+ * Represents a common disk image.
  *
  * @author <a href="mailto:umjammer@gmail.com">Naohide Sano</a> (nsano)
  * @version 0.00 010819 nsano initial version <br>

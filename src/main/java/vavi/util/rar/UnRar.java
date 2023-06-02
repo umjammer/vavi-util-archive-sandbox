@@ -239,7 +239,7 @@ public class UnRar {
                         (((a & 0x20) != 0) ? 'A' : '.') + "  ";
             default:
             case UNIX:
-                return "" + (((a & 0x4000) != 0) ? 'd' : '-') +
+                return String.valueOf(((a & 0x4000) != 0) ? 'd' : '-') +
                         (((a & 0x0100) != 0) ? 'r' : '-') +
                         (((a & 0x0080) != 0) ? 'w' : '-') +
                         (((a & 0x0040) != 0) ? (((a & 0x0800) != 0) ? 's' : 'x')
@@ -1726,7 +1726,7 @@ Debug.println("allArgsUsed");
                             System.out.printf(" %16X", newLhd.fileCRC);
                             System.out.printf(" m%d", newLhd.method - 0x30);
                             if ((newLhd.flags & LHD_WINDOWMASK) <= (4 * 32)) {
-                                System.out.print("" + ((newLhd.flags & LHD_WINDOWMASK) >> 5) + 'a');
+                                System.out.print(String.valueOf((newLhd.flags & LHD_WINDOWMASK) >> 5) + 'a');
                             } else {
                                 System.out.print(" ");
                             }
@@ -2185,9 +2185,9 @@ Debug.println("mainCommand: " + mainCommand);
 
         if (dir.exists()) {
             File[] ent = new File(findPath).listFiles();
-            for (int i = 0; i < ent.length; i++) {
+            for (File file : ent) {
                 String archiveName = findPath;
-                archiveName += ent[i].getName();
+                archiveName += file.getName();
                 File fs = new File(archiveName);
                 if (fs.exists()) {
                     continue;
@@ -2195,14 +2195,14 @@ Debug.println("mainCommand: " + mainCommand);
 
                 if (fs.isDirectory()) {
                     if (opt.recurse != 0 &&
-                        !".".equals(ent[i].getName()) &&
-                        !"..".equals(ent[i].getName())) {
-                        findPath += ent[i].getName();
+                            !".".equals(file.getName()) &&
+                            !"..".equals(file.getName())) {
+                        findPath += file.getName();
                         findPath += File.separator;
                         findArchives();
                     }
                 } else {
-                    if (findName.equals(ent[i].getParent())) {
+                    if (findName.equals(file.getParent())) {
                         int nameLen = archiveName.length() + 1;
                         arcName += archiveName;
                         arcNamesSize += nameLen;

@@ -15,7 +15,7 @@ import net.sf.sevenzipjbinding.SevenZipException;
 
 
 /**
- * Implementation of {@link IInStream} using {@link SeekableByteChannel}.
+ * An implementation of {@link IInStream} using {@link SeekableByteChannel}.
  *
  * @author <a href="mailto:umjammer@gmail.com">Naohide Sano</a> (nsano)
  * @version 0.00 2022-09-23 nsano initial version <br>
