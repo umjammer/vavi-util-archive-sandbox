@@ -35,7 +35,9 @@ public abstract class ArjArchiveSpi implements ArchiveSpi {
         }
         is.reset();
 
-        is.close();
+        if (needToClose) {
+            is.close();
+        }
 
         return b[0] == 'A' && // TODO
                b[1] == 'R' &&
