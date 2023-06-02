@@ -230,12 +230,15 @@ Debug.printf(Level.FINE, "%08x: %d, %d, %d%n", cluster, track, surface, (sector 
             byte[][] tmp = readCluster(c);
 //Debug.println("tmp: " + tmp.length + "x" + tmp[0].length);
 
+try {
             // TODO currently deals only 2D
             int max = (nc < 0xc1) ? 8 : nc & 0x1f;
             for (int i = 0; i < max; i++) {
                 os.write(tmp[i], 0, tmp[i].length);
             }
-
+} catch (ArrayIndexOutOfBoundsException e) {
+ throw new IllegalArgumentException("only support 2d (sectors 8)");
+}
 //System.err.print(" " + Integer.toHexString(c) + "(" + max + ")");
 
             if (nc > 0xc0) {
