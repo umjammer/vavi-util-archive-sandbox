@@ -10,23 +10,20 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.stream.Stream;
+import java.nio.file.StandardCopyOption;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-
-import org.junit.jupiter.api.condition.DisabledIfEnvironmentVariable;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
+import vavi.util.Debug;
 import vavi.util.archive.Archive;
+import vavi.util.archive.Archives;
 import vavi.util.archive.Entry;
 import vavi.util.properties.annotation.Property;
 import vavi.util.properties.annotation.PropsEntity;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 
 /**
@@ -43,7 +40,7 @@ public class N88DiskBasicFileTest {
     }
 
     @Property(name = "test.d88")
-    String file;
+    String file = "src/test/resources/test.d88";
 
     @BeforeEach
     void setup() throws IOException {
@@ -53,9 +50,24 @@ public class N88DiskBasicFileTest {
     }
 
     @Test
+    @DisplayName("direct")
     public void test() throws IOException {
         N88DiskBasicFile disk = new N88DiskBasicFile(N88DiskBasicFileTest.class.getResourceAsStream("/test.d88"));
-System.err.println(disk);
+Debug.println(disk);
+
+        for (Entry e : disk.entries()) {
+            N88DiskBasicEntry entry = (N88DiskBasicEntry) e;
+            System.err.println(entry.getName());
+        }
+
+        assertEquals(19, disk.entries().length);
+    }
+
+    @Test
+    @DisplayName("spi")
+    public void test2() throws IOException {
+        Archive disk = Archives.getArchive(Paths.get(file).toFile());
+Debug.println(disk);
 
         for (Entry e : disk.entries()) {
             N88DiskBasicEntry entry = (N88DiskBasicEntry) e;
@@ -119,7 +131,7 @@ System.err.println(name + " -> " + file);
     }
 
     @Test
-    @DisabledIfEnvironmentVariable(named = "vavi.test", matches = "ide")
+    @EnabledIfSystemProperty(named = "vavi.test", matches = "ide")
     void testX() throws IOException {
         Path p = Paths.get(file);
         Path outDir = Paths.get("tmp", p.getFileName().toString().replaceFirst("\\.d88$", ""));
@@ -130,7 +142,7 @@ System.err.println("---- " + p);
         for (Entry e : disk.entries()) {
             Path file = outDir.resolve(e.getName());
 System.err.println(e.getName() + " -> " + file);
-            Files.copy(disk.getInputStream(e), file);
+            Files.copy(disk.getInputStream(e), file, StandardCopyOption.REPLACE_EXISTING);
         }
     }
 }
