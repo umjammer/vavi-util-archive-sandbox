@@ -31,7 +31,7 @@ public class D88Test {
 System.err.print(d88.getHeader());
         for (int i = 0; i < 164; i++) {
             if (d88.getTracks()[i] != null) {
-//System.err.print(d88.getTracks()[i]);
+System.err.print(d88.getTracks()[i]);
             }
         }
     }

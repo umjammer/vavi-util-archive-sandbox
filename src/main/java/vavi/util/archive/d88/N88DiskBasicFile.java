@@ -71,7 +71,9 @@ public class N88DiskBasicFile implements Archive {
         this.is = is;
         this.diskImage = DiskImage.Factory.readFrom(is);
 
-System.err.println("-fname----:aREP   m: SC");
+if (Debug.isLoggable(Level.FINE)) {
+ System.err.println("-fname----:aREP   m: SC");
+}
         // Directory
         //  1D(5inch)    Track 18           Sector 1 - 12
         //  2D(5inch)    Track 18 Surface 1 Sector 1 - 12
@@ -94,14 +96,20 @@ System.err.println("-fname----:aREP   m: SC");
 
         for (int i = 0; i < 12; i++) {
             byte[] data = diskImage.readData(t, s, i + 1);
-System.err.println(StringUtil.getDump(data));
+if (Debug.isLoggable(Level.FINE)) {
+ System.err.println(StringUtil.getDump(data));
+}
             for (int j = 0; j < 16; j++) {
                 switch (data[j * 16]) {
                 case 0x00:
-                    System.err.println("killed");
+if (Debug.isLoggable(Level.FINE)) {
+ System.err.println("killed");
+}
                     break;
                 case (byte) 0xff:
-System.err.println("not used");
+if (Debug.isLoggable(Level.FINE)) {
+ System.err.println("not used");
+}
                     break;
                 default:
                     String name = new String(data, j * 16, 6, encoding) + "." +
@@ -111,7 +119,9 @@ System.err.println("not used");
                                                                     data[j * 16 + 9],
                                                                     data[j * 16 + 10] & 0xff);
                     entries.put(name, entry);
-System.err.println(entry);
+if (Debug.isLoggable(Level.FINE)) {
+ System.err.println(entry);
+}
                     break;
                 }
             }
@@ -218,6 +228,7 @@ Debug.printf(Level.FINE, "%08x: %d, %d, %d%n", cluster, track, surface, (sector 
             int nc = data[c] & 0xff;
 
             byte[][] tmp = readCluster(c);
+//Debug.println("tmp: " + tmp.length + "x" + tmp[0].length);
 
             // TODO currently deals only 2D
             int max = (nc < 0xc1) ? 8 : nc & 0x1f;
