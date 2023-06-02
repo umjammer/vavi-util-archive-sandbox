@@ -135,7 +135,7 @@ public class D88 implements DiskImage {
 
             byte[] buf = new byte[17];
             ledis.readFully(buf, 0, 17);
-            header.name = new String(buf, 0, 16, Charset.forName("MS932"));
+            header.name = new String(buf, 0, ByteUtil.indexOf(buf, (byte) 0), Charset.forName("MS932"));
             for (int i = 0; i < 9; i++) {
                 header.reserved[i] = ledis.read();
             }
