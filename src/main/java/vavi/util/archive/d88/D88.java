@@ -11,13 +11,16 @@ import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.nio.charset.Charset;
+import java.util.logging.Level;
 
 import vavi.io.LittleEndianDataInputStream;
+import vavi.util.ByteUtil;
 import vavi.util.Debug;
+import vavi.util.StringUtil;
 
 
 /**
- * Represents D88 formatted disc image.
+ * Represents D88 format disc image.
  *
  * <pre>
  *  * disk image 1
@@ -66,6 +69,7 @@ import vavi.util.Debug;
  *
  * @author <a href="mailto:umjammer@gmail.com">Naohide Sano</a> (nsano)
  * @version 0.00 010819 nsano initial version <br>
+ * @see "https://www.pc98.org/project/doc/d88.html"
  */
 public class D88 implements DiskImage {
 
@@ -134,7 +138,8 @@ public class D88 implements DiskImage {
 
             byte[] buf = new byte[17];
             ledis.readFully(buf, 0, 17);
-            header.name = new String(buf, 0, 16, Charset.forName("MS932"));
+Debug.println(Level.FINE, StringUtil.getDump(buf, 16));
+            header.name = new String(buf, 0, ByteUtil.indexOf(buf, (byte) 0), Charset.forName("MS932"));
             for (int i = 0; i < 9; i++) {
                 header.reserved[i] = ledis.read();
             }
@@ -145,7 +150,7 @@ public class D88 implements DiskImage {
             for (int i = 0; i < 164; i++) {
                 header.tracks[i] = ledis.readInt();
 if (i == 0) {
- Debug.println("track[0]: " + header.tracks[i]);
+ Debug.println(Level.FINER, "track[0]: " + header.tracks[i]);
 }
             }
 

@@ -18,7 +18,7 @@ import vavi.util.archive.spi.ArchiveSpi;
 
 
 /**
- * A service provider which is processing XAR archive.
+ * A service provider for XAR archive.
  *
  * @author <a href="mailto:umjammer@gmail.com">Naohide Sano</a> (umjammer)
  * @version 0.00 2020/10/07 umjammer initial version <br>
@@ -28,12 +28,24 @@ public class XarArchiveSpi implements ArchiveSpi {
     @Override
     public boolean canExtractInput(Object target) throws IOException {
 
-        if (!(target instanceof File)) {
-            throw new IllegalArgumentException("not supported type " + target);
+        if (!isSupported(target)) {
+            return false;
         }
 
-        InputStream is =
-            new BufferedInputStream(Files.newInputStream(((File) target).toPath()));
+        InputStream is = null;
+        boolean needToClose = false;
+
+        if (target instanceof File) {
+            is = new BufferedInputStream(Files.newInputStream(((File) target).toPath()));
+            needToClose = true;
+        } else if (target instanceof InputStream) {
+            is = (InputStream) target;
+            if (!is.markSupported()) {
+                throw new IllegalArgumentException("InputStream should support #mark()");
+            }
+        } else {
+            assert false : target.getClass().getName();
+        }
 
         byte[] b = new byte[4];
 
@@ -44,7 +56,9 @@ public class XarArchiveSpi implements ArchiveSpi {
         }
         is.reset();
 
-        is.close();
+        if (needToClose) {
+            is.close();
+        }
 
         return b[0] == 'x' &&
                b[1] == 'a' &&
@@ -54,7 +68,13 @@ public class XarArchiveSpi implements ArchiveSpi {
 
     @Override
     public Archive createArchiveInstance(Object obj, Map<String, ?> env) throws IOException {
-        return new XarArchive((File) obj);
+        if (obj instanceof File) {
+            return new XarArchive((File) obj);
+        } else if (obj instanceof InputStream) {
+            return new XarArchive((InputStream) obj);
+        } else {
+            throw new IllegalArgumentException("not supported type " + obj.getClass().getName());
+        }
     }
 
     @Override

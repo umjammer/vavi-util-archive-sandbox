@@ -17,7 +17,7 @@ import vavi.util.archive.Archive;
 
 
 /**
- * The CAB archived file.
+ * A service provider for CAB archive file.
  *
  * @author <a href="mailto:umjammer@gmail.com">Naohide Sano</a> (nsano)
  * @version 0.00 041002 nsano initial version <br>

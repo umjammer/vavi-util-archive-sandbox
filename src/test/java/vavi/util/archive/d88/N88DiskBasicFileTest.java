@@ -10,21 +10,20 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.stream.Stream;
+import java.nio.file.StandardCopyOption;
 
-import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
+import vavi.util.Debug;
 import vavi.util.archive.Archive;
+import vavi.util.archive.Archives;
 import vavi.util.archive.Entry;
 import vavi.util.properties.annotation.Property;
 import vavi.util.properties.annotation.PropsEntity;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 
 /**
@@ -33,13 +32,28 @@ import static org.junit.jupiter.params.provider.Arguments.arguments;
  * @author <a href="mailto:umjammer@gmail.com">Naohide Sano</a> (umjammer)
  * @version 0.00 2014/06/08 umjammer initial version <br>
  */
-@PropsEntity(url = "file://${user.dir}/local.properties")
+@PropsEntity(url = "file:local.properties")
 public class N88DiskBasicFileTest {
 
+    static boolean localPropertiesExists() {
+        return Files.exists(Paths.get("local.properties"));
+    }
+
+    @Property(name = "test.d88")
+    String file = "src/test/resources/test.d88";
+
+    @BeforeEach
+    void setup() throws IOException {
+        if (localPropertiesExists()) {
+            PropsEntity.Util.bind(this);
+        }
+    }
+
     @Test
+    @DisplayName("direct")
     public void test() throws IOException {
         N88DiskBasicFile disk = new N88DiskBasicFile(N88DiskBasicFileTest.class.getResourceAsStream("/test.d88"));
-System.err.println(disk);
+Debug.println(disk);
 
         for (Entry e : disk.entries()) {
             N88DiskBasicEntry entry = (N88DiskBasicEntry) e;
@@ -49,10 +63,19 @@ System.err.println(disk);
         assertEquals(19, disk.entries().length);
     }
 
-    //----
+    @Test
+    @DisplayName("spi")
+    public void test2() throws IOException {
+        Archive disk = Archives.getArchive(Paths.get(file).toFile());
+Debug.println(disk);
 
-    @Property(name = "test.d88")
-    String file;
+        for (Entry e : disk.entries()) {
+            N88DiskBasicEntry entry = (N88DiskBasicEntry) e;
+            System.err.println(entry.getName());
+        }
+
+        assertEquals(19, disk.entries().length);
+    }
 
     /**
      * java N88DiskBasicFile file
@@ -107,15 +130,11 @@ System.err.println(name + " -> " + file);
         }
     }
 
-    static Stream<Arguments> sources() throws IOException {
-        return Files.list(Paths.get("/Users/nsano/src/java/mucomDotNET/tmp/MCM_sample_20190124")).filter(p -> p.toString().endsWith(".d88")).map(p -> arguments(p));
-    }
-
-    @Disabled("this is application, cause fuckin' intellij doesn't support run w/ test classpath")
-    @ParameterizedTest
-    @MethodSource("sources")
-    public void testX(Path p) throws IOException {
-        Path outDir = Paths.get("/Users/nsano/src/java/mucomDotNET/tmp/kodai", p.getFileName().toString().replaceFirst("\\.d88$", ""));
+    @Test
+    @EnabledIfSystemProperty(named = "vavi.test", matches = "ide")
+    void testX() throws IOException {
+        Path p = Paths.get(file);
+        Path outDir = Paths.get("tmp", p.getFileName().toString().replaceFirst("\\.d88$", ""));
         Files.createDirectories(outDir);
 
 System.err.println("---- " + p);
@@ -123,7 +142,7 @@ System.err.println("---- " + p);
         for (Entry e : disk.entries()) {
             Path file = outDir.resolve(e.getName());
 System.err.println(e.getName() + " -> " + file);
-            Files.copy(disk.getInputStream(e), file);
+            Files.copy(disk.getInputStream(e), file, StandardCopyOption.REPLACE_EXISTING);
         }
     }
 }

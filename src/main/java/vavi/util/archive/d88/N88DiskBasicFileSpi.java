@@ -15,7 +15,7 @@ import vavi.util.archive.spi.ArchiveSpi;
 
 
 /**
- * The SPI for N88 Disk Basic File.
+ * A service provider for N88 disk basic File.
  *
  * @author <a href="mailto:umjammer@gmail.com">Naohide Sano</a> (nsano)
  * @version 0.00 021222 nsano initial version <br>
@@ -29,6 +29,7 @@ public class N88DiskBasicFileSpi implements ArchiveSpi {
             return false;
         }
 
+        // TODO spi accepts only file, implement determining d88 by stream
         String name = ((File) target).getName();
         String extension = name.substring(name.lastIndexOf('.') + 1).toLowerCase();
 

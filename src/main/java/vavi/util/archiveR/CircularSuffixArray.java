@@ -8,6 +8,7 @@ package vavi.util.archiveR;
 
 import java.util.Arrays;
 
+
 /**
  * This class provides methods for printing strings and numbers to standard output.
  *
@@ -55,7 +56,7 @@ public class CircularSuffixArray {
     /**
      * Returns index of ith sorted suffix.
      *
-     * @param i the ith sorted sufix
+     * @param i the ith sorted suffix
      * @return the index of ith sorted suffix
      * @throws IllegalArgumentException if {@code i < 0 || i >= index.length}
      */

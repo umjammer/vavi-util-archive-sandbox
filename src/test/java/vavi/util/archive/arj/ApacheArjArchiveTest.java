@@ -6,6 +6,7 @@
 
 package vavi.util.archive.arj;
 
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.InputStream;
 import java.net.URL;
@@ -20,6 +21,7 @@ import org.junit.jupiter.api.Test;
 
 import vavi.util.Debug;
 import vavi.util.archive.Archive;
+import vavi.util.archive.Archives;
 import vavi.util.archive.Entry;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -37,8 +39,33 @@ import static org.junit.jupiter.api.Assertions.fail;
 class ApacheArjArchiveTest {
 
     @Test
+    @DisplayName("direct")
     void test() throws Exception {
         ApacheArjArchive arj = new ApacheArjArchive(new File("src/test/resources/test.arj"));
+System.err.println("size: " + arj.size());
+        Arrays.stream(arj.entries()).forEach(e -> System.err.println(e.getName()));
+        Entry entry = arj.getEntry("UNZIP4D.BTM");
+System.err.println("entry: " + entry.getSize());
+        InputStream is = arj.getInputStream(entry);
+System.err.println("is: " + is.available());
+    }
+
+    @Test
+    @DisplayName("spi, file")
+    void test1() throws Exception {
+        Archive arj = Archives.getArchive(new File("src/test/resources/test.arj"));
+System.err.println("size: " + arj.size());
+        Arrays.stream(arj.entries()).forEach(e -> System.err.println(e.getName()));
+        Entry entry = arj.getEntry("UNZIP4D.BTM");
+System.err.println("entry: " + entry.getSize());
+        InputStream is = arj.getInputStream(entry);
+System.err.println("is: " + is.available());
+    }
+
+    @Test
+    @DisplayName("spi, input stream")
+    void test2() throws Exception {
+        Archive arj = Archives.getArchive(new BufferedInputStream(Files.newInputStream(Paths.get("src/test/resources/test.arj"))));
 System.err.println("size: " + arj.size());
         Arrays.stream(arj.entries()).forEach(e -> System.err.println(e.getName()));
         Entry entry = arj.getEntry("UNZIP4D.BTM");

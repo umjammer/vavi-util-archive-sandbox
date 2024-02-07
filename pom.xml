@@ -8,7 +8,7 @@
 
   <groupId>vavi</groupId>
   <artifactId>vavi-util-archive-sandbox</artifactId>
-  <version>1.0.5</version>
+  <version>1.0.6</version>
 
   <name>Vavi Archiving Sandbox API</name>
   <url>https://github.com/umjammer/vavi-util-archive-sandbox</url>
@@ -21,7 +21,7 @@
   <description>Vavi Archiving Sandbox API</description>
 
   <properties>
-    <sevenzipjbinding.platform>mac-x86_64</sevenzipjbinding.platform>
+    <sevenzipjbinding.platform>${os.name}-${os.arch}</sevenzipjbinding.platform>
   </properties>
 
   <profiles>
@@ -30,7 +30,6 @@
       <activation>
         <os>
           <family>mac</family>
-          <arch>x86_64</arch>
         </os>
       </activation>
       <properties>
@@ -53,7 +52,7 @@
             <!-- $ mvn -P asar exec:java -Dexec.args='"file" "outdir"' -->
             <groupId>org.codehaus.mojo</groupId>
             <artifactId>exec-maven-plugin</artifactId>
-            <version>1.6.0</version>
+            <version>3.1.0</version>
             <executions>
               <execution>
                 <goals>
@@ -69,6 +68,37 @@
         </plugins>
       </build>
     </profile>
+
+    <profile>
+      <id>shade</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-shade-plugin</artifactId>
+            <version>3.2.4</version>
+            <configuration>
+              <shadedArtifactAttached>true</shadedArtifactAttached>
+              <shadedClassifierName>jar-with-dependencies</shadedClassifierName>
+              <transformers>
+                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                  <mainClass>vavi.util.archive.ArchivesMain</mainClass>
+                </transformer>
+                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
+              </transformers>
+            </configuration>
+            <executions>
+              <execution>
+                <phase>package</phase>
+                <goals>
+                  <goal>shade</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
   </profiles>
 
   <build>
@@ -76,17 +106,15 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.10.1</version>
+        <version>3.11.0</version>
         <configuration>
-          <source>1.8</source>
-          <target>1.8</target>
-          <encoding>UTF-8</encoding>
+          <release>17</release>
         </configuration>
       </plugin>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>native2ascii-maven-plugin</artifactId>
-        <version>2.0.1</version>
+        <version>2.1.0</version>
         <executions>
           <execution>
             <goals>
@@ -103,7 +131,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
-        <version>3.0.0-M7</version>
+        <version>3.2.2</version>
         <configuration>
           <argLine>-Djava.util.logging.config.file=${project.build.testOutputDirectory}/logging.properties</argLine>
           <trimStackTrace>false</trimStackTrace>
@@ -124,7 +152,7 @@
       <dependency>
         <groupId>org.junit</groupId>
         <artifactId>junit-bom</artifactId>
-        <version>5.9.0</version>
+        <version>5.10.1</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
@@ -133,31 +161,40 @@
 
   <dependencies>
     <dependency>
-      <groupId>com.github.umjammer</groupId>
+      <groupId>com.github.umjammer</groupId> <!-- vavi /  -->
       <artifactId>vavi-util-archive</artifactId>
-      <version>1.1.1</version>
+      <version>1.1.2</version>
     </dependency>
     <dependency>
-      <groupId>com.github.umjammer</groupId>
-      <artifactId>klab-commons-cli</artifactId>
-      <version>1.3.0</version>
+      <groupId>com.github.umjammer</groupId> <!-- vavi / com.github.umjammer -->
+      <artifactId>vavi-commons-sandbox</artifactId>
+      <version>0.4.4</version>
     </dependency>
-    <dependency>
+
+    <dependency> <!-- asar 1 -->
       <groupId>com.github.Scroetchen</groupId>
       <artifactId>asar</artifactId>
       <version>e785ea9acd</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.json</groupId>
+          <artifactId>json</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
-    <dependency>
+  <dependency>
+    <groupId>org.json</groupId>
+    <artifactId>json</artifactId>
+    <version>20231013</version>
+  </dependency>
+
+    <dependency> <!-- asar 2 -->
       <groupId>com.anatawa12.asar4j</groupId>
       <artifactId>file</artifactId>
       <version>0.0.1</version>
     </dependency>
-    <dependency>
-      <groupId>com.github.umjammer</groupId>
-      <artifactId>vavi-commons-sandbox</artifactId>
-      <version>0.4.2</version>
-    </dependency>
-    <dependency>
+
+    <dependency> <!-- xar -->
       <groupId>com.github.sprylab</groupId>
       <artifactId>xar</artifactId>
       <version>0.9.9</version>
@@ -166,14 +203,49 @@
           <groupId>org.slf4j</groupId>
           <artifactId>slf4j-simple</artifactId>
         </exclusion>
+        <exclusion> <!-- https://nvd.nist.gov/vuln/detail/CVE-2017-1000190 -->
+          <groupId>org.simpleframework</groupId>
+          <artifactId>simple-xml</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>com.squareup.okhttp3</groupId>
+          <artifactId>okhttp</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>com.squareup.okio</groupId>
+          <artifactId>okio</artifactId>
+        </exclusion>
       </exclusions>
     </dependency>
-    <dependency>
+<dependency>
+  <groupId>com.squareup.okhttp3</groupId>
+  <artifactId>okhttp</artifactId>
+  <version>5.0.0-alpha.11</version>
+  <exclusions>
+    <exclusion>
+      <groupId>com.squareup.okio</groupId>
+      <artifactId>okio-jvm</artifactId>
+    </exclusion>
+  </exclusions>
+</dependency>
+<dependency>
+  <groupId>com.squareup.okio</groupId>
+  <artifactId>okio-jvm</artifactId>
+  <version>3.4.0</version>
+</dependency>
+    <dependency> <!-- https://github.com/ngallagher/simplexml/issues/18#issuecomment-533047324 -->
+      <groupId>com.carrotsearch.thirdparty</groupId>
+      <artifactId>simple-xml-safe</artifactId>
+      <version>2.7.1</version>
+    </dependency>
+
+    <dependency> <!-- used by archiveR -->
       <groupId>com.github.kevin-wayne</groupId>
       <artifactId>algs4</artifactId>
-      <version>master-SNAPSHOT</version>
+      <version>fc511547db</version>
     </dependency>
-    <dependency>
+
+    <dependency> <!-- 7z -->
       <groupId>net.sf.sevenzipjbinding</groupId>
       <artifactId>sevenzipjbinding</artifactId>
       <version>16.02-2.01</version>
@@ -202,6 +274,13 @@
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-params</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-jdk14</artifactId>
+      <version>1.7.36</version>
       <scope>test</scope>
     </dependency>
   </dependencies>

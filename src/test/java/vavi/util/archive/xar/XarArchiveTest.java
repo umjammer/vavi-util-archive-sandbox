@@ -6,6 +6,7 @@
 
 package vavi.util.archive.xar;
 
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.InputStream;
 import java.net.URL;
@@ -18,6 +19,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import vavi.util.Debug;
 import vavi.util.archive.Archive;
+import vavi.util.archive.Archives;
 import vavi.util.archive.Entry;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -35,9 +37,36 @@ import static org.junit.jupiter.api.Assertions.fail;
 class XarArchiveTest {
 
     @Test
+    @DisplayName("direct")
     void test() throws Exception {
         String file = "src/test/resources/test.xar";
         XarArchive archive = new XarArchive(new File(file));
+        int c = 0;
+        for (Entry e : archive.entries()) {
+            System.err.println(e.getName());
+            c++;
+        }
+        assertEquals(9, c);
+    }
+
+    @Test
+    @DisplayName("spi")
+    void test1() throws Exception {
+        String file = "src/test/resources/test.xar";
+        Archive archive = Archives.getArchive(Paths.get(file).toFile());
+        int c = 0;
+        for (Entry e : archive.entries()) {
+            System.err.println(e.getName());
+            c++;
+        }
+        assertEquals(9, c);
+    }
+
+    @Test
+    @DisplayName("spi")
+    void test2() throws Exception {
+        String file = "src/test/resources/test.xar";
+        Archive archive = Archives.getArchive(new BufferedInputStream(Files.newInputStream(Paths.get(file))));
         int c = 0;
         for (Entry e : archive.entries()) {
             System.err.println(e.getName());

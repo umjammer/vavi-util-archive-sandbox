@@ -30,10 +30,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 /*
- *  Compilation:  javac BinaryOutputStream.java
- *  Execution:    java BinaryOutputStream
- *  Dependencies: none
- *
  *  Write binary data to standard output, either one 1-bit boolean,
  *  one 8-bit char, one 32-bit int, one 64-bit double, one 32-bit float,
  *  or one 64-bit long at a time.
@@ -44,7 +40,7 @@ import java.io.OutputStream;
 
 /**
  * <i>Binary standard output</i>. This class provides methods for converting
- * primtive type variables ({@code boolean}, {@code byte}, {@code char},
+ * primitive type variables ({@code boolean}, {@code byte}, {@code char},
  * {@code int}, {@code long}, {@code float}, and {@code double})
  * to sequences of bits and writing them to standard output.
  * Uses big-endian (most-significant byte first).
@@ -59,9 +55,12 @@ import java.io.OutputStream;
  * @author Kevin Wayne
  */
 public final class BinaryOutputStream extends FilterOutputStream {
-    private int buffer;                // 8-bit buffer of bits to write
-    private int n;                     // number of bits remaining in buffer
-    private boolean isInitialized;     // has BinaryOutputStream been called for first time?
+    /** 8-bit buffer of bits to write */
+    private int buffer;
+    /** number of bits remaining in buffer */
+    private int n;
+    /** has BinaryOutputStream been called for first time? */
+    private boolean isInitialized;
 
     public BinaryOutputStream(OutputStream os) {
         super(new BufferedOutputStream(os));
@@ -110,7 +109,7 @@ public final class BinaryOutputStream extends FilterOutputStream {
         }
     }
 
-    // write out any remaining bits in buffer to standard output, padding with 0s
+    /** write out any remaining bits in buffer to standard output, padding with 0s */
     private void clearBuffer() {
         if (!isInitialized) throw new IllegalStateException("not initialized");
 
@@ -251,7 +250,7 @@ public final class BinaryOutputStream extends FilterOutputStream {
      * Writes the 8-bit char to standard output.
      *
      * @param x the {@code char} to write.
-     * @throws IllegalArgumentException if {@code x} is not betwen 0 and 255.
+     * @throws IllegalArgumentException if {@code x} is not between 0 and 255.
      */
     public void write(char x) {
         if (x < 0 || x >= 256) throw new IllegalArgumentException("Illegal 8-bit char = " + x);
@@ -295,7 +294,7 @@ public final class BinaryOutputStream extends FilterOutputStream {
      * Writes the string of <em>r</em>-bit characters to standard output.
      *
      * @param s the {@code String} to write.
-     * @param r the number of relevants bits in each character.
+     * @param r the number of relevant bits in each character.
      * @throws IllegalArgumentException if r is not between 1 and 16.
      * @throws IllegalArgumentException if any character in the string is not
      *                                  between 0 and 2<sup>r</sup> - 1.

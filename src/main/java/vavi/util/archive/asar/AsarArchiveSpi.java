@@ -13,7 +13,7 @@ import vavi.util.archive.spi.ArchiveSpi;
 
 
 /**
- * The SPI base for ASAR.
+ * A service provider base for ASAR.
  *
  * @author <a href="mailto:umjammer@gmail.com">Naohide Sano</a> (umjammer)
  * @version 0.00 2022/09/29 umjammer initial version <br>
@@ -26,19 +26,23 @@ public abstract class AsarArchiveSpi implements ArchiveSpi {
      */
     protected boolean canExtractInput(InputStream is, boolean needToClose) throws IOException {
 
-        byte[] b = new byte[2];
+        byte[] b = new byte[4];
 
-        is.mark(2);
+        is.mark(4);
         int l = 0;
-        while (l < 2) {
-            l += is.read(b, l, 2 - l);
+        while (l < 4) {
+            l += is.read(b, l, 4 - l);
         }
         is.reset();
 
-        is.close();
+        if (needToClose) {
+            is.close();
+        }
 
-        return b[0] == 'P' &&
-               b[1] == 'K';
+        return b[0] == 0x04 &&
+               b[1] == 0x00 &&
+               b[2] == 0x00 &&
+               b[3] == 0x00;
     }
 
     @Override

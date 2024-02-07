@@ -14,7 +14,7 @@ import vavi.util.archive.WrappedEntry;
 
 
 /**
- * A service provider which is processing 7z archive.
+ * A service provider for 7z archive file.
  *
  * @author <a href="mailto:umjammer@gmail.com">Naohide Sano</a> (umjammer)
  * @version 0.00 2020/10/07 umjammer initial version <br>

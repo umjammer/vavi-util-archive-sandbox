@@ -13,7 +13,7 @@ import vavi.util.archive.spi.ArchiveSpi;
 
 
 /**
- * The SPI base for ARJ.
+ * A service provider base for ARJ archive file.
  *
  * @author <a href="mailto:umjammer@gmail.com">Naohide Sano</a> (nsano)
  * @version 0.00 220929 nsano initial version <br>
@@ -35,7 +35,9 @@ public abstract class ArjArchiveSpi implements ArchiveSpi {
         }
         is.reset();
 
-        is.close();
+        if (needToClose) {
+            is.close();
+        }
 
         return b[0] == 'A' && // TODO
                b[1] == 'R' &&

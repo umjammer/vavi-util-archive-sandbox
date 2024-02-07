@@ -16,10 +16,7 @@ import vavi.util.archive.Entry;
 
 
 /**
- * The SPI for RAR archived file.
- * COM version.
- *
- * @target 1.1
+ * A service provider for RAR archive file using windows COM.
  *
  * @author <a href="mailto:umjammer@gmail.com">Naohide Sano</a> (nsano)
  * @version 0.00 030211 nsano initial version <br>

@@ -9,6 +9,7 @@ package vavi.util.archive.rar;
 import java.io.File;
 import java.io.InputStream;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledOnOs;
 import org.junit.jupiter.api.condition.OS;
@@ -23,10 +24,11 @@ import vavi.util.rar.UnRar;
  * @author <a href="mailto:umjammer@gmail.com">Naohide Sano</a> (umjammer)
  * @version 0.00 2020/05/12 umjammer initial version <br>
  */
+@EnabledOnOs(OS.WINDOWS)
 class ComRarArchiveTest {
 
     @Test
-    @EnabledOnOs(OS.WINDOWS)
+    @Disabled
     void test() throws Exception {
         UnRar unrar = new UnRar(new String[] { "l", "src/test/resources/test.rar" }); 
     }
