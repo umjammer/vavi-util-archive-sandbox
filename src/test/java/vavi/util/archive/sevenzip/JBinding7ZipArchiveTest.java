@@ -28,6 +28,7 @@ import net.sf.sevenzipjbinding.SevenZipException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
 import vavi.util.Debug;
 import vavi.util.archive.Archive;
 import vavi.util.archive.Archives;
@@ -44,9 +45,12 @@ import static org.junit.jupiter.api.Assertions.fail;
 /**
  * JBinding7ZipArchiveTest.
  *
+ * TODO sevenzipjbinding doesn't support arm64
+ *
  * @author <a href="mailto:umjammer@gmail.com">Naohide Sano</a> (umjammer)
  * @version 0.00 2020/05/12 umjammer initial version <br>
  */
+@EnabledIfSystemProperty(named = "os.arch", matches = "x86_64") // TODO what we really need is jvm "process's" arch
 @PropsEntity(url = "file:local.properties")
 class JBinding7ZipArchiveTest {
 
