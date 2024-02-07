@@ -1,7 +1,7 @@
-[![](https://jitpack.io/v/umjammer/vavi-util-archive-sandbox.svg)](https://jitpack.io/#umjammer/vavi-util-archive-sandbox)
-[![Java CI with Maven](https://github.com/umjammer/vavi-util-archive-sandbox/workflows/Java%20CI%20with%20Maven/badge.svg)](https://github.com/umjammer/vavi-util-archive-sandbox/actions)
+[![Release](https://jitpack.io/v/umjammer/vavi-util-archive-sandbox.svg)](https://jitpack.io/#umjammer/vavi-util-archive-sandbox)
+[![Java CI](https://github.com/umjammer/vavi-util-archive-sandbox/workflows/Java%20CI%20with%20Maven/badge.svg)](https://github.com/umjammer/vavi-util-archive-sandbox/actions)
 [![CodeQL](https://github.com/umjammer/vavi-util-archive-sandbox/workflows/CodeQL/badge.svg)](https://github.com/umjammer/vavi-util-archive-sandbox/actions)
-![Java](https://img.shields.io/badge/Java-8-b07219)
+![Java](https://img.shields.io/badge/Java-17-b07219)
 [![Parent](https://img.shields.io/badge/Parent-vavi--util--archive-pink)](https://github.com/umjammer/vavi-util-archive)
 
 # vavi-util-archive-sandbox
@@ -30,16 +30,19 @@ and [vavi-net-fuse](https://github.com/umjammer/vavi-apps-fuse/tree/master/vavi-
 | arj        | archiving  | 🚧   | -     |                                        | [c](https://github.com/tripsin/unarj)                                                                                           |
 | arj        | archiving  | ✅*   | -     | unsupported files exist                | [commons-compress](https://commons.apache.org/proper/commons-compress/)                                                         |
 | archiveR   | streaming  | 🚧   | -     | TODO engine.io-nize                    | [ArchiveR](https://github.com/prog-ai/ArchivR)                                                                                  |
-| sevenzip   | archiving  | ✅    | -     | multi                                  | [sevenzipjbinding](https://github.com/borisbrodski/sevenzipjbinding)                                                            |
+| sevenzip   | archiving  | ✅    | -     | multi, **arm64 not supported**         | [sevenzipjbinding](https://github.com/borisbrodski/sevenzipjbinding)                                                            |
 
 <sub>* chosen as spi</sub>
+
+## Install
+
+ * [maven](https://jitpack.io/#umjammer/vavi-util-archive-sandbox)
 
 ## Usage
 
 ```java
-    Path inXar = Paths.get("foo/bar.xar");
+    Archive archive = Archives.getArchive(Paths.get("foo/bar.xar").toFile());
     Path outDir = Paths.get("foo/bar");
-    Archive archive = Archives.getArchive(inXar.toFile());
     for (Entry entry : archive.entries()) {
         Files.copy(archive.getInputStream(entry), outDir.resolve(entry.getName()));
     }
