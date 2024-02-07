@@ -8,7 +8,7 @@
 
   <groupId>vavi</groupId>
   <artifactId>vavi-util-archive-sandbox</artifactId>
-  <version>1.0.5</version>
+  <version>1.0.6</version>
 
   <name>Vavi Archiving Sandbox API</name>
   <url>https://github.com/umjammer/vavi-util-archive-sandbox</url>
