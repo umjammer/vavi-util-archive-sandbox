@@ -36,6 +36,17 @@
         <sevenzipjbinding.platform>mac-x86_64</sevenzipjbinding.platform>
       </properties>
     </profile>
+    <profile>
+      <id>linux</id>
+      <activation>
+        <os>
+          <family>linux</family>
+        </os>
+      </activation>
+      <properties>
+        <sevenzipjbinding.platform>linux-${os.arch}</sevenzipjbinding.platform>
+      </properties>
+    </profile>
 
     <profile>
       <id>asar</id>
