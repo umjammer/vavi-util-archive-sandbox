@@ -110,5 +110,3 @@ public class ScroetchenAsarEntry implements WrappedEntry<VirtualFile> {
         return entry;
     }
 }
-
-/* */

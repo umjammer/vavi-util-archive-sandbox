@@ -116,5 +116,3 @@ Debug.println("skip entry: " + entry.getName() + ", " + entry.getSize());
         return entries().length;
     }
 }
-
-/* */

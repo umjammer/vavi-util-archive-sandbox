@@ -49,5 +49,3 @@ public abstract class ArjArchiveSpi implements ArchiveSpi {
         return new String[] {"arj", "ARJ"};
     }
 }
-
-/* */

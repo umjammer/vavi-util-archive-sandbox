@@ -69,5 +69,3 @@ public class PureJavaCabArchiveSpi extends CabArchiveSpi {
         return new Class[] {File.class, InputStream.class};
     }
 }
-
-/* */

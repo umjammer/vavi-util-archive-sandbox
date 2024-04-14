@@ -84,5 +84,3 @@ public class Asar4jArchive implements Archive {
         return (int) size;
     }
 }
-
-/* */

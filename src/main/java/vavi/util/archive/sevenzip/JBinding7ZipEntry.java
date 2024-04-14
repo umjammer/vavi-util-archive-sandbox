@@ -140,5 +140,3 @@ public class JBinding7ZipEntry implements WrappedEntry<ISimpleInArchiveItem> {
         return entry;
     }
 }
-
-/* */

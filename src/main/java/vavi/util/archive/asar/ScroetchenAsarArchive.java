@@ -85,5 +85,3 @@ public class ScroetchenAsarArchive implements Archive {
         return (int) size;
     }
 }
-
-/* */

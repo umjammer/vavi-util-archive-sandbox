@@ -104,5 +104,3 @@ public class XarArchive extends InputStreamSupport implements Archive {
         return entries().length;
     }
 }
-
-/* */

@@ -55,5 +55,3 @@ public class ComCabArchiveSpi extends CabArchiveSpi {
         return new Class[] {File.class};
     }
 }
-
-/* */

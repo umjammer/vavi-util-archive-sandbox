@@ -40,5 +40,3 @@ public interface DiskImage {
         }
     }
 }
-
-/* */

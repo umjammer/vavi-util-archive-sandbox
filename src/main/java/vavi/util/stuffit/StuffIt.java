@@ -968,5 +968,3 @@ Debug.println("Unknown compression method: " + type);
         return (int) crc16.getValue();
     }
 }
-
-/* */

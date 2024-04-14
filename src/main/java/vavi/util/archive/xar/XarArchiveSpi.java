@@ -87,5 +87,3 @@ public class XarArchiveSpi implements ArchiveSpi {
         return new String[] {"xar"};
     }
 }
-
-/* */

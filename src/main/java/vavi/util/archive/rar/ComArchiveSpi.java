@@ -58,5 +58,3 @@ public class ComArchiveSpi extends RarArchiveSpi {
         return new Class[] {File.class};
     }
 }
-
-/* */

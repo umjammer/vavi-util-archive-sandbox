@@ -254,5 +254,3 @@ try {
         return new ByteArrayInputStream(os.toByteArray());
     }
 }
-
-/* */

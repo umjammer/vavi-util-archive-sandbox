@@ -53,5 +53,3 @@ class LimitStream extends FilterInputStream {
         return ret;
     }
 }
-
-/* */

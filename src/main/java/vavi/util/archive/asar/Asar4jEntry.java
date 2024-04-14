@@ -109,5 +109,3 @@ public class Asar4jEntry implements WrappedEntry<AsarEntry> {
         return entry;
     }
 }
-
-/* */

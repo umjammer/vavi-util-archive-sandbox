@@ -144,5 +144,3 @@ Debug.println(Level.FINE, "interrupted: who cad do this? i want to do this");
         return entries().length;
     }
 }
-
-/* */

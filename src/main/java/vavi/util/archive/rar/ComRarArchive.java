@@ -49,5 +49,3 @@ Debug.println("commandLine: " + commandLine);
         return System.getProperty("java.io.tmpdir") + entry.getName();
     }
 }
-
-/* */

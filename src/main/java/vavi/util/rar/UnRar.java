@@ -3473,5 +3473,3 @@ Debug.println("arcType: " + arcType);
                posTab[startPos];
     }
 }
-
-/* */

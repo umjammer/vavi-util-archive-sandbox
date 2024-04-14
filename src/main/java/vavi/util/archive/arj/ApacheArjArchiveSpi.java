@@ -67,5 +67,3 @@ public class ApacheArjArchiveSpi extends ArjArchiveSpi {
         return new Class[] {File.class, InputStream.class};
     }
 }
-
-/* */

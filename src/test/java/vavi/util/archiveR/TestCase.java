@@ -25,12 +25,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
 /**
- * Test1.
+ * TestCase.
  *
  * @author <a href="mailto:umjammer@gmail.com">Naohide Sano</a> (nsano)
  * @version 0.00 2022-09-22 nsano initial version <br>
  */
-public class Test1 {
+public class TestCase {
 
     @Test
     void test() throws Exception {

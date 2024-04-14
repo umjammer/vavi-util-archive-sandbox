@@ -108,5 +108,3 @@ public class XarEntry implements WrappedEntry<com.sprylab.xar.XarEntry> {
         return entry;
     }
 }
-
-/* */

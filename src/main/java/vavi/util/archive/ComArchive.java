@@ -235,5 +235,3 @@ Debug.println("result: " + resultString);
         return entries.size();
     }
 }
-
-/* */
