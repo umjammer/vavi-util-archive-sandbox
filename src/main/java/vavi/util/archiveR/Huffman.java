@@ -71,6 +71,7 @@ public class Huffman {
         }
 
         // compare, based on frequency
+        @Override
         public int compareTo(Node that) {
             return this.freq - that.freq;
         }

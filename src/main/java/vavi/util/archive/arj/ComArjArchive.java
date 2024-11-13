@@ -8,11 +8,14 @@ package vavi.util.archive.arj;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.System.Logger;
+import java.lang.System.Logger.Level;
 import java.text.MessageFormat;
 
-import vavi.util.Debug;
 import vavi.util.archive.ComArchive;
 import vavi.util.archive.Entry;
+
+import static java.lang.System.getLogger;
 
 
 /**
@@ -22,6 +25,8 @@ import vavi.util.archive.Entry;
  * @version 0.00 041002 nsano initial version <br>
  */
 public class ComArjArchive extends ComArchive {
+
+    private static final Logger logger = getLogger(ComArjArchive.class.getName());
 
     /** */
     public ComArjArchive(File file) throws IOException {
@@ -39,7 +44,7 @@ public class ComArjArchive extends ComArchive {
             System.getProperty("java.io.tmpdir"),
             entry.getName()
         });
-Debug.println("commandLine: " + commandLine);
+logger.log(Level.DEBUG, "commandLine: " + commandLine);
 
         return commandLine;
     }

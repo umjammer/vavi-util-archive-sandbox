@@ -9,17 +9,20 @@ package vavi.util.archive.cab;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.System.Logger;
+import java.lang.System.Logger.Level;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
-import vavi.util.Debug;
 import vavi.util.archive.Archive;
 import vavi.util.archive.CommonEntry;
 import vavi.util.archive.Entry;
 import vavi.util.cab.Cab;
 import vavi.util.cab.CabFile;
 import vavi.util.cab.CabFolder;
+
+import static java.lang.System.getLogger;
 
 
 /**
@@ -30,17 +33,19 @@ import vavi.util.cab.CabFolder;
  */
 public class PureJavaCabArchive implements Archive {
 
+    private static final Logger logger = getLogger(PureJavaCabArchive.class.getName());
+
     /** */
     private Cab cab;
     /** */
     private InputStream is;
     /** */
-    private int size;
+    private final int size;
     /** */
-    private String name;
+    private final String name;
 
     /** */
-    private List<Entry> entries = new ArrayList<>();
+    private final List<Entry> entries = new ArrayList<>();
 
     /** */
     public PureJavaCabArchive(File file) throws IOException {
@@ -61,7 +66,7 @@ public class PureJavaCabArchive implements Archive {
         this.is = is;
         this.cab = new Cab(is, 1);
 
-Debug.println(cab.getFolders().size());
+logger.log(Level.DEBUG, cab.getFolders().size());
         for (CabFolder folder : cab.getFolders()) {
             for (CabFile cabFile : folder.getFiles()) {
                 CommonEntry entry = new CommonEntry();
@@ -72,19 +77,17 @@ Debug.println(cab.getFolders().size());
         }
     }
 
-    /** */
+    @Override
     public void close() throws IOException {
         is.close();
     }
 
-    /** */
+    @Override
     public Entry[] entries() {
-        Entry[] entries = new Entry[this.entries.size()];
-        this.entries.toArray(entries);
-        return entries;
+        return entries.toArray(Entry[]::new);
     }
 
-    /** */
+    @Override
     public Entry getEntry(String name) {
         for (Entry entry : entries) {
           if (entry.getName().equals(name)) {
@@ -95,17 +98,18 @@ Debug.println(cab.getFolders().size());
     }
 
     /** reads a CAB file, parses it, and returns an InputStream representing the named file */
+    @Override
     public InputStream getInputStream(Entry entry) throws IOException {
         // TODO Auto-generated method stub
         return null;
     }
 
-    /** */
+    @Override
     public String getName() {
         return name;
     }
 
-    /** */
+    @Override
     public int size() {
         return size;
     }

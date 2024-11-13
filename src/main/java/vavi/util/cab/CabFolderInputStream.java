@@ -24,13 +24,13 @@ import vavi.io.LittleEndianDataInputStream;
 class CabFolderInputStream extends InputStream {
     /** */
     @SuppressWarnings("unused")
-    private CabFolder folder;
+    private final CabFolder folder;
     /** */
-    private LittleEndianDataInputStream in;
+    private final LittleEndianDataInputStream in;
     /** */
     private InputStream iis = null;
     /** */
-    private byte[] compressed = new byte[128 * 1024];
+    private final byte[] compressed = new byte[128 * 1024];
     /** */
     private byte[] uncompressed = new byte[256 * 1024];
 
@@ -73,30 +73,30 @@ e.printStackTrace(System.err);
         return new ByteArrayInputStream(uncompressed, 0, unCompressedBytes);
     }
 
-    /** */
+    @Override
     public int available() throws IOException {
         return (iis == null) ? 0 : iis.available();
     }
 
-    /** */
+    @Override
     public void close() throws IOException {
         iis.close();
     }
 
-    /** */
+    @Override
     public void mark(int i) {
     }
 
-    /** */
+    @Override
     public boolean markSupported() {
         return false;
     }
 
-    /** */
+    @Override
     public void reset() {
     }
 
-    /** */
+    @Override
     public long skip(long l) throws IOException {
         if (iis == null) {
             iis = readBlock();
@@ -114,7 +114,7 @@ e.printStackTrace(System.err);
         return ret;
     }
 
-    /** */
+    @Override
     public int read(byte[] b, int off, int len) throws IOException {
         if (iis == null) {
             iis = readBlock();
@@ -132,7 +132,7 @@ e.printStackTrace(System.err);
         return ret;
     }
 
-    /** */
+    @Override
     public int read() throws IOException {
         if (iis == null) {
             iis = readBlock();

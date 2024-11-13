@@ -8,11 +8,14 @@ package vavi.util.archive.cab;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.System.Logger;
+import java.lang.System.Logger.Level;
 import java.text.MessageFormat;
 
-import vavi.util.Debug;
 import vavi.util.archive.ComArchive;
 import vavi.util.archive.Entry;
+
+import static java.lang.System.getLogger;
 
 
 /**
@@ -23,6 +26,8 @@ import vavi.util.archive.Entry;
  */
 public class ComCabArchive extends ComArchive {
 
+    private static final Logger logger = getLogger(ComCabArchive.class.getName());
+
     /** */
     public ComCabArchive(File file) throws IOException {
         super(file, TYPE_CAB);
@@ -31,7 +36,7 @@ public class ComCabArchive extends ComArchive {
     /** */
     private static final MessageFormat commandLineBase = new MessageFormat("-x -i -o \"{0}\" \"{1}\" \"{2}\"");
 
-    /** */
+    @Override
     protected String getCommandString(Entry entry) {
 
         String commandLine = commandLineBase.format(new Object[] {
@@ -39,12 +44,12 @@ public class ComCabArchive extends ComArchive {
             System.getProperty("java.io.tmpdir"),
             entry.getName()
         });
-Debug.println("commandLine: " + commandLine);
+logger.log(Level.DEBUG, "commandLine: " + commandLine);
 
         return commandLine;
     }
 
-    /** */
+    @Override
     protected String getTemporaryFileName(Entry entry) {
         return System.getProperty("java.io.tmpdir") + entry.getName();
     }

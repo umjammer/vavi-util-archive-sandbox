@@ -15,6 +15,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import vavi.util.Debug;
 import vavix.util.Checksum;
@@ -33,6 +34,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class TestCase {
 
     @Test
+    @DisplayName("use encode/decode")
     void test() throws Exception {
         // encode
 
@@ -46,23 +48,23 @@ public class TestCase {
 
         InputStream is = Files.newInputStream(inPath);
 Debug.println("in: " + Files.size(inPath));
-        ByteArrayOutputStream pos = new ByteArrayOutputStream();
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
-        BurrowsWheeler.transform(is, pos);
-Debug.println("middle1: " + pos.size());
-        assertEquals(191947, pos.size());
+        BurrowsWheeler.transform(is, baos);
+Debug.println("middle1: " + baos.size());
+        assertEquals(191947, baos.size());
 
-        InputStream pis = new ByteArrayInputStream(pos.toByteArray());
-        pos.reset();
+        InputStream bais = new ByteArrayInputStream(baos.toByteArray());
+        baos.reset();
 
         MoveToFront moveToFront = new MoveToFront();
-        moveToFront.encode(pis, pos);
-Debug.println("middle2: " + pos.size());
+        moveToFront.encode(bais, baos);
+Debug.println("middle2: " + baos.size());
 
-        pis = new ByteArrayInputStream(pos.toByteArray());
+        bais = new ByteArrayInputStream(baos.toByteArray());
         OutputStream os = Files.newOutputStream(outPath);
 
-        Huffman.compress(pis, os);
+        Huffman.compress(bais, os);
 
         assertTrue(Files.exists(outPath));
 Debug.println("out: " + Files.size(outPath));
@@ -71,21 +73,21 @@ Debug.println("out: " + Files.size(outPath));
         // decode
 
         is = Files.newInputStream(outPath);
-        pos.reset();
+        baos.reset();
 
-        Huffman.expand(is, pos);
-Debug.println("middle3: " + pos.size());
+        Huffman.expand(is, baos);
+Debug.println("middle3: " + baos.size());
 
-        pis = new ByteArrayInputStream(pos.toByteArray());
-        pos.reset();
+        bais = new ByteArrayInputStream(baos.toByteArray());
+        baos.reset();
 
-        moveToFront.decode(pis, pos);
-Debug.println("middle4: " + pos.size());
+        moveToFront.decode(bais, baos);
+Debug.println("middle4: " + baos.size());
 
-        pis = new ByteArrayInputStream(pos.toByteArray());
+        bais = new ByteArrayInputStream(baos.toByteArray());
         os = Files.newOutputStream(outPath2);
 
-        BurrowsWheeler.inverseTransform(pis, os);
+        BurrowsWheeler.inverseTransform(bais, os);
 
         assertTrue(Files.exists(outPath2));
 Debug.println("out2: " + Files.size(outPath2));
@@ -95,6 +97,7 @@ Debug.println("out2: " + Files.size(outPath2));
     }
 
     @Test
+    @DisplayName("try input/output-stream")
     @Disabled("wip")
     void test2() throws Exception {
         String infile = "src/test/resources/aesop.txt";
@@ -107,29 +110,29 @@ Debug.println("out2: " + Files.size(outPath2));
 
         InputStream is = Files.newInputStream(inPath);
 Debug.println("in: " + Files.size(inPath));
-        ByteArrayOutputStream pos = new ByteArrayOutputStream();
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
-        BurrowsWheeler.transform(is, pos);
-Debug.println("middle1: " + pos.size());
-        assertEquals(191947, pos.size());
+        BurrowsWheeler.transform(is, baos);
+Debug.println("middle1: " + baos.size());
+        assertEquals(191947, baos.size());
 
-        is = new MoveToFront.EncodeInputStream(new ByteArrayInputStream(pos.toByteArray()));
+        is = new MoveToFront.EncodeInputStream(new ByteArrayInputStream(baos.toByteArray()));
         OutputStream os = Files.newOutputStream(outPath);
 
         Huffman.compress(is, os);
 
         assertTrue(Files.exists(outPath));
 Debug.println("out: " + Files.size(outPath));
-        assertEquals(66026, Files.size(outPath)); // TODO xxx
+        assertEquals(66026, Files.size(outPath)); // TODO maybe we need DecodeInputStream instead of InputEngineOutputStream
 
         // decode
 
         is = Files.newInputStream(outPath);
-        pos.reset();
+        baos.reset();
 
-        Huffman.expand(is, pos);
-Debug.println("middle3: " + pos.size());
-        InputStream pis = new ByteArrayInputStream(pos.toByteArray());
+        Huffman.expand(is, baos);
+Debug.println("middle3: " + baos.size());
+        InputStream pis = new ByteArrayInputStream(baos.toByteArray());
         os = new MoveToFront.DecodeOutputStream(Files.newOutputStream(outPath2));
 
         BurrowsWheeler.inverseTransform(pis, os);

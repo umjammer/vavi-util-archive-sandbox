@@ -27,11 +27,11 @@ import vavi.util.archive.Entry;
 public class Asar4jArchive implements Archive {
 
     /** */
-    private AsarFile archive;
+    private final AsarFile archive;
 
-    private String name;
+    private final String name;
 
-    private long size;
+    private final long size;
 
     /** */
     public Asar4jArchive(File file) throws IOException {

@@ -6,6 +6,7 @@
 
 package vavi.util.archiveR;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -14,6 +15,8 @@ import java.nio.file.Paths;
 import org.junit.jupiter.api.Test;
 import vavi.util.Debug;
 import vavi.util.StringUtil;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
 /**
@@ -26,17 +29,21 @@ public class BinaryOutputStreamTest {
 
     @Test
     void test1() throws Exception {
-        Path path = Paths.get("src/test/resources/logging.properties");
-        BinaryInputStream in = new BinaryInputStream(Files.newInputStream(path));
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        BinaryOutputStream out = new BinaryOutputStream(baos);
+        BinaryOutputStream bout = new BinaryOutputStream(baos);
         // write n integers to binary standard output
-        for (int i = 0; i < in.available(); i++) {
-            out.write(i);
+        for (int i = 0; i < 512; i++) {
+            bout.write(i);
         }
-        out.flush();
-        out.close();
-Debug.println(baos.size() + "\n" + StringUtil.getDump(baos.toByteArray()));
+        bout.flush();
+        bout.close();
+//Debug.println(baos.size() + "\n" + StringUtil.getDump(baos.toByteArray()));
+
+        BinaryInputStream bin = new BinaryInputStream(new ByteArrayInputStream(baos.toByteArray()));
+        for (int i = 0; i < 512; i++) {
+            int v = bin.readInt();
+            assertEquals(i, v);
+        }
     }
 
     /**

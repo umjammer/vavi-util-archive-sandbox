@@ -10,13 +10,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.lang.System.Logger;
+import java.lang.System.Logger.Level;
 import java.nio.charset.Charset;
-import java.util.logging.Level;
 
 import vavi.io.LittleEndianDataInputStream;
 import vavi.util.ByteUtil;
-import vavi.util.Debug;
 import vavi.util.StringUtil;
+
+import static java.lang.System.getLogger;
 
 
 /**
@@ -73,11 +75,13 @@ import vavi.util.StringUtil;
  */
 public class D88 implements DiskImage {
 
+    private static final Logger logger = getLogger(D88.class.getName());
+
     /** */
     private Header header;
 
     /** */
-    private Track[] tracks = new Track[164];
+    private final Track[] tracks = new Track[164];
 
     /** */
     public static class Header {
@@ -90,9 +94,7 @@ public class D88 implements DiskImage {
         int type;
 
         static final int _2D = 0x00;
-
         static final int _2DD = 0x10;
-
         static final int _2HD = 0x20;
 
         int size;
@@ -138,7 +140,7 @@ public class D88 implements DiskImage {
 
             byte[] buf = new byte[17];
             ledis.readFully(buf, 0, 17);
-Debug.println(Level.FINE, StringUtil.getDump(buf, 16));
+logger.log(Level.DEBUG, StringUtil.getDump(buf, 16));
             header.name = new String(buf, 0, ByteUtil.indexOf(buf, (byte) 0), Charset.forName("MS932"));
             for (int i = 0; i < 9; i++) {
                 header.reserved[i] = ledis.read();
@@ -150,7 +152,7 @@ Debug.println(Level.FINE, StringUtil.getDump(buf, 16));
             for (int i = 0; i < 164; i++) {
                 header.tracks[i] = ledis.readInt();
 if (i == 0) {
- Debug.println(Level.FINER, "track[0]: " + header.tracks[i]);
+ logger.log(Level.TRACE, "track[0]: " + header.tracks[i]);
 }
             }
 
@@ -206,8 +208,8 @@ if (i == 0) {
         int N;
         int number;
         int density;
-        final int _2DD = 0x40;
-        final int _2D = 0x00;
+        static final int _2DD = 0x40;
+        static final int _2D = 0x00;
         boolean isDeleted;
         int status;
         int[] reserved = new int[5];
@@ -293,23 +295,19 @@ if (i == 0) {
         return d88;
     }
 
-    /* */
+    @Override
     public byte[] readData(int track, int surface, int sector) {
         return tracks[track * 2 + surface].getSector(sector).data;
     }
 
-    /* */
+    @Override
     public Density getDensity() {
-        switch (header.type) {
-        case Header._2D:
-            return Density._2D;
-        case Header._2DD:
-            return Density._2DD;
-        case Header._2HD:
-            return Density._2HD;
-        default:
-            return Density.UNKNOWN;
-        }
+        return switch (header.type) {
+            case Header._2D -> Density._2D;
+            case Header._2DD -> Density._2DD;
+            case Header._2HD -> Density._2HD;
+            default -> Density.UNKNOWN;
+        };
     }
 
     /**

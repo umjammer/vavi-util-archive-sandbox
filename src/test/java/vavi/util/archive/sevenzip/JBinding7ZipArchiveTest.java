@@ -78,12 +78,13 @@ class JBinding7ZipArchiveTest {
 
     static class MyExtractCallback implements IArchiveExtractCallback {
         private boolean skipExtraction;
-        private IInArchive archive;
+        private final IInArchive archive;
 
         public MyExtractCallback(IInArchive inArchive) {
             this.archive = inArchive;
         }
 
+        @Override
         public ISequentialOutStream getStream(int index, ExtractAskMode extractAskMode) throws SevenZipException {
             skipExtraction = (Boolean) archive.getProperty(index, PropID.IS_FOLDER);
             if (skipExtraction || extractAskMode != ExtractAskMode.EXTRACT) {
@@ -95,9 +96,11 @@ Debug.println("[" + index + "]: " + archive.getProperty(index, PropID.PATH));
             };
         }
 
+        @Override
         public void prepareOperation(ExtractAskMode extractAskMode) throws SevenZipException {
         }
 
+        @Override
         public void setOperationResult(ExtractOperationResult extractOperationResult) throws SevenZipException {
             if (skipExtraction) {
                 return;
@@ -107,9 +110,11 @@ Debug.println("[" + index + "]: " + archive.getProperty(index, PropID.PATH));
             }
         }
 
+        @Override
         public void setCompleted(long completeValue) throws SevenZipException {
         }
 
+        @Override
         public void setTotal(long total) throws SevenZipException {
         }
     }

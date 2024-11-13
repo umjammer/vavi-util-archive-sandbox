@@ -18,7 +18,7 @@ import vavi.util.archive.WrappedEntry;
 public class XarEntry implements WrappedEntry<com.sprylab.xar.XarEntry> {
 
     /** */
-    private com.sprylab.xar.XarEntry entry;
+    private final com.sprylab.xar.XarEntry entry;
 
     /** */
     public XarEntry(com.sprylab.xar.XarEntry entry) {

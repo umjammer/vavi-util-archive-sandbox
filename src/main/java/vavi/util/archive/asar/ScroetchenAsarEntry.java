@@ -20,7 +20,7 @@ import asar.VirtualFile;
 public class ScroetchenAsarEntry implements WrappedEntry<VirtualFile> {
 
     /** */
-    private VirtualFile entry;
+    private final VirtualFile entry;
 
     /** */
     public ScroetchenAsarEntry(VirtualFile entry) {

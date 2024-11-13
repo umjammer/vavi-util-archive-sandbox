@@ -22,15 +22,15 @@ import vavi.io.UtilInputStream;
  */
 class CabHeader {
     /** Reserved field, set to zero. */
-    private byte[] reserved1 = new byte[4];
+    private final byte[] reserved1 = new byte[4];
     /** size of this cabinet file in bytes */
     private int fileSize = 0;
     /** Reserved field, set to zero. */
-    private byte[] reserved2 = new byte[4];
+    private final byte[] reserved2 = new byte[4];
     /** offset of the first CabFile entry */
     private int offsetOfFirstCFFILEEntry;
     /** Reserved field, set to zero. */
-    private byte[] reserved3 = new byte[4];
+    private final byte[] reserved3 = new byte[4];
     /** cabinet file format version, minor */
     private byte versionMinor = 3;
     /** cabinet file format version, major */

@@ -19,7 +19,7 @@ import vavi.util.archive.WrappedEntry;
 public class Asar4jEntry implements WrappedEntry<AsarEntry> {
 
     /** */
-    private AsarEntry entry;
+    private final AsarEntry entry;
 
     /** */
     public Asar4jEntry(AsarEntry entry) {

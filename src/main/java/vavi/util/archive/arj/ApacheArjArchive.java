@@ -9,23 +9,25 @@ package vavi.util.archive.arj;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.System.Logger;
+import java.lang.System.Logger.Level;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.logging.Level;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.archivers.arj.ArjArchiveInputStream;
 
-import vavi.util.Debug;
 import vavi.util.archive.Archive;
 import vavi.util.archive.Entry;
 import vavi.util.archive.InputStreamSupport;
 import vavi.util.archive.WrappedEntry;
 import vavi.util.archive.apache.ApacheEntry;
+
+import static java.lang.System.getLogger;
 
 
 /**
@@ -37,8 +39,10 @@ import vavi.util.archive.apache.ApacheEntry;
  */
 public class ApacheArjArchive extends InputStreamSupport implements Archive {
 
+    private static final Logger logger = getLogger(ApacheArjArchive.class.getName());
+
     /** */
-    private File file;
+    private final File file;
 
     /** */
     private Entry[] entries;
@@ -61,16 +65,16 @@ public class ApacheArjArchive extends InputStreamSupport implements Archive {
     @Override
     public Entry[] entries() {
         if (entries == null) {
-            try (ArchiveInputStream i = new ArjArchiveInputStream(Files.newInputStream(file.toPath()))) {
+            try (ArchiveInputStream<?> i = new ArjArchiveInputStream(Files.newInputStream(file.toPath()))) {
                 List<ApacheEntry> entries = new ArrayList<>();
                 ArchiveEntry entry;
                 while ((entry = i.getNextEntry()) != null) {
                     if (!i.canReadEntryData(entry)) {
-Debug.println("skip entry: " + entry.getName() + ", " + entry.getSize());
+logger.log(Level.DEBUG, "skip entry: " + entry.getName() + ", " + entry.getSize());
                         continue;
                     }
                     entries.add(new ApacheEntry(entry));
-Debug.println(Level.FINE, "entry: " + entry.getName() + ", " + entry.getSize());
+logger.log(Level.DEBUG, "entry: " + entry.getName() + ", " + entry.getSize());
                 }
                 this.entries = entries.toArray(new ApacheEntry[0]);
             } catch (ArchiveException | IOException e) {
@@ -89,11 +93,11 @@ Debug.println(Level.FINE, "entry: " + entry.getName() + ", " + entry.getSize());
     @Override
     public InputStream getInputStream(Entry entry) throws IOException {
         try {
-            ArchiveInputStream i = new ArjArchiveInputStream(Files.newInputStream(file.toPath()));
+            ArchiveInputStream<?> i = new ArjArchiveInputStream(Files.newInputStream(file.toPath()));
             ArchiveEntry e = null;
             while ((e = i.getNextEntry()) != null) {
                 if (!i.canReadEntryData(e)) {
-Debug.println("skip entry: " + entry.getName() + ", " + entry.getSize());
+logger.log(Level.DEBUG, "skip entry: " + entry.getName() + ", " + entry.getSize());
                     continue;
                 }
                 if (((WrappedEntry<?>) entry).getWrappedObject().equals(e)) {

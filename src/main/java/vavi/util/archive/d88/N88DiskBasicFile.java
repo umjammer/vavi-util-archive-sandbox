@@ -12,17 +12,19 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.System.Logger;
+import java.lang.System.Logger.Level;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.logging.Level;
 
-import vavi.util.Debug;
 import vavi.util.StringUtil;
 import vavi.util.archive.Archive;
 import vavi.util.archive.Entry;
+
+import static java.lang.System.getLogger;
 
 
 /**
@@ -35,15 +37,17 @@ import vavi.util.archive.Entry;
  */
 public class N88DiskBasicFile implements Archive {
 
-    /** */
-    private static String encoding = "MS932";
+    private static final Logger logger = getLogger(N88DiskBasicFile.class.getName());
 
     /** */
-    private Map<String, Entry> entries = new HashMap<>();
+    private static final String encoding = "MS932";
+
     /** */
-    private DiskImage diskImage;
+    private final Map<String, Entry> entries = new HashMap<>();
     /** */
-    private InputStream is;
+    private final DiskImage diskImage;
+    /** */
+    private final InputStream is;
     /** */
     private String name;
 
@@ -71,7 +75,7 @@ public class N88DiskBasicFile implements Archive {
         this.is = is;
         this.diskImage = DiskImage.Factory.readFrom(is);
 
-if (Debug.isLoggable(Level.FINE)) {
+if (logger.isLoggable(Level.DEBUG)) {
  System.err.println("-fname----:aREP   m: SC");
 }
         // Directory
@@ -79,35 +83,27 @@ if (Debug.isLoggable(Level.FINE)) {
         //  2D(5inch)    Track 18 Surface 1 Sector 1 - 12
         //  2D(8inch)    Track 35 Surface 0 Sector 1 - 22
         // currently deals only 2D TODO else 2D
-        int t;
-        int s;
-        switch (diskImage.getDensity()) {
-        case _2D:
-        case _2DD:
-        default:
-            t = 18;
-            s = 1;
-            break;
-        case _2HD:
-            t = 35;
-            s = 0;
-            break;
-        }
+        int[] ts = switch (diskImage.getDensity()) {
+            default -> new int[] {18, 1};
+            case _2HD -> new int[] {35, 0};
+        };
+        int t = ts[0];
+        int s = ts[1];
 
         for (int i = 0; i < 12; i++) {
             byte[] data = diskImage.readData(t, s, i + 1);
-if (Debug.isLoggable(Level.FINE)) {
+if (logger.isLoggable(Level.DEBUG)) {
  System.err.println(StringUtil.getDump(data));
 }
             for (int j = 0; j < 16; j++) {
                 switch (data[j * 16]) {
                 case 0x00:
-if (Debug.isLoggable(Level.FINE)) {
+if (logger.isLoggable(Level.DEBUG)) {
  System.err.println("killed");
 }
                     break;
                 case (byte) 0xff:
-if (Debug.isLoggable(Level.FINE)) {
+if (logger.isLoggable(Level.DEBUG)) {
  System.err.println("not used");
 }
                     break;
@@ -119,7 +115,7 @@ if (Debug.isLoggable(Level.FINE)) {
                                                                     data[j * 16 + 9],
                                                                     data[j * 16 + 10] & 0xff);
                     entries.put(name, entry);
-if (Debug.isLoggable(Level.FINE)) {
+if (logger.isLoggable(Level.DEBUG)) {
  System.err.println(entry);
 }
                     break;
@@ -172,8 +168,8 @@ if (Debug.isLoggable(Level.FINE)) {
             return null;
         }
         String[] p = name.split("\\.", -1);
-        String normalized = String.format("%-6s.%-3s", p[0], p.length > 1 ? p[1] : "");
-//Debug.println(name + ", " + normalized);
+        String normalized = "%-6s.%-3s".formatted(p[0], p.length > 1 ? p[1] : "");
+//logger.log(Level.DEBUG, name + ", " + normalized);
         return entries.get(normalized);
     }
 
@@ -203,7 +199,7 @@ if (Debug.isLoggable(Level.FINE)) {
 
         for (int i = 0; i < 8; i++) {
             data[i] = diskImage.readData(track, surface, sector + i);
-Debug.printf(Level.FINE, "%08x: %d, %d, %d%n", cluster, track, surface, (sector + i));
+logger.log(Level.DEBUG, "%08x: %d, %d, %d".formatted(cluster, track, surface, (sector + i)));
         }
 
         return data;
@@ -221,14 +217,14 @@ Debug.printf(Level.FINE, "%08x: %d, %d, %d%n", cluster, track, surface, (sector 
         ByteArrayOutputStream os = new ByteArrayOutputStream();
 
         int c = ((int[]) entry.getExtra())[1]; // startCluster
-//System.err.print(" " + Integer.toHexString(nc));
+//logger.log(Level.DEBUG, nc));
 
         while (true) {
 
             int nc = data[c] & 0xff;
 
             byte[][] tmp = readCluster(c);
-//Debug.println("tmp: " + tmp.length + "x" + tmp[0].length);
+//logger.log(Level.DEBUG, "tmp: " + tmp.length + "x" + tmp[0].length);
 
 try {
             // TODO currently deals only 2D
@@ -239,7 +235,7 @@ try {
 } catch (ArrayIndexOutOfBoundsException e) {
  throw new IllegalArgumentException("only support 2d (sectors 8)");
 }
-//System.err.print(" " + Integer.toHexString(c) + "(" + max + ")");
+//logger.log(Level.DEBUG, " + max + ")");
 
             if (nc > 0xc0) {
                 break;
@@ -247,7 +243,7 @@ try {
 
             c = nc;
         }
-//System.err.println();
+//logger.log(Level.DEBUG, "");
 
         entry.setSize(os.size());
 

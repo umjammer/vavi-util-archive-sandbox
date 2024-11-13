@@ -28,6 +28,10 @@ import java.io.BufferedOutputStream;
 import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.lang.System.Logger;
+import java.lang.System.Logger.Level;
+
+import static java.lang.System.getLogger;
 
 /*
  *  Write binary data to standard output, either one 1-bit boolean,
@@ -55,6 +59,9 @@ import java.io.OutputStream;
  * @author Kevin Wayne
  */
 public final class BinaryOutputStream extends FilterOutputStream {
+
+    private static final Logger logger = getLogger(BinaryOutputStream.class.getName());
+
     /** 8-bit buffer of bits to write */
     private int buffer;
     /** number of bits remaining in buffer */
@@ -97,7 +104,7 @@ public final class BinaryOutputStream extends FilterOutputStream {
             try {
                 out.write(x);
             } catch (IOException e) {
-                e.printStackTrace();
+                logger.log(Level.ERROR, e.getMessage(), e);
             }
             return;
         }
@@ -118,7 +125,7 @@ public final class BinaryOutputStream extends FilterOutputStream {
         try {
             out.write(buffer);
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.log(Level.ERROR, e.getMessage(), e);
         }
         n = 0;
         buffer = 0;
@@ -128,12 +135,13 @@ public final class BinaryOutputStream extends FilterOutputStream {
      * Flushes standard output, padding 0s if number of bits written so far
      * is not a multiple of 8.
      */
+    @Override
     public void flush() {
         clearBuffer();
         try {
             out.flush();
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.log(Level.ERROR, e.getMessage(), e);
         }
     }
 
@@ -141,13 +149,14 @@ public final class BinaryOutputStream extends FilterOutputStream {
      * Flushes and closes standard output. Once standard output is closed, you can no
      * longer write bits to it.
      */
+    @Override
     public void close() {
         flush();
         try {
             out.close();
             isInitialized = false;
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.log(Level.ERROR, e.getMessage(), e);
         }
     }
 
@@ -174,6 +183,7 @@ public final class BinaryOutputStream extends FilterOutputStream {
      *
      * @param x the {@code int} to write.
      */
+    @Override
     public void write(int x) {
         writeByte((x >>> 24) & 0xff);
         writeByte((x >>> 16) & 0xff);

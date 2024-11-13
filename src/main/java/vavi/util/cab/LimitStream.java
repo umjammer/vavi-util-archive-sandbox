@@ -26,7 +26,7 @@ class LimitStream extends FilterInputStream {
         this.limit = limit;
     }
 
-    /** */
+    @Override
     public int read() throws IOException {
         if (limit == 0) {
             return -1;
@@ -39,7 +39,7 @@ class LimitStream extends FilterInputStream {
         return ret;
     }
 
-    /** */
+    @Override
     public int read(byte[] b, int off, int len) throws IOException {
         if (len > limit) {
             len = limit;

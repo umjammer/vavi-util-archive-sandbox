@@ -27,6 +27,7 @@ public class ComCabArchiveSpi extends CabArchiveSpi {
     /**
      * @param target currently accepts {@link File} only.
      */
+    @Override
     public boolean canExtractInput(Object target) throws IOException {
         if (!isSupported(target)) {
             return false;
@@ -45,7 +46,7 @@ public class ComCabArchiveSpi extends CabArchiveSpi {
         return canExtractInput(is, needToClose);
     }
 
-    /* */
+    @Override
     public Archive createArchiveInstance(Object obj, Map<String, ?> env) throws IOException {
         return new ComCabArchive((File) obj);
     }
