@@ -6,6 +6,7 @@
 
 package vavi.util.archiveR;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -14,6 +15,9 @@ import java.nio.file.Paths;
 import org.junit.jupiter.api.Test;
 import vavi.util.Debug;
 import vavi.util.StringUtil;
+import vavix.util.Checksum;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
 /**
@@ -23,10 +27,16 @@ public class BurrowsWheelerTest {
 
     @Test
     void test1() throws Exception {
-        Path path = Paths.get("src/test/resources/logging.properties");
+        Path in = Paths.get("src/test/resources/aesop.txt");
+        Path out = Path.of("tmp", "out.bwt");
+        if (!Files.exists(out.getParent())) Files.createDirectories(out.getParent());
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        BurrowsWheeler.transform(Files.newInputStream(path), baos);
-Debug.println(baos.size() + "\n" + StringUtil.getDump(baos.toByteArray()));
+
+        BurrowsWheeler.transform(Files.newInputStream(in), baos);
+//Debug.println(baos.size() + "\n" + StringUtil.getDump(baos.toByteArray()));
+        BurrowsWheeler.inverseTransform(new ByteArrayInputStream(baos.toByteArray()), Files.newOutputStream(out));
+
+        assertEquals(Checksum.getChecksum(in), Checksum.getChecksum(out));
     }
 
     // if args[0] is '-', apply Burrows-Wheeler transform

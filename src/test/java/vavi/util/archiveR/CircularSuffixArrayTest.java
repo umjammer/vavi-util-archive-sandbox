@@ -7,12 +7,18 @@
 package vavi.util.archiveR;
 
 import edu.princeton.cs.algs4.In;
+import org.junit.jupiter.api.Test;
 
 
 /**
  * CircularSuffixArrayTest.
  */
 public class CircularSuffixArrayTest {
+
+    @Test
+    void test1() throws Exception {
+
+    }
 
     /**
      * Unit tests the {@code CircularSuffixArray} data type.
