@@ -75,7 +75,7 @@ public class XarArchive extends InputStreamSupport implements Archive {
     @Override
     public Entry getEntry(String name) {
         for (Entry entry : entries()) {
-//logger.log(Level.DEBUG, "@@@: " + name + ", " + e.getName());
+//logger.log(Level.TRACE, "@@@: " + name + ", " + e.getName());
             if (name.equals(entry.getName())) {
                 return entry;
             }

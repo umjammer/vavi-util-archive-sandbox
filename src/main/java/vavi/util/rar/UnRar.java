@@ -295,7 +295,7 @@ public class UnRar {
         }
         static String convertDate() {
             DateFormat format = new SimpleDateFormat("yy-MM-dd HH:mm");
-//logger.log(Level.DEBUG, "fileTime: " + fileTime);
+//logger.log(Level.TRACE, "fileTime: " + fileTime);
             return format.format(new Date());
         }
         String showAttr() {
@@ -786,13 +786,13 @@ logger.log(Level.WARNING, "here: " + nextBlockPos + ", " + curBlockPos);
                 arcPtr.read(bytes, 0, newLhd.nameSize);
                 int crc = CRC(headerCRC, bytes, 0, newLhd.nameSize, CRC32);
                 newLhd.name = new String(bytes);
-//logger.log(Level.DEBUG, "%nreadBlock: %08x, %08x, %08x, %d".formatted(newLhd.headCRC, ~crc, headerCRC, newLhd.nameSize));
+//logger.log(Level.TRACE, "%nreadBlock: %08x, %08x, %08x, %d".formatted(newLhd.headCRC, ~crc, headerCRC, newLhd.nameSize));
                 if ((arcFormat == NEW) &&
                     ((newLhd.headCRC & 0xffff) != (~crc & 0xffff))) {
                     brokenFileHeader = 1;
                     System.err.printf("%n%s - %s: %08x, %08x%n", newLhd.name, rb.getString("message.LogFileHead"), newLhd.headCRC, ~crc);
                 }
-//logger.log(Level.DEBUG, "newLhd.name: " + newLhd.name);
+//logger.log(Level.TRACE, "newLhd.name: " + newLhd.name);
                 if (opt.convertNames == NAMES_UPPERCASE) {
                     newLhd.name = newLhd.name.toUpperCase();
                 }
@@ -831,7 +831,7 @@ logger.log(Level.DEBUG, "skip not header");
                 newMhd.reserved = ByteUtil.readLeShort(header, 7);
                 newMhd.reserved1 = ByteUtil.readLeInt(header, 9);
                 headerCRC = CRC(0xffff_ffff, header, 2, SIZEOF_NEWMHD - 2, CRC32);
-//logger.log(Level.DEBUG, header, size));
+//logger.log(Level.TRACE, header, size));
             }
             break;
         case FILE_HEAD:
@@ -857,14 +857,14 @@ logger.log(Level.DEBUG, "skip not header");
                 newLhd.unpSize = ByteUtil.readLeInt(header, 11);
                 newLhd.hostOS = header[15];
                 newLhd.fileCRC = ByteUtil.readLeInt(header, 16);
-//logger.log(Level.DEBUG, "newLhd.fileCRC: %08x, %08x".formatted(newLhd.fileCRC, ~newLhd.fileCRC));
+//logger.log(Level.TRACE, "newLhd.fileCRC: %08x, %08x".formatted(newLhd.fileCRC, ~newLhd.fileCRC));
                 newLhd.setFileTime(ByteUtil.readLeInt(header, 20));
                 newLhd.unpVer = header[24];
                 newLhd.method = header[25];
                 newLhd.nameSize = ByteUtil.readLeShort(header, 26);
                 newLhd.fileAttr = ByteUtil.readLeInt(header, 28);
                 headerCRC = CRC(0xffff_ffff, header, 2, SIZEOF_NEWLHD - 2, CRC32);
-//logger.log(Level.DEBUG, "FILE_HEAD: %08x".formatted(headerCRC));
+//logger.log(Level.TRACE, "FILE_HEAD: %08x".formatted(headerCRC));
             }
             break;
         case COMM_HEAD:
@@ -878,7 +878,7 @@ logger.log(Level.DEBUG, "skip not header");
             commHead.method = header[10];
             commHead.commCRC = ByteUtil.readLeShort(header, 11);
             headerCRC = CRC(0xffff_ffff, header, 2, SIZEOF_COMMHEAD - 2, CRC32);
-//logger.log(Level.DEBUG, "COMM_HEAD: %08x".formatted(headerCRC));
+//logger.log(Level.TRACE, "COMM_HEAD: %08x".formatted(headerCRC));
             break;
         case PROTECT_HEAD:
             size = arcPtr.read(header, 0, SIZEOF_PROTECTHEAD);
@@ -892,7 +892,7 @@ logger.log(Level.DEBUG, "skip not header");
             protectHead.totalBlocks = ByteUtil.readLeInt(header, 14);
             System.arraycopy(protectHead.mark, 0, header, 18, 8);
             headerCRC = CRC(0xffff_ffff, header, 2, SIZEOF_PROTECTHEAD - 2, CRC32);
-//logger.log(Level.DEBUG, "PROTECT_HEAD: %08x".formatted(headerCRC));
+//logger.log(Level.TRACE, "PROTECT_HEAD: %08x".formatted(headerCRC));
             break;
         case ALL_HEAD:
             size = arcPtr.read(header, 0, SIZEOF_SHORTBLOCKHEAD);
@@ -1473,7 +1473,7 @@ System.err.println(); // TODO rb doesn't accept trailing ws
             while (true) {
                 size = readBlock(FILE_HEAD | READSUBBLOCK);
                 if ((size <= 0) && (unpVolume == 0)) {
-//logger.log(Level.DEBUG, Level.INFO, "readBlock");
+//logger.log(Level.TRACE, Level.INFO, "readBlock");
                     break;
                 }
                 if (blockHead.headType == SUB_HEAD) {
@@ -1525,7 +1525,7 @@ logger.log(Level.WARNING, "allArgsUsed");
                 extrFile = 0;
                 skipSolid = 0;
 
-//logger.log(Level.DEBUG, skipSolid = solidType) != 0, newLhd.name);
+//logger.log(Level.TRACE, skipSolid = solidType) != 0, newLhd.name);
                 if (((isProcessFile(COMPARE_PATH) != 0) &&
                     ((newLhd.flags & LHD_SPLIT_BEFORE) == 0)) ||
                     ((skipSolid = solidType) != 0)) {
@@ -1679,7 +1679,7 @@ logger.log(Level.DEBUG, "dir for P, E");
                         suspend = 0;
                         repack = 0;
                         skipUnpCRC = skipSolid;
-//logger.log(Level.DEBUG, "%nskipSolid: %d".formatted(skipSolid));
+//logger.log(Level.TRACE, "%nskipSolid: %d".formatted(skipSolid));
                         if (newLhd.method == 0x30) {
                             unstoreFile();
                         } else {
@@ -2126,7 +2126,7 @@ logger.log(Level.DEBUG, "delete: " + curExtrFile);
         curUnpWrite += count;
         if (skipUnpCRC == 0) {
             unpFileCRC = CRC(unpFileCRC, addr, off, count, arcFormat == OLD ? CRC16 : CRC32);
-//logger.log(Level.DEBUG, addr, off, 64));
+//logger.log(Level.TRACE, addr, off, 64));
         }
     }
 
@@ -2411,7 +2411,7 @@ logger.log(Level.DEBUG, "markHead:\n" + StringUtil.getDump(markHead.mark));
                 if (readHeader(MAIN_HEAD) != SIZEOF_NEWMHD) {
                     return 0;
                 }
-//logger.log(Level.DEBUG, "newMhd:\n" + StringUtil.paramString(newMhd));
+//logger.log(Level.TRACE, "newMhd:\n" + StringUtil.paramString(newMhd));
 
                 if ((newMhd.flags & MHD_MULT_VOL) != 0) {
                     arcType = VOL;
@@ -2766,7 +2766,7 @@ logger.log(Level.DEBUG, "arcType: " + arcType);
         }
         getBits();
         unpAudioBlock = (bitField & 0x8000);
-//logger.log(Level.DEBUG, "unpAudioBlock: %08x, %d".formatted(bitField, unpAudioBlock));
+//logger.log(Level.TRACE, "unpAudioBlock: %08x, %d".formatted(bitField, unpAudioBlock));
 
         if ((bitField & 0x4000) == 0) {
             Arrays.fill(unpOldTable, (byte) 0);
@@ -3084,7 +3084,7 @@ logger.log(Level.DEBUG, "arcType: " + arcType);
                 break;
             }
         }
-//logger.log(Level.DEBUG, "decode: %d, %02x".formatted(delta, ch));
+//logger.log(Level.TRACE, "decode: %d, %02x".formatted(delta, ch));
         return (byte) ch;
     }
 

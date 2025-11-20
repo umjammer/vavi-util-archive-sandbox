@@ -169,7 +169,7 @@ if (logger.isLoggable(Level.DEBUG)) {
         }
         String[] p = name.split("\\.", -1);
         String normalized = "%-6s.%-3s".formatted(p[0], p.length > 1 ? p[1] : "");
-//logger.log(Level.DEBUG, name + ", " + normalized);
+//logger.log(Level.TRACE, name + ", " + normalized);
         return entries.get(normalized);
     }
 
@@ -217,14 +217,14 @@ logger.log(Level.DEBUG, "%08x: %d, %d, %d".formatted(cluster, track, surface, (s
         ByteArrayOutputStream os = new ByteArrayOutputStream();
 
         int c = ((int[]) entry.getExtra())[1]; // startCluster
-//logger.log(Level.DEBUG, nc));
+//logger.log(Level.TRACE, nc));
 
         while (true) {
 
             int nc = data[c] & 0xff;
 
             byte[][] tmp = readCluster(c);
-//logger.log(Level.DEBUG, "tmp: " + tmp.length + "x" + tmp[0].length);
+//logger.log(Level.TRACE, "tmp: " + tmp.length + "x" + tmp[0].length);
 
 try {
             // TODO currently deals only 2D
@@ -235,7 +235,7 @@ try {
 } catch (ArrayIndexOutOfBoundsException e) {
  throw new IllegalArgumentException("only support 2d (sectors 8)");
 }
-//logger.log(Level.DEBUG, " + max + ")");
+//logger.log(Level.TRACE, " + max + ")");
 
             if (nc > 0xc0) {
                 break;
@@ -243,7 +243,7 @@ try {
 
             c = nc;
         }
-//logger.log(Level.DEBUG, "");
+//logger.log(Level.TRACE, "");
 
         entry.setSize(os.size());
 

@@ -153,7 +153,7 @@ logger.log(Level.DEBUG, "compressed: " + value.getClass() + ": " + ComUtil.toObj
 logger.log(Level.DEBUG, "ratio: " + value.getClass() + ": " + ComUtil.toObject(value));
 
             entries.add(entry);
-//logger.log(Level.DEBUG, StringUtil.paramString(entry));
+//logger.log(Level.TRACE, StringUtil.paramString(entry));
 
             result = Dispatch.invoke(module, "FindNext", Dispatch.Method, new Object[] {}, new int[1]);
 logger.log(Level.DEBUG, "findNext: " + ComUtil.toObject(result));
@@ -183,7 +183,7 @@ logger.log(Level.DEBUG, ComUtil.toObject(result));
     @Override
     public Entry getEntry(String name) {
         for (Entry entry : entries) {
-//logger.log(Level.DEBUG, entry.getName() + ", " + name);
+//logger.log(Level.TRACE, entry.getName() + ", " + name);
             if (entry.getName().equals(name)) {
                 return entry;
             }

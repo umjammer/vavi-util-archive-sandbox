@@ -397,7 +397,7 @@ logger.log(Level.DEBUG, "Can't read file header");
             return;
 //            System.exit(1);
         }
-//logger.log(Level.DEBUG, "numfiles=" + sitHdr.numFiles + ", arclength=" + sitHdr.arcLength);
+//logger.log(Level.TRACE, "numfiles=" + sitHdr.numFiles + ", arclength=" + sitHdr.arcLength);
 
         int status = extract("", false);
 //        System.exit((status < 0) ? 1 : 0);
@@ -424,7 +424,7 @@ logger.log(Level.DEBUG, "Can't read file header");
                 status = rstat;
                 break;
             }
-//logger.log(Level.DEBUG, "compr=" + filehdr.compRMethod + ", compd=" + filehdr.compDMethod + ", rsrclen=" + filehdr.compRLength + ", datalen=" + filehdr.compDLength + ", rsrccrc=" + filehdr.rsrcCRC + ", datacrc=" + filehdr.dataCRC);
+//logger.log(Level.TRACE, "compr=" + filehdr.compRMethod + ", compd=" + filehdr.compDMethod + ", rsrclen=" + filehdr.compRLength + ", datalen=" + filehdr.compDLength + ", rsrccrc=" + filehdr.rsrcCRC + ", datacrc=" + filehdr.dataCRC);
 
             skipit = rstat == H_SKIP;
 
@@ -448,7 +448,7 @@ logger.log(Level.DEBUG, "Directory name " + Arrays.toString(uname) + " already i
                         }
                     }
 //                  if (chdir(uname) == -1) {
-//logger.log(Level.DEBUG, "Can't chdir to " + uname);
+//logger.log(Level.TRACE, "Can't chdir to " + uname);
 //                      return -1;
 //                  }
                     name = parent + ":" + new String(uname);

@@ -88,7 +88,7 @@ Debug.println(disk);
 
     void t1(String[] args) throws Exception {
         N88DiskBasicFile disk = new N88DiskBasicFile(args[0]);
-//logger.log(Level.DEBUG, disk);
+//logger.log(Level.TRACE, disk);
 
         Path dir = Paths.get(args[1]);
         if (!Files.exists(dir)) {

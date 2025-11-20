@@ -106,19 +106,19 @@ logger.log(Level.DEBUG, "@@@: " + name + ", " + entry.getName());
                     final BlockingDeque<Integer> deque = new LinkedBlockingDeque<>();
                     {
                         ExtractOperationResult result = e.extractSlow(data -> {
-//logger.log(Level.DEBUG, "data: " + data.length);
+//logger.log(Level.TRACE, "data: " + data.length);
                             for (byte datum : data) {
                                 deque.add(datum & 0xff);
                             }
                             return data.length;
                         });
-//logger.log(Level.DEBUG, "extractSlow: " + result);
+//logger.log(Level.TRACE, "extractSlow: " + result);
                         deque.add(-1); // poison pill
                     }
                     @Override
                     public int read() throws IOException {
                         try {
-//logger.log(Level.DEBUG, "read: " + (deque.peek() != null ? deque.peek() : "none"));
+//logger.log(Level.TRACE, "read: " + (deque.peek() != null ? deque.peek() : "none"));
                             int r = -1;
                             if (!done) {
                                 r = deque.take();
