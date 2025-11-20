@@ -23,6 +23,7 @@ import java.util.Map;
 import vavi.util.StringUtil;
 import vavi.util.archive.Archive;
 import vavi.util.archive.Entry;
+import vavi.util.archive.d88.DiskImage.GeometryDiskImage;
 
 import static java.lang.System.getLogger;
 
@@ -45,7 +46,7 @@ public class N88DiskBasicFile implements Archive {
     /** */
     private final Map<String, Entry> entries = new HashMap<>();
     /** */
-    private final DiskImage diskImage;
+    private final GeometryDiskImage diskImage;
     /** */
     private final InputStream is;
     /** */
@@ -73,7 +74,7 @@ public class N88DiskBasicFile implements Archive {
     public N88DiskBasicFile(InputStream is) throws IOException {
 
         this.is = is;
-        this.diskImage = DiskImage.Factory.readFrom(is);
+        this.diskImage = (GeometryDiskImage) DiskImage.Factory.readFrom(is);
 
 if (logger.isLoggable(Level.DEBUG)) {
  System.err.println("-fname----:aREP   m: SC");

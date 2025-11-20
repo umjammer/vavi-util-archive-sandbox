@@ -18,8 +18,17 @@ import java.io.InputStream;
  */
 public interface DiskImage {
 
-    /** */
-    byte[] readData(int track, int surface, int sector);
+    interface GeometryDiskImage extends DiskImage {
+
+        /** */
+        byte[] readData(int track, int surface, int sector);
+    }
+
+    interface SolidDiskImage extends DiskImage {
+
+        /** */
+        byte[] readData(int offset);
+    }
 
     enum Density {
         _2D,

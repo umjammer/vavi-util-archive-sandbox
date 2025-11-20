@@ -17,6 +17,7 @@ import java.nio.charset.Charset;
 import vavi.io.LittleEndianDataInputStream;
 import vavi.util.ByteUtil;
 import vavi.util.StringUtil;
+import vavi.util.archive.d88.DiskImage.GeometryDiskImage;
 
 import static java.lang.System.getLogger;
 
@@ -73,7 +74,7 @@ import static java.lang.System.getLogger;
  * @version 0.00 010819 nsano initial version <br>
  * @see "https://www.pc98.org/project/doc/d88.html"
  */
-public class D88 implements DiskImage {
+public class D88 implements GeometryDiskImage {
 
     private static final Logger logger = getLogger(D88.class.getName());
 
@@ -201,7 +202,7 @@ if (i == 0) {
     }
 
     /** */
-    private static class Sector {
+    public static class Sector {
         int C;
         int H;
         int R;
