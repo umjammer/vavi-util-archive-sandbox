@@ -100,16 +100,16 @@ public class D88 implements GeometryDiskImage {
 
         int size;
 
-        int[] tracks = new int[164];
+        int[] tracks;
 
         @Override
         public String toString() {
             StringWriter sw = new StringWriter();
             PrintWriter pr = new PrintWriter(sw);
             pr.println("name: " + name);
-            for (int i = 0; i < 9; i++) {
-                pr.println("reserved" + i + ": " + reserved[i]);
-            }
+//            for (int i = 0; i < 9; i++) {
+//                pr.println("reserved" + i + ": " + reserved[i]);
+//            }
             pr.println("isProtected: " + isProtected);
             switch (type) {
             case _2D:
@@ -126,9 +126,9 @@ public class D88 implements GeometryDiskImage {
                 break;
             }
             pr.println("size: " + size);
-            for (int i = 0; i < 164; i++) {
-                pr.println("track" + i + ": " + tracks[i]);
-            }
+//            for (int i = 0; i < tracks.length; i++) {
+//                pr.println("track" + i + ": " + tracks[i]);
+//            }
             return sw.toString();
         }
 
@@ -150,11 +150,13 @@ logger.log(Level.DEBUG, StringUtil.getDump(buf, 16));
             header.type = ledis.read();
             header.size = ledis.readInt();
 
-            for (int i = 0; i < 164; i++) {
+            int track0 = ledis.readInt();
+            int size = track0 == 672 ? 160 : 164;
+            header.tracks = new int[size];
+            header.tracks[0] = track0;
+logger.log(Level.TRACE, "track[0]: " + header.tracks[0]);
+            for (int i = 1; i < header.tracks.length; i++) {
                 header.tracks[i] = ledis.readInt();
-if (i == 0) {
- logger.log(Level.TRACE, "track[0]: " + header.tracks[i]);
-}
             }
 
             return header;
@@ -239,9 +241,9 @@ if (i == 0) {
             }
             pr.println("isDeleted: " + isDeleted);
             pr.println("status: " + status);
-            for (int i = 0; i < 5; i++) {
-                pr.println("reserved" + i + ": " + reserved[i]);
-            }
+//            for (int i = 0; i < 5; i++) {
+//                pr.println("reserved" + i + ": " + reserved[i]);
+//            }
             pr.println("size: " + size);
             return sw.toString();
         }
@@ -285,7 +287,7 @@ if (i == 0) {
 
         for (int i = 0; i < 164; i++) {
             if (d88.header.tracks[i] != 0) {
-//                long l = 0; // TODO
+//                long l = 0; // TODO ???
 //                while (l < d88.header.tracks[i]) {
 //                    l += in.skip(d88.header.tracks[i] - l);
 //                }

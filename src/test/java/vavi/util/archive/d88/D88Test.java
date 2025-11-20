@@ -13,12 +13,15 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import vavi.util.Debug;
+import vavi.util.archive.d88.D88.Sector;
+import vavi.util.archive.d88.D88.Track;
 import vavi.util.properties.annotation.Property;
 import vavi.util.properties.annotation.PropsEntity;
+import vavi.util.serdes.Serdes;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.EnabledIf;
 
 
 /**
@@ -46,13 +49,18 @@ class D88Test {
 
     @Test
     void test() throws IOException {
+Debug.println(d88);
         InputStream is = new BufferedInputStream(Files.newInputStream(Path.of(d88)));
 
         D88 d88 = D88.readFrom(is);
-System.err.print(d88.getHeader());
-        for (int i = 0; i < 164; i++) {
-            if (d88.getTracks()[i] != null) {
-System.err.print(d88.getTracks()[i]);
+Debug.print(d88.getHeader());
+        Track[] tracks = d88.getTracks();
+        for (int i = 0; i < tracks.length; i++) {
+Debug.printf("Track: %d%n", i);
+            if (tracks[i] != null) {
+                for (Sector s : tracks[i].sectors) {
+Debug.printf("C: %d, H: %d, R: %d, N: %d, number: %d, density: %d, isDeleted: %b, status: %d, size: %d%n", s.C, s.H, s.R, s.N, s.number, s.density, s.isDeleted, s.status, s.size);
+                }
             }
         }
     }
