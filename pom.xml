@@ -117,7 +117,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.11.0</version>
+        <version>3.12.1</version>
         <configuration>
           <release>17</release>
         </configuration>
@@ -142,7 +142,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
-        <version>3.2.2</version>
+        <version>3.2.5</version>
         <configuration>
           <argLine>-Djava.util.logging.config.file=${project.build.testOutputDirectory}/logging.properties</argLine>
           <trimStackTrace>false</trimStackTrace>
@@ -163,7 +163,7 @@
       <dependency>
         <groupId>org.junit</groupId>
         <artifactId>junit-bom</artifactId>
-        <version>5.10.1</version>
+        <version>5.14.0</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
@@ -172,14 +172,14 @@
 
   <dependencies>
     <dependency>
-      <groupId>com.github.umjammer</groupId> <!-- vavi /  -->
+      <groupId>com.github.umjammer</groupId> <!-- vavi / com.github.umjammer -->
       <artifactId>vavi-util-archive</artifactId>
-      <version>1.1.2</version>
+      <version>1.1.9</version>
     </dependency>
     <dependency>
       <groupId>com.github.umjammer</groupId> <!-- vavi / com.github.umjammer -->
       <artifactId>vavi-commons-sandbox</artifactId>
-      <version>0.4.4</version>
+      <version>0.4.7</version>
     </dependency>
 
     <dependency> <!-- asar 1 -->
@@ -196,7 +196,7 @@
   <dependency>
     <groupId>org.json</groupId>
     <artifactId>json</artifactId>
-    <version>20231013</version>
+    <version>20240303</version>
   </dependency>
 
     <dependency> <!-- asar 2 -->
@@ -242,7 +242,7 @@
 <dependency>
   <groupId>com.squareup.okio</groupId>
   <artifactId>okio-jvm</artifactId>
-  <version>3.4.0</version>
+  <version>3.9.0</version>
 </dependency>
     <dependency> <!-- https://github.com/ngallagher/simplexml/issues/18#issuecomment-533047324 -->
       <groupId>com.carrotsearch.thirdparty</groupId>
