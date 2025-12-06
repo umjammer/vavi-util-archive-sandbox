@@ -46,5 +46,3 @@ public class Asar4jArchiveSpi extends AsarArchiveSpi {
         return new Class[] {File.class};
     }
 }
-
-/* */

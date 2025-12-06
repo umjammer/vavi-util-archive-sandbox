@@ -11,6 +11,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.System.Logger;
+import java.lang.System.Logger.Level;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,8 +21,9 @@ import com.jacob.activeX.ActiveXComponent;
 import com.jacob.com.ComThread;
 import com.jacob.com.Dispatch;
 import com.jacob.com.Variant;
-import vavi.util.Debug;
 import vavix.util.ComUtil;
+
+import static java.lang.System.getLogger;
 
 
 /**
@@ -32,6 +35,8 @@ import vavix.util.ComUtil;
  * @see "https://github.com/freemansoft/jacob-project"
  */
 public abstract class ComArchive implements Archive {
+
+    private static final Logger logger = getLogger(ComArchive.class.getName());
 
     /** */
     public static final String TYPE_LHA = "UNLHA";
@@ -53,15 +58,15 @@ public abstract class ComArchive implements Archive {
     public static final String TYPE_ISH = "ISH";
 
     /** */
-    private String type;
+    private final String type;
 
     /** */
-    private List<Entry> entries = new ArrayList<>();
+    private final List<Entry> entries = new ArrayList<>();
 
     /** KBA manager */
-    private Dispatch manager;
+    private final Dispatch manager;
     /** archive COM */
-    private Dispatch module;
+    private final Dispatch module;
 
     /** */
     protected File file;
@@ -73,49 +78,49 @@ public abstract class ComArchive implements Archive {
 
         this.file = file;
         this.type = type;
-Debug.println("type: " + this.type);
+logger.log(Level.DEBUG, "type: " + this.type);
         ComThread.InitSTA();
 
         // manager
         ActiveXComponent activex = new ActiveXComponent("KBA.Manager");
         manager = activex.getObject();
 
-Debug.println("version: " + Dispatch.get(manager, "Ver"));
-Debug.println("unlha: " + Dispatch.get(manager, "UnlhaOk").getBoolean());
-Debug.println("ftp: "   + Dispatch.get(manager, "FtpOk").getBoolean());
-Debug.println("cab: "   + Dispatch.get(manager, "CabOk").getBoolean());
-Debug.println("zip: "   + Dispatch.get(manager, "ZipOk").getBoolean());
-Debug.println("unarj: " + Dispatch.get(manager, "UnarjOk").getBoolean());
-Debug.println("unrar: " + Dispatch.get(manager, "UnrarOk").getBoolean());
-Debug.println("unzip: " + Dispatch.get(manager, "UnzipOk").getBoolean());
-Debug.println("ish: "   + Dispatch.get(manager, "IshOk").getBoolean());
+logger.log(Level.DEBUG, "version: " + Dispatch.get(manager, "Ver"));
+logger.log(Level.DEBUG, "unlha: " + Dispatch.get(manager, "UnlhaOk").getBoolean());
+logger.log(Level.DEBUG, "ftp: "   + Dispatch.get(manager, "FtpOk").getBoolean());
+logger.log(Level.DEBUG, "cab: "   + Dispatch.get(manager, "CabOk").getBoolean());
+logger.log(Level.DEBUG, "zip: "   + Dispatch.get(manager, "ZipOk").getBoolean());
+logger.log(Level.DEBUG, "unarj: " + Dispatch.get(manager, "UnarjOk").getBoolean());
+logger.log(Level.DEBUG, "unrar: " + Dispatch.get(manager, "UnrarOk").getBoolean());
+logger.log(Level.DEBUG, "unzip: " + Dispatch.get(manager, "UnzipOk").getBoolean());
+logger.log(Level.DEBUG, "ish: "   + Dispatch.get(manager, "IshOk").getBoolean());
 
         Variant result = Dispatch.invoke(manager, "ArcClass", Dispatch.Method, new Object[] { type }, new int[1]);
-Debug.println("arcClass: " + ComUtil.toObject(result));
+logger.log(Level.DEBUG, "arcClass: " + ComUtil.toObject(result));
 
         // each module
         activex = new ActiveXComponent("KBA." + type);
-Debug.println("activex: " + "KBA." + type);
+logger.log(Level.DEBUG, "activex: " + "KBA." + type);
         module = activex.getObject();
 
 if ("ZIP".equals(type)) {
- Debug.println("version: " + Dispatch.get(module, "VerUnZip"));
+ logger.log(Level.DEBUG, "version: " + Dispatch.get(module, "VerUnZip"));
 } else {
- Debug.println("version: " + Dispatch.get(module, "Ver"));
+ logger.log(Level.DEBUG, "version: " + Dispatch.get(module, "Ver"));
 }
-Debug.println("interval: " + Dispatch.get(module, "CursorInterval"));
-Debug.println("background: " + Dispatch.get(module, "BackgroundMode"));
-Debug.println("cursorMode: " + Dispatch.get(module, "CursorMode"));
-Debug.println("running: " + Dispatch.get(module, "Running"));
+logger.log(Level.DEBUG, "interval: " + Dispatch.get(module, "CursorInterval"));
+logger.log(Level.DEBUG, "background: " + Dispatch.get(module, "BackgroundMode"));
+logger.log(Level.DEBUG, "cursorMode: " + Dispatch.get(module, "CursorMode"));
+logger.log(Level.DEBUG, "running: " + Dispatch.get(module, "Running"));
         result = Dispatch.invoke(module, "OpenArc", Dispatch.Method, new Object[] { file.toString() }, new int[1]);
-Debug.println("openArc: " + ComUtil.toObject(result));
+logger.log(Level.DEBUG, "openArc: " + ComUtil.toObject(result));
         if (result.getInt() == 0) {
             throw new FileNotFoundException(file.toString());
         }
 
         result = Dispatch.invoke(module, "Find", Dispatch.Method, new Object[] { "*" }, new int[1]);
         if (!result.getBoolean()) {
-Debug.println("no content");
+logger.log(Level.DEBUG, "no content");
             return;
         }
 
@@ -123,35 +128,35 @@ Debug.println("no content");
             CommonEntry entry = new CommonEntry();
 
             Variant value = Dispatch.get(module, "FileName");
-Debug.println("name: " + value.getClass() + ": " + ComUtil.toObject(value));
+logger.log(Level.DEBUG, "name: " + value.getClass() + ": " + ComUtil.toObject(value));
             entry.setName(value.getString());
 
             value = Dispatch.get(module, "FileTime");
-Debug.println("time: " + value.getClass() + ": " + ComUtil.toObject(value));
+logger.log(Level.DEBUG, "time: " + value.getClass() + ": " + ComUtil.toObject(value));
             entry.setTime(value.getJavaDate().getTime());
 
             value = Dispatch.get(module, "FileAttr");
-Debug.println("attr: " + value.getClass() + ": " + ComUtil.toObject(value));
+logger.log(Level.DEBUG, "attr: " + value.getClass() + ": " + ComUtil.toObject(value));
 
             value = Dispatch.get(module, "FileMode");
-Debug.println("mode: " + value.getClass() + ": " + ComUtil.toObject(value));
+logger.log(Level.DEBUG, "mode: " + value.getClass() + ": " + ComUtil.toObject(value));
 
             value = Dispatch.get(module, "OriginalSize");
-Debug.println("size: " + value.getClass() + ": " + ComUtil.toObject(value));
+logger.log(Level.DEBUG, "size: " + value.getClass() + ": " + ComUtil.toObject(value));
             entry.setSize(value.getInt());
 
             value = Dispatch.get(module, "CompressedSize");
-Debug.println("compressed: " + value.getClass() + ": " + ComUtil.toObject(value));
+logger.log(Level.DEBUG, "compressed: " + value.getClass() + ": " + ComUtil.toObject(value));
             entry.setCompressedSize(value.getInt());
 
             value = Dispatch.get(module, "Ratio");
-Debug.println("ratio: " + value.getClass() + ": " + ComUtil.toObject(value));
+logger.log(Level.DEBUG, "ratio: " + value.getClass() + ": " + ComUtil.toObject(value));
 
             entries.add(entry);
-//Debug.println(StringUtil.paramString(entry));
+//logger.log(Level.TRACE, StringUtil.paramString(entry));
 
             result = Dispatch.invoke(module, "FindNext", Dispatch.Method, new Object[] {}, new int[1]);
-Debug.println("findNext: " + ComUtil.toObject(result));
+logger.log(Level.DEBUG, "findNext: " + ComUtil.toObject(result));
         } while (!result.getBoolean());
 /*
         "ArcDateTime";
@@ -161,31 +166,24 @@ Debug.println("findNext: " + ComUtil.toObject(result));
 */
     }
 
-    /**
-     * ファイルを閉じます。
-     */
+    @Override
     public void close() throws IOException {
         Variant result = Dispatch.invoke(module, "CloseArc", Dispatch.Method, new Object[] {}, new int[1]);
-Debug.println(ComUtil.toObject(result));
+logger.log(Level.DEBUG, ComUtil.toObject(result));
         ComThread.Release();
     }
 
-    /**
-     * ファイルエントリの列挙を返します。
-     */
+    @Override
     public Entry[] entries() {
         Entry[] entries = new Entry[this.entries.size()];
         this.entries.toArray(entries);
         return entries;
     }
 
-    /**
-     * 指定された名前の RAR ファイルエントリを返します。
-     * 見つからない場合は null を返します。
-     */
+    @Override
     public Entry getEntry(String name) {
         for (Entry entry : entries) {
-//Debug.println(entry.getName() + ", " + name);
+//logger.log(Level.TRACE, entry.getName() + ", " + name);
             if (entry.getName().equals(name)) {
                 return entry;
             }
@@ -193,15 +191,12 @@ Debug.println(ComUtil.toObject(result));
         return null;
     }
 
-    /**
-     * 指定された ファイルエントリの内容を読み込むための入力ストリームを
-     * 返します。
-     */
+    @Override
     public InputStream getInputStream(Entry entry) throws IOException {
         Variant result = Dispatch.invoke(module, "ArcCmd", Dispatch.Method, new Object[] { getCommandString(entry) }, new int[1]);
-Debug.println("ArcCmd: " + ComUtil.toObject(result));
+logger.log(Level.DEBUG, "ArcCmd: " + ComUtil.toObject(result));
         String resultString = Dispatch.get(module, "ArcCmdRes").getString();
-Debug.println("result: " + resultString);
+logger.log(Level.DEBUG, "result: " + resultString);
         if (result.getInt() != 0) {
             throw new IOException(resultString);
         }
@@ -215,25 +210,19 @@ Debug.println("result: " + resultString);
         }
     }
 
-    /** COM に渡すコマンドラインを返してください。 */
+    /** Returns the command line to pass to COM. */
     protected abstract String getCommandString(Entry entry);
 
-    /** 解凍されたファイルネームを返してください。 */
+    /** Returns the unzipped filename. */
     protected abstract String getTemporaryFileName(Entry entry);
 
-    /**
-     * ファイルのパス名を返します。
-     */
+    @Override
     public String getName() {
         return file.getPath();
     }
 
-    /**
-     * ファイル中のエントリの数を返します。
-     */
+    @Override
     public int size() {
         return entries.size();
     }
 }
-
-/* */

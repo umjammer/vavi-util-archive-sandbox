@@ -31,7 +31,7 @@ public class N88DiskBasicEntry implements Entry {
     private static final int MACHINE_LANGUAGE = 0x01;
 
     /** */
-    private String name;
+    private final String name;
     /** @see #getExtra() */
     private int attribute;
     /** @see #getExtra() */
@@ -49,7 +49,7 @@ public class N88DiskBasicEntry implements Entry {
     @Override
     public String getName() {
         String[] pair = name.split("\\.");
-        return pair[0].trim() + (pair[1].trim().length() > 0 ? "." + pair[1].trim() : "");
+        return pair[0].trim() + (!pair[1].trim().isEmpty() ? "." + pair[1].trim() : "");
     }
 
     @Override
@@ -84,6 +84,7 @@ public class N88DiskBasicEntry implements Entry {
     /**
      * @return Integer[] 0: attribute, 1: startCluster
      */
+    @Override
     public Object getExtra() {
         return new int[] { attribute, startCluster };
     }
@@ -127,6 +128,7 @@ public class N88DiskBasicEntry implements Entry {
     /**
      * @param extra int[] 0: attribute, 1: startCluster
      */
+    @Override
     public void setExtra(Object extra) {
         attribute = ((int[]) extra)[0];
         startCluster = ((int[]) extra)[1];
@@ -148,5 +150,3 @@ public class N88DiskBasicEntry implements Entry {
         // TODO Auto-generated method stub
     }
 }
-
-/* */

@@ -10,13 +10,16 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.lang.System.Logger;
+import java.lang.System.Logger.Level;
 import java.nio.charset.Charset;
-import java.util.logging.Level;
 
 import vavi.io.LittleEndianDataInputStream;
 import vavi.util.ByteUtil;
-import vavi.util.Debug;
 import vavi.util.StringUtil;
+import vavi.util.archive.d88.DiskImage.GeometryDiskImage;
+
+import static java.lang.System.getLogger;
 
 
 /**
@@ -71,13 +74,15 @@ import vavi.util.StringUtil;
  * @version 0.00 010819 nsano initial version <br>
  * @see "https://www.pc98.org/project/doc/d88.html"
  */
-public class D88 implements DiskImage {
+public class D88 implements GeometryDiskImage {
+
+    private static final Logger logger = getLogger(D88.class.getName());
 
     /** */
     private Header header;
 
     /** */
-    private Track[] tracks = new Track[164];
+    private final Track[] tracks = new Track[164];
 
     /** */
     public static class Header {
@@ -90,23 +95,21 @@ public class D88 implements DiskImage {
         int type;
 
         static final int _2D = 0x00;
-
         static final int _2DD = 0x10;
-
         static final int _2HD = 0x20;
 
         int size;
 
-        int[] tracks = new int[164];
+        int[] tracks;
 
         @Override
         public String toString() {
             StringWriter sw = new StringWriter();
             PrintWriter pr = new PrintWriter(sw);
             pr.println("name: " + name);
-            for (int i = 0; i < 9; i++) {
-                pr.println("reserved" + i + ": " + reserved[i]);
-            }
+//            for (int i = 0; i < 9; i++) {
+//                pr.println("reserved" + i + ": " + reserved[i]);
+//            }
             pr.println("isProtected: " + isProtected);
             switch (type) {
             case _2D:
@@ -123,9 +126,9 @@ public class D88 implements DiskImage {
                 break;
             }
             pr.println("size: " + size);
-            for (int i = 0; i < 164; i++) {
-                pr.println("track" + i + ": " + tracks[i]);
-            }
+//            for (int i = 0; i < tracks.length; i++) {
+//                pr.println("track" + i + ": " + tracks[i]);
+//            }
             return sw.toString();
         }
 
@@ -138,7 +141,7 @@ public class D88 implements DiskImage {
 
             byte[] buf = new byte[17];
             ledis.readFully(buf, 0, 17);
-Debug.println(Level.FINE, StringUtil.getDump(buf, 16));
+logger.log(Level.DEBUG, StringUtil.getDump(buf, 16));
             header.name = new String(buf, 0, ByteUtil.indexOf(buf, (byte) 0), Charset.forName("MS932"));
             for (int i = 0; i < 9; i++) {
                 header.reserved[i] = ledis.read();
@@ -147,11 +150,13 @@ Debug.println(Level.FINE, StringUtil.getDump(buf, 16));
             header.type = ledis.read();
             header.size = ledis.readInt();
 
-            for (int i = 0; i < 164; i++) {
+            int track0 = ledis.readInt();
+            int size = track0 == 672 ? 160 : 164;
+            header.tracks = new int[size];
+            header.tracks[0] = track0;
+logger.log(Level.TRACE, "track[0]: " + header.tracks[0]);
+            for (int i = 1; i < header.tracks.length; i++) {
                 header.tracks[i] = ledis.readInt();
-if (i == 0) {
- Debug.println(Level.FINER, "track[0]: " + header.tracks[i]);
-}
             }
 
             return header;
@@ -199,15 +204,15 @@ if (i == 0) {
     }
 
     /** */
-    private static class Sector {
+    public static class Sector {
         int C;
         int H;
         int R;
         int N;
         int number;
         int density;
-        final int _2DD = 0x40;
-        final int _2D = 0x00;
+        static final int _2DD = 0x40;
+        static final int _2D = 0x00;
         boolean isDeleted;
         int status;
         int[] reserved = new int[5];
@@ -236,9 +241,9 @@ if (i == 0) {
             }
             pr.println("isDeleted: " + isDeleted);
             pr.println("status: " + status);
-            for (int i = 0; i < 5; i++) {
-                pr.println("reserved" + i + ": " + reserved[i]);
-            }
+//            for (int i = 0; i < 5; i++) {
+//                pr.println("reserved" + i + ": " + reserved[i]);
+//            }
             pr.println("size: " + size);
             return sw.toString();
         }
@@ -282,7 +287,7 @@ if (i == 0) {
 
         for (int i = 0; i < 164; i++) {
             if (d88.header.tracks[i] != 0) {
-//                long l = 0; // TODO
+//                long l = 0; // TODO ???
 //                while (l < d88.header.tracks[i]) {
 //                    l += in.skip(d88.header.tracks[i] - l);
 //                }
@@ -293,23 +298,19 @@ if (i == 0) {
         return d88;
     }
 
-    /* */
+    @Override
     public byte[] readData(int track, int surface, int sector) {
         return tracks[track * 2 + surface].getSector(sector).data;
     }
 
-    /* */
+    @Override
     public Density getDensity() {
-        switch (header.type) {
-        case Header._2D:
-            return Density._2D;
-        case Header._2DD:
-            return Density._2DD;
-        case Header._2HD:
-            return Density._2HD;
-        default:
-            return Density.UNKNOWN;
-        }
+        return switch (header.type) {
+            case Header._2D -> Density._2D;
+            case Header._2DD -> Density._2DD;
+            case Header._2HD -> Density._2HD;
+            default -> Density.UNKNOWN;
+        };
     }
 
     /**
@@ -326,5 +327,3 @@ if (i == 0) {
         return tracks;
     }
 }
-
-/* */

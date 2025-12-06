@@ -47,5 +47,3 @@ public class ScroetchenAsarArchiveSpi extends AsarArchiveSpi {
         return new Class[] {File.class};
     }
 }
-
-/* */

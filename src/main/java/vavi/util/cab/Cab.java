@@ -9,10 +9,12 @@ package vavi.util.cab;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.System.Logger;
+import java.lang.System.Logger.Level;
 import java.util.ArrayList;
 import java.util.List;
 
-import vavi.util.Debug;
+import static java.lang.System.getLogger;
 
 
 /**
@@ -22,11 +24,13 @@ import vavi.util.Debug;
  */
 public class Cab {
 
-    /** */
-    private CabHeader header;
+    private static final Logger logger = getLogger(Cab.class.getName());
 
     /** */
-    private List<CabFolder> folders = new ArrayList<>();
+    private final CabHeader header;
+
+    /** */
+    private final List<CabFolder> folders = new ArrayList<>();
 
     /**
      * @return Returns the folders.
@@ -45,26 +49,26 @@ public class Cab {
     /** */
     public Cab(InputStream is, int skipHeaders) throws IOException {
 
-Debug.println("before: " + is.available());
+logger.log(Level.DEBUG, "before: " + is.available());
         while (skipHeaders > 0) {
             seekMSCF(is);
             skipHeaders--;
         }
-Debug.println("after: " + is.available());
+logger.log(Level.DEBUG, "after: " + is.available());
 
         header = new CabHeader();
         header.read(is);
-Debug.println(header);
+logger.log(Level.DEBUG, header);
 header.print(System.err);
 
-Debug.println("header.getFolderNumber: " + header.getFolderNumber());
+logger.log(Level.DEBUG, "header.getFolderNumber: " + header.getFolderNumber());
         for (int i = 0; i < header.getFolderNumber(); i++) {
             CabFolder folder = new CabFolder(header.getPerCFFOLDERReservedSize());
             folder.read(is);
             folders.add(folder);
         }
 
-Debug.println(header.getFileNumber());
+logger.log(Level.DEBUG, header.getFileNumber());
         for (int i = 0; i < header.getFileNumber(); i++) {
             CabFile file = new CabFile();
             file.read(is);
@@ -116,5 +120,3 @@ Debug.println(header.getFileNumber());
         }
     }
 }
-
-/* */

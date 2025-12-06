@@ -51,11 +51,16 @@ import java.util.NoSuchElementException;
  * @author Kevin Wayne
  */
 public final class BinaryInputStream extends FilterInputStream {
-    private final int EOF = -1;      // end of file
 
-    private int buffer;              // one character buffer
-    private int n;                   // number of bits left in buffer
-    private boolean isInitialized;   // has BinaryInputStream been called for first time?
+    /** end of file */
+    private static final int EOF = -1;
+
+    /** one character buffer */
+    private int buffer;
+    /** number of bits left in buffer */
+    private int n;
+    /** has BinaryInputStream been called for first time? */
+    private boolean isInitialized;
 
     public BinaryInputStream(InputStream is) {
         super(new BufferedInputStream(is));
@@ -79,6 +84,7 @@ public final class BinaryInputStream extends FilterInputStream {
     /**
      * Close this input stream and release any associated system resources.
      */
+    @Override
     public void close() {
         if (!isInitialized) throw new IllegalStateException("not initialized");
         try {

@@ -112,5 +112,3 @@ Debug.println("stream after loop: available: " + archive.getInputStream(entry).a
         fail("no file size > 0");
     }
 }
-
-/* */

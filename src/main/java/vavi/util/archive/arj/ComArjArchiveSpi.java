@@ -48,5 +48,3 @@ public class ComArjArchiveSpi extends ArjArchiveSpi {
         return new Class[] {File.class};
     }
 }
-
-/* */

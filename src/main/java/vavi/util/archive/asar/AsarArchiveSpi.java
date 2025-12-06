@@ -50,5 +50,3 @@ public abstract class AsarArchiveSpi implements ArchiveSpi {
         return new String[] {"asar"};
     }
 }
-
-/* */

@@ -11,19 +11,21 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
+import java.lang.System.Logger;
+import java.lang.System.Logger.Level;
 import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
-import java.util.logging.Level;
 
 import org.apache.commons.compress.compressors.CompressorStreamFactory;
-import vavi.util.Debug;
 import vavi.util.StringUtil;
 import vavi.util.archive.Archive;
 import vavi.util.archive.apache.ApacheCommonsArchiveSpi;
+
+import static java.lang.System.getLogger;
 
 
 /**
@@ -33,6 +35,8 @@ import vavi.util.archive.apache.ApacheCommonsArchiveSpi;
  * @version 0.00 2020/10/07 umjammer initial version <br>
  */
 public class JBinding7ZipArchiveSpi extends SevenZipArchiveSpi {
+
+    private static final Logger logger = getLogger(JBinding7ZipArchiveSpi.class.getName());
 
     @Override
     public boolean canExtractInput(Object target) throws IOException {
@@ -80,10 +84,10 @@ public class JBinding7ZipArchiveSpi extends SevenZipArchiveSpi {
     public String[] getFileSuffixes() {
         Set<String> suffixes = new HashSet<>();
         CompressorStreamFactory.findAvailableCompressorInputStreamProviders().forEach((name, provider) -> {
-Debug.println(Level.FINER, name + ": " + StringUtil.paramString(provider));
+logger.log(Level.DEBUG, name + ": " + StringUtil.paramString(provider));
             for (String compressorName : provider.getInputStreamCompressorNames()) {
                 String[] ss = props.getProperty(compressorName).split(",", -1);
-Debug.println(Level.FINER, compressorName + ": " + Arrays.toString(ss));
+logger.log(Level.DEBUG, compressorName + ": " + Arrays.toString(ss));
                 suffixes.addAll(Arrays.asList(ss));
             }
         });
@@ -91,7 +95,7 @@ Debug.println(Level.FINER, compressorName + ": " + Arrays.toString(ss));
     }
 
     /** {compressorName: suffixes} */
-    private static Properties props = new Properties();
+    private static final Properties props = new Properties();
 
     static {
         try {
@@ -103,5 +107,3 @@ Debug.println(Level.FINER, compressorName + ": " + Arrays.toString(ss));
         }
     }
 }
-
-/* */

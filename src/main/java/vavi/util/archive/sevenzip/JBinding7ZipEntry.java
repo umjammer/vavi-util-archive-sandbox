@@ -22,7 +22,7 @@ import vavi.util.archive.WrappedEntry;
 public class JBinding7ZipEntry implements WrappedEntry<ISimpleInArchiveItem> {
 
     /** */
-    private ISimpleInArchiveItem entry;
+    private final ISimpleInArchiveItem entry;
 
     /** */
     public JBinding7ZipEntry(ISimpleInArchiveItem entry) {
@@ -140,5 +140,3 @@ public class JBinding7ZipEntry implements WrappedEntry<ISimpleInArchiveItem> {
         return entry;
     }
 }
-
-/* */

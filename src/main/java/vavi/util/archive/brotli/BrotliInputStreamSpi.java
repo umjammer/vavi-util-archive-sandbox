@@ -1,0 +1,70 @@
+/*
+ * Copyright (c) 2025 by Naohide Sano, All rights reserved.
+ *
+ * Programmed by Naohide Sano
+ */
+
+package vavi.util.archive.brotli;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.System.Logger;
+import java.lang.System.Logger.Level;
+
+import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
+import org.brotli.dec.BrotliInputStream;
+import vavi.util.archive.bzip2.BZip2InputStreamSpi;
+import vavi.util.archive.spi.InputStreamSpi;
+
+import static java.lang.System.getLogger;
+
+
+/**
+ * The service provider for Brotli archive.
+ *
+ * @author <a href="mailto:umjammer@gmail.com">Naohide Sano</a> (nsano)
+ * @version 0.00 251008 nsano initial version <br>
+ */
+public class BrotliInputStreamSpi implements InputStreamSpi {
+
+    private static final Logger logger = getLogger(BZip2InputStreamSpi.class.getName());
+
+    /** */
+    private Object target;
+
+    /**
+     * @param target currently accepts only InputStream
+     */
+    @Override
+    public boolean canExpandInput(Object target) throws IOException {
+
+        if (!(target instanceof InputStream is)) {
+            throw new IllegalArgumentException("not supported type " + target);
+        }
+
+        this.target = target; // TODO weird
+
+        if (!is.markSupported()) {
+            throw new IllegalArgumentException("cannot mark to stream");
+        }
+
+        byte[] b = new byte[3];
+
+        is.mark(3);
+        int l = 0;
+        while (l < 3) {
+            l += is.read(b, l, 3 - l);
+        }
+        is.reset();
+
+        // https://github.com/google/brotli/issues/298
+        return true;
+    }
+
+    @Override
+    public InputStream createInputStreamInstance()
+        throws IOException {
+logger.log(Level.DEBUG, target);
+        return new BrotliInputStream((InputStream) target);
+    }
+}

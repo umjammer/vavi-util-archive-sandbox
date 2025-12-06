@@ -31,10 +31,10 @@ import vavi.util.archive.WrappedEntry;
 public class XarArchive extends InputStreamSupport implements Archive {
 
     /** */
-    private XarSource archive;
+    private final XarSource archive;
 
     /** */
-    private String name;
+    private final String name;
 
     /** */
     private Entry[] entries;
@@ -75,7 +75,7 @@ public class XarArchive extends InputStreamSupport implements Archive {
     @Override
     public Entry getEntry(String name) {
         for (Entry entry : entries()) {
-//Debug.println("@@@: " + name + ", " + e.getName());
+//logger.log(Level.TRACE, "@@@: " + name + ", " + e.getName());
             if (name.equals(entry.getName())) {
                 return entry;
             }
@@ -104,5 +104,3 @@ public class XarArchive extends InputStreamSupport implements Archive {
         return entries().length;
     }
 }
-
-/* */

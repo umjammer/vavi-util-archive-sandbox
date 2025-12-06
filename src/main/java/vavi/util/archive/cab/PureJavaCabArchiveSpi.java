@@ -27,6 +27,7 @@ public class PureJavaCabArchiveSpi extends CabArchiveSpi {
     /**
      * @param target currently accepts {@link File}, {@link InputStream} only.
      */
+    @Override
     public boolean canExtractInput(Object target) throws IOException {
         if (!isSupported(target)) {
             return false;
@@ -54,6 +55,7 @@ public class PureJavaCabArchiveSpi extends CabArchiveSpi {
      * @param obj {@link File} and {@link InputStream} are supported.
      * @throws IllegalArgumentException unsupported type is specified to <code>obj</code>.
      */
+    @Override
     public Archive createArchiveInstance(Object obj, Map<String, ?> env) throws IOException {
         if (obj instanceof File) {
             return new PureJavaCabArchive((File) obj);
@@ -69,5 +71,3 @@ public class PureJavaCabArchiveSpi extends CabArchiveSpi {
         return new Class[] {File.class, InputStream.class};
     }
 }
-
-/* */

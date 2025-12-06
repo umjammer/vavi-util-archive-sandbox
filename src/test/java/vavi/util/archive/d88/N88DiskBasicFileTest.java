@@ -33,7 +33,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  * @version 0.00 2014/06/08 umjammer initial version <br>
  */
 @PropsEntity(url = "file:local.properties")
-public class N88DiskBasicFileTest {
+class N88DiskBasicFileTest {
 
     static boolean localPropertiesExists() {
         return Files.exists(Paths.get("local.properties"));
@@ -51,7 +51,7 @@ public class N88DiskBasicFileTest {
 
     @Test
     @DisplayName("direct")
-    public void test() throws IOException {
+    void test() throws IOException {
         N88DiskBasicFile disk = new N88DiskBasicFile(N88DiskBasicFileTest.class.getResourceAsStream("/test.d88"));
 Debug.println(disk);
 
@@ -65,7 +65,7 @@ Debug.println(disk);
 
     @Test
     @DisplayName("spi")
-    public void test2() throws IOException {
+    void test2() throws IOException {
         Archive disk = Archives.getArchive(Paths.get(file).toFile());
 Debug.println(disk);
 
@@ -88,7 +88,7 @@ Debug.println(disk);
 
     void t1(String[] args) throws Exception {
         N88DiskBasicFile disk = new N88DiskBasicFile(args[0]);
-//System.err.println(disk);
+//logger.log(Level.TRACE, disk);
 
         Path dir = Paths.get(args[1]);
         if (!Files.exists(dir)) {
@@ -146,5 +146,3 @@ System.err.println(e.getName() + " -> " + file);
         }
     }
 }
-
-/* */

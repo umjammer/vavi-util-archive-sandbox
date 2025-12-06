@@ -40,7 +40,7 @@ public class BurrowsWheeler {
         TransformOutputStream(OutputStream os) throws IOException {
             super(new InputEngineOutputStream(new InputEngine() {
                 BinaryInputStream in;
-                BinaryOutputStream out = new BinaryOutputStream(os);
+                final BinaryOutputStream out = new BinaryOutputStream(os);
 
                 @Override
                 public void initialize(InputStream inputStream) throws IOException {

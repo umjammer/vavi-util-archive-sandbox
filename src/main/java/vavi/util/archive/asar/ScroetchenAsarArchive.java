@@ -28,11 +28,11 @@ import asar.VirtualFile;
 public class ScroetchenAsarArchive implements Archive {
 
     /** */
-    private asar.AsarArchive archive;
+    private final asar.AsarArchive archive;
 
-    private String name;
+    private final String name;
 
-    private long size;
+    private final long size;
 
     /** */
     public ScroetchenAsarArchive(File file) throws IOException {
@@ -85,5 +85,3 @@ public class ScroetchenAsarArchive implements Archive {
         return (int) size;
     }
 }
-
-/* */

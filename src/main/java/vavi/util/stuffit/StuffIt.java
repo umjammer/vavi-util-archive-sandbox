@@ -6,26 +6,28 @@
 
 package vavi.util.stuffit;
 
+import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.System.Logger;
+import java.lang.System.Logger.Level;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.StringJoiner;
 
-import jp.gr.java_conf.dangan.util.lha.CRC16;
-
-import org.apache.commons.cli.BasicParser;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
-
-import vavi.util.Debug;
 import vavi.util.StringUtil;
+
+import static java.lang.System.getLogger;
 
 
 /**
@@ -35,8 +37,8 @@ import vavi.util.StringUtil;
  * separate .data, .rsrc., and .info files that can be downloaded to a
  * Mac using macput.  The program is much like the "unpit" program for
  * breaking apart Packit archive files.
- *
- * ***** IMPORTANT *****
+ * <p>
+ * <h3>            ***** IMPORTANT *****</h3>
  * To extract StuffIt files that have been compressed with the Lempel-Ziv
  * compression method, unsit pipes the data through the "compress"
  * program with the appropriate switches, rather than incorporate the
@@ -44,12 +46,13 @@ import vavi.util.StringUtil;
  * have the "compress" program on the system and in the search path to
  * make "unsit" work.  "Compress" is available from the comp.sources.unix
  * archives.
- *
+ * <p>
  * The program syntax is much like unpit and macput/macget, with some added
  * options:
- *
- * unsit [-rdulvqfm] stuffit-file.data
- *
+ * <pre>
+ *     unsit [-rdulvqfm] stuffit-file.data
+ * </pre>
+ * <p>
  * The -r and -d flags will cause only the resource and data forks to be
  * written.  The -u flag will cause only the data fork to be written and
  * to have carriage return characters changed to Unix newline characters.
@@ -62,7 +65,7 @@ import vavi.util.StringUtil;
  * three separate .data, .info, and .rsrc files.  It causes the program
  * to skip the 128 byte MacBinary header before looking for the StuffIt
  * header.
- *
+ * </p><p>
  * Version 1.5 of the unsit supports extracting files and folders as
  * implemented by StuffIt 1.5's "Hierarchy Maintained Folder" feature.
  * Each folder is extracted as a subdirectory on the Unix system with the
@@ -70,8 +73,8 @@ import vavi.util.StringUtil;
  * option can be used to "flatten" out the hierarchy and unsit will store
  * all the files in the current directory.  If the query option (-q) is
  * used and a "n" response is given to a folder name, none of the files
- * or folders in that folder will be extraced.
- *
+ * or folders in that folder will be extracted.
+ * </p><p>
  * Some of the program is borrowed from the macput.c/macget.c programs.
  * Many, many thanks to Raymond Lau, the author of StuffIt, for including
  * information on the format of the StuffIt archives in the
@@ -80,12 +83,15 @@ import vavi.util.StringUtil;
  * doing things like supporting System V and recognizing MacBinary files.
  * I'm always glad to receive advice, suggestions, or comments about the
  * program so feel free to send whatever you think would be helpful
+ * </p>
  *
  * @author Allan G. Weber weber%brand.usc.edu@oberon.usc.edu ...sdcrdcf!usc-oberon!brand!weber
  * @version 1.5c, for StuffIt 1.5 August 3, 1989
  * TODO complete
  */
 public class StuffIt {
+
+    private static final Logger logger = getLogger(StuffIt.class.getName());
 
     /** 22 bytes */
     static class SitHdr {
@@ -139,6 +145,27 @@ public class StuffIt {
         byte[] reserved = new byte[6];
         /** crc of file header */
         int hdrCRC;
+
+        @Override public String toString() {
+            return new StringJoiner(", ", FileHdr.class.getSimpleName() + "[", "]")
+                    .add("compRMethod=" + compRMethod)
+                    .add("compDMethod=" + compDMethod)
+                    .add("fName=" + Arrays.toString(fName))
+                    .add("fType='" + fType + "'")
+                    .add("fCreator='" + fCreator + "'")
+                    .add("fndrFlags=" + fndrFlags)
+                    .add("creationDate=" + creationDate)
+                    .add("modDate=" + modDate)
+                    .add("rsrcLength=" + rsrcLength)
+                    .add("dataLength=" + dataLength)
+                    .add("compRLength=" + compRLength)
+                    .add("compDLength=" + compDLength)
+                    .add("rsrcCRC=" + rsrcCRC)
+                    .add("dataCRC=" + dataCRC)
+                    .add("reserved=" + Arrays.toString(reserved))
+                    .add("hdrCRC=" + hdrCRC)
+                    .toString();
+        }
     }
 
     /*
@@ -158,7 +185,7 @@ public class StuffIt {
      *            fileNDataFork
      */
 
-    /* compression methods */
+    // compression methods
     /** just read each byte and write it to archive */
     private static final int noComp = 0;
     /** RLE compression */
@@ -169,7 +196,7 @@ public class StuffIt {
     private static final int hufComp = 3;
 
 //    /** bit set if encrypted.  ex: encrypted+lpzComp */
-//  private static final int encrypted = 16;
+//    private static final int encrypted = 16;
 
     /** marks start of a new folder */
     private static final int startFolder = 32;
@@ -199,7 +226,7 @@ public class StuffIt {
     private static final int S_NUMFILES = 4;
     private static final int S_ARCLENGTH = 6;
     private static final int S_SIGNATURE2 = 10;
-//  private static final int S_VERSION = 14;
+//    private static final int S_VERSION = 14;
     private static final int SITHDRSIZE = 22;
 
     private static final int F_COMPRMETHOD = 0;
@@ -221,7 +248,7 @@ public class StuffIt {
 
     private static final int F_NAMELEN = 63;
 //    /** 63 + strlen(".info") + 1 */
-//  private static final int I_NAMELEN = 69;
+//    private static final int I_NAMELEN = 69;
 
     /** The following are copied out of macput.c/macget.c */
     private static final int I_NAMEOFF = 1;
@@ -236,9 +263,9 @@ public class StuffIt {
     private static final int I_MTIMOFF = 95;
 
 //    /** offset to byte with Inited flag */
-//  private static final int INITED_OFF    = I_FLAGOFF;
-    /** mask to '&' with byte to reset it */
-//  private static final int INITED_MASK = ~1;
+//    private static final int INITED_OFF    = I_FLAGOFF;
+//    /** mask to '&' with byte to reset it */
+//    private static final int INITED_MASK = ~1;
 
     private static final int TEXT = 0;
     private static final int DATA = 1;
@@ -262,26 +289,26 @@ public class StuffIt {
     }
 
     /** 512 should be big enough */
-    private Node[] nodelist = new Node[512];
+    private final Node[] nodelist = new Node[512];
     private int nodeptr;
 
-    private SitHdr sitHdr = new SitHdr();
+    private final SitHdr sitHdr = new SitHdr();
 
     private String f_info;
     private String f_data;
     private String f_rsrc;
 
-    private byte[] info = new byte[INFOBYTES];
-    private byte[] mname = new byte[F_NAMELEN + 1];
-    private byte[] uname = new byte[F_NAMELEN + 1];
-    private byte[] iobuf = new byte[IOBUFSIZ];
+    private final byte[] info = new byte[INFOBYTES];
+    private final byte[] mname = new byte[F_NAMELEN + 1];
+    private final byte[] uname = new byte[F_NAMELEN + 1];
+    private final byte[] iobuf = new byte[IOBUFSIZ];
 
     private int mode;
     private boolean txtmode;
     private boolean listonly, verbose, query, flatten;
     private int bit, numfiles, depth;
     private boolean chkcrc;
-    private InputStream infp;
+    private DataInputStream infp;
 
     /** */
     public static void main(String[] args) throws Exception {
@@ -290,7 +317,7 @@ public class StuffIt {
 
     /** */
     StuffIt(String[] args) throws IOException, ParseException {
-        boolean macbin = false;
+        boolean macbin = false; // TODO .bin
 
         mode = FULL;
         flatten = false;
@@ -309,7 +336,7 @@ public class StuffIt {
         options.addOption("m", false, "input file in in the MacBinary format");
         options.addOption("?", false, "display help");
 
-        CommandLineParser parser = new BasicParser();
+        CommandLineParser parser = new DefaultParser();
 
         CommandLine cl = parser.parse(options, args);
 
@@ -348,29 +375,29 @@ public class StuffIt {
         }
 
         try {
-            infp = Files.newInputStream(Paths.get(cl.getArgs()[0]));
+            infp = new DataInputStream(Files.newInputStream(Paths.get(cl.getArgs()[0])));
         } catch (IOException e) {
-Debug.println("Can't open input file \"" + cl.getArgs()[0] + "\"");
+logger.log(Level.DEBUG, "Can't open input file \"" + cl.getArgs()[0] + "\"");
             return;
 //            System.exit(1);
         }
 
         if (macbin) {
             try {
-                infp.skip(MACBINHDRSIZE);
+                infp.skipBytes(MACBINHDRSIZE);
             } catch (IOException e) {
-Debug.println("Can't skip over MacBinary header");
+logger.log(Level.DEBUG, "Can't skip over MacBinary header");
                 return;
 //                System.exit(1);
             }
         }
 
         if (readSitHdr(sitHdr) == 0) {
-Debug.println("Can't read file header");
+logger.log(Level.DEBUG, "Can't read file header");
             return;
 //            System.exit(1);
         }
-//System.out.println("numfiles=" + sitHdr.numFiles + ", arclength=" + sitHdr.arcLength);
+//logger.log(Level.TRACE, "numfiles=" + sitHdr.numFiles + ", arclength=" + sitHdr.arcLength);
 
         int status = extract("", false);
 //        System.exit((status < 0) ? 1 : 0);
@@ -397,7 +424,7 @@ Debug.println("Can't read file header");
                 status = rstat;
                 break;
             }
-//Debug.println("compr=" + filehdr.compRMethod + ", compd=" + filehdr.compDMethod + ", rsrclen=" + filehdr.compRLength + ", datalen=" + filehdr.compDLength + ", rsrccrc=" + filehdr.rsrcCRC + ", datacrc=" + filehdr.dataCRC);
+//logger.log(Level.TRACE, "compr=" + filehdr.compRMethod + ", compd=" + filehdr.compDMethod + ", rsrclen=" + filehdr.compRLength + ", datalen=" + filehdr.compDLength + ", rsrccrc=" + filehdr.rsrcCRC + ", datacrc=" + filehdr.dataCRC);
 
             skipit = rstat == H_SKIP;
 
@@ -411,17 +438,17 @@ Debug.println("Can't read file header");
                     File file = new File(new String(uname));
                     if (!file.exists()) {    // directory doesn't exist
                         if (!file.mkdirs()) {
-Debug.println("Can't create subdirectory " + Arrays.toString(uname));
+logger.log(Level.DEBUG, "Can't create subdirectory " + Arrays.toString(uname));
                             return -1;
                         }
                     } else {        // something exists with this name
                         if (!file.isDirectory()) {
-Debug.println("Directory name " + Arrays.toString(uname) + " already in use");
+logger.log(Level.DEBUG, "Directory name " + Arrays.toString(uname) + " already in use");
                             return -1;
                         }
                     }
 //                  if (chdir(uname) == -1) {
-//Debug.println("Can't chdir to " + uname);
+//logger.log(Level.TRACE, "Can't chdir to " + uname);
 //                      return -1;
 //                  }
                     name = parent + ":" + new String(uname);
@@ -491,10 +518,11 @@ Debug.println("Directory name " + Arrays.toString(uname) + " already in use");
         }
 
         if (f_info != null && checkAccess(f_info) != -1) {
+logger.log(Level.DEBUG, "write info: " + f_info);
             try {
                 fp = new FileOutputStream(f_info);
             } catch (IOException e) {
-                Debug.println(e);
+logger.log(Level.ERROR, e.getMessage(), e);
                 System.exit(1);
             }
             fp.write(info, 0, INFOBYTES);
@@ -502,26 +530,26 @@ Debug.println("Directory name " + Arrays.toString(uname) + " already in use");
         }
 
         if (f_rsrc != null) {
+logger.log(Level.DEBUG, "write rsrc: " + f_rsrc);
             txtmode = false;
-            crc = writeFile(f_rsrc, fh.compRLength,
-                            fh.rsrcLength, fh.compRMethod);
+            crc = writeFile(f_rsrc, fh.compRLength, fh.rsrcLength, fh.compRMethod);
             if (chkcrc && (fh.rsrcCRC != crc)) {
-                Debug.printf("CRC error on resource fork: need 0x%04x, got 0x%04x%n", fh.rsrcCRC, crc);
+                logger.log(Level.DEBUG, "CRC error on resource fork: need 0x%04x, got 0x%04x".formatted(fh.rsrcCRC, crc));
                 return -1;
             }
         } else {
-            infp.skip(fh.compRLength); // SEEK_CUR
+            infp.skipBytes((int) fh.compRLength); // SEEK_CUR
         }
         if (f_data != null) {
+logger.log(Level.DEBUG, "write data: " + f_data);
             txtmode = (mode == TEXT);
-            crc = writeFile(f_data, fh.compDLength,
-                            fh.dataLength, fh.compDMethod);
+            crc = writeFile(f_data, fh.compDLength, fh.dataLength, fh.compDMethod);
             if (chkcrc && (fh.dataCRC != crc)) {
-                Debug.printf("CRC error on data fork: need 0x%04x, got 0x%04x%n", fh.dataCRC, crc);
+                logger.log(Level.DEBUG, "CRC error on data fork: need 0x%04x, got 0x%04x".formatted(fh.dataCRC, crc));
                 return -1;
             }
         } else {
-            infp.skip(fh.compDLength); // SEEK_CUR
+            infp.skipBytes((int) fh.compDLength); // SEEK_CUR
         }
         return 1;
     }
@@ -533,11 +561,11 @@ Debug.println("Directory name " + Arrays.toString(uname) + " already in use");
 
         while (true) {
             if (infp.read(temp, 0, SITHDRSIZE) != SITHDRSIZE) {
-Debug.println("Can't read file header");
+logger.log(Level.DEBUG, "Can't read file header");
                 return 0;
             }
 
-Debug.println("\n" + StringUtil.getDump(temp));
+logger.log(Level.DEBUG, "sit header:\n" + StringUtil.getDump(temp, SITHDRSIZE));
             if (new String(temp, S_SIGNATURE,  4).equals("SIT!") &&
                 new String(temp, S_SIGNATURE2, 4).equals("rLau")) {
                 s.numFiles = get2(temp, S_NUMFILES);
@@ -546,13 +574,13 @@ Debug.println("\n" + StringUtil.getDump(temp));
             }
 
             if (++count == 2) {
-Debug.println("Not a StuffIt file");
+logger.log(Level.DEBUG, "Not a StuffIt file");
                 return 0;
             }
 
             if (infp.read(temp, SITHDRSIZE, FILEHDRSIZE - SITHDRSIZE) !=
                 FILEHDRSIZE - SITHDRSIZE) {
-Debug.println("Can't read file header");
+logger.log(Level.DEBUG, "Can't read file header");
                 return 0;
             }
 
@@ -560,7 +588,8 @@ Debug.println("Can't read file header");
                 new String(temp, I_AUTHOFF, 4).equals("SIT!")) {
                 // MacBinary format
                 // Skip over header
-                infp.skip(INFOBYTES - FILEHDRSIZE); // SEEK_CUR
+logger.log(Level.DEBUG, "skip: " + (INFOBYTES - FILEHDRSIZE));
+                infp.skipBytes(INFOBYTES - FILEHDRSIZE); // SEEK_CUR
             }
         }
     }
@@ -594,16 +623,17 @@ Debug.println("Can't read file header");
         if (n == 0) {            // return 0 on EOF
             return H_EOF;
         } else if (n != FILEHDRSIZE) {
-Debug.println("Can't read file header");
+logger.log(Level.DEBUG, "Can't read file header");
             return H_ERROR;
         }
+logger.log(Level.DEBUG, "file header:\n" + StringUtil.getDump(hdr));
 
         // check the CRC for the file header
         crc = INIT_CRC;
         crc = updateCrc(crc, hdr, FILEHDRSIZE - 2);
         f.hdrCRC = get2(hdr, F_HDRCRC);
         if (f.hdrCRC != crc) {
-Debug.printf("Header CRC mismatch: got 0x%04x, need 0x%04x%n", f.hdrCRC, crc);
+logger.log(Level.DEBUG, "Header CRC mismatch: got 0x%04x, need 0x%04x".formatted(f.hdrCRC, crc));
             return H_ERROR;
         }
 
@@ -622,7 +652,7 @@ Debug.printf("Header CRC mismatch: got 0x%04x, need 0x%04x%n", f.hdrCRC, crc);
         while ((ch = mname[mp++]) != '\0') {
             if (ch <= ' ' ||
                 ch > '~' ||
-                "/!()[]*<>?\\\"$\';&`".indexOf(ch) != -1) {
+                "/!()[]*<>?\\\"$';&`".indexOf(ch) != -1) {
                 ch = '_';
             }
             uname[up++] = (byte) ch;
@@ -692,26 +722,32 @@ Debug.printf("Header CRC mismatch: got 0x%04x, need 0x%04x%n", f.hdrCRC, crc);
                 }
             }
         }
+logger.log(Level.DEBUG, f);
         return write_it ? H_WRITE : H_SKIP;
     }
 
     /** return 0 if OK to write on file fname, -1 otherwise */
-    private int checkAccess(String fname) throws IOException {
+    private static int checkAccess(String fname) throws IOException {
         byte[] temp = new byte[10];
         int tp;
 
         if (!new File(fname).exists()) {
             return 0;
         } else {
-            System.out.println(fname + " exists. Overwrite? ");
-            System.in.read(temp, 0, temp.length);
-            tp = 0;
-            while (temp[tp] != '\0') {
-                if (temp[tp] == 'y' || temp[tp] == 'Y') {
-                    return 0;
-                } else {
-                    tp++;
+            if (false) {
+                System.out.println(fname + " exists. Overwrite? ");
+                System.in.read(temp, 0, temp.length);
+                tp = 0;
+                while (temp[tp] != '\0') {
+                    if (temp[tp] == 'y' || temp[tp] == 'Y') {
+                        return 0;
+                    } else {
+                        tp++;
+                    }
                 }
+            } else {
+logger.log(Level.DEBUG, "always accept overwrite: " + fname);
+                return 0;
             }
         }
         return -1;
@@ -728,17 +764,17 @@ Debug.printf("Header CRC mismatch: got 0x%04x, need 0x%04x%n", f.hdrCRC, crc);
         chkcrc = true;        // usually can check the CRC
 
         if (checkAccess(fname) == -1) {
-            infp.skip(ibytes);    // SEEK_CUR
+            infp.skipBytes((int) ibytes);    // SEEK_CUR
             chkcrc = false;    // inhibit crc check if file not written
             return -1;
         }
 
-        switch (type) {
+        switch (type & 0xff) {
         case noComp:         // no compression
             try {
                 outf = Files.newOutputStream(Paths.get(fname));
             } catch (IOException e) {
-                Debug.println(e);
+                logger.log(Level.ERROR, e.getMessage(), e);
                 System.exit(1);
             }
             while (ibytes > 0) {
@@ -757,7 +793,7 @@ Debug.printf("Header CRC mismatch: got 0x%04x, need 0x%04x%n", f.hdrCRC, crc);
             try {
                 outf = Files.newOutputStream(Paths.get(fname));
             } catch (IOException e) {
-                Debug.println(e);
+                logger.log(Level.ERROR, e.getMessage(), e);
                 System.exit(1);
             }
             while (ibytes > 0) {
@@ -790,7 +826,7 @@ Debug.printf("Header CRC mismatch: got 0x%04x, need 0x%04x%n", f.hdrCRC, crc);
         case lzwComp:         // LZW compression
             String temp = COMPRESS + " -d -c -n -b 14 ";
             if (txtmode) {
-                temp += "| tr \'\\015\' \'\\012\' ";
+                temp += "| tr '\\015' '\\012' ";
                 chkcrc = false;        // can't check CRC in this case
             }
             temp += "> '";
@@ -799,7 +835,7 @@ Debug.printf("Header CRC mismatch: got 0x%04x, need 0x%04x%n", f.hdrCRC, crc);
             try {
                 outf = Files.newOutputStream(Paths.get(temp));
             } catch (IOException e) {
-                Debug.println(e);
+                logger.log(Level.ERROR, e.getMessage(), e);
                 System.exit(1);
             }
             while (ibytes > 0) {
@@ -818,7 +854,7 @@ Debug.printf("Header CRC mismatch: got 0x%04x, need 0x%04x%n", f.hdrCRC, crc);
                     // read the file to get CRC value
                     is = Files.newInputStream(Paths.get(fname));
                 } catch (IOException e) {
-                    Debug.println(e);
+                    logger.log(Level.ERROR, e.getMessage(), e);
                     System.exit(1);
                 }
                 while (true) {
@@ -835,7 +871,7 @@ Debug.printf("Header CRC mismatch: got 0x%04x, need 0x%04x%n", f.hdrCRC, crc);
             try {
                 outf = Files.newOutputStream(Paths.get(fname));
             } catch (IOException e) {
-                Debug.println(e);
+                logger.log(Level.ERROR, e.getMessage(), e);
                 System.exit(1);
             }
             nodeptr = 0;
@@ -852,7 +888,7 @@ Debug.printf("Header CRC mismatch: got 0x%04x, need 0x%04x%n", f.hdrCRC, crc);
             outf.close();
             break;
         default:
-Debug.println("Unknown compression method: " + type);
+logger.log(Level.DEBUG, "Unknown compression method: " + type);
             chkcrc = false;    // inhibit crc check if file not written
             return -1;
         }
@@ -956,17 +992,51 @@ Debug.println("Unknown compression method: " + type);
         return b;
     }
 
-    //----
+//#region updcec.c
 
-    /** */
-    private CRC16 crc16 = new CRC16();
+    static final int[] crctab = {
+            0x0000, 0xc0c1, 0xc181, 0x0140, 0xc301, 0x3c0, 0x0280, 0xc241,
+            0xc601, 0x06c0, 0x0780, 0xc741, 0x0500, 0xc5c1, 0xc481, 0x0440,
+            0xcc01, 0x0cc0, 0x0d80, 0xcd41, 0x0f00, 0xcfc1, 0xce81, 0x0e40,
+            0x0a00, 0xcac1, 0xcb81, 0x0b40, 0xc901, 0x09c0, 0x0880, 0xc841,
+            0xd801, 0x18c0, 0x1980, 0xd941, 0x1b00, 0xdbc1, 0xda81, 0x1a40,
+            0x1e00, 0xdec1, 0xdf81, 0x1f40, 0xdd01, 0x1dc0, 0x1c80, 0xdc41,
+            0x1400, 0xd4c1, 0xd581, 0x1540, 0xd701, 0x17c0, 0x1680, 0xd641,
+            0xd201, 0x12c0, 0x1380, 0xd341, 0x1100, 0xd1c1, 0xd081, 0x1040,
+            0xf001, 0x30c0, 0x3180, 0xf141, 0x3300, 0xf3c1, 0xf281, 0x3240,
+            0x3600, 0xf6c1, 0xf781, 0x3740, 0xf501, 0x35c0, 0x3480, 0xf441,
+            0x3c00, 0xfcc1, 0xfd81, 0x3d40, 0xff01, 0x3fc0, 0x3e80, 0xfe41,
+            0xfa01, 0x3ac0, 0x3b80, 0xfb41, 0x3900, 0xf9c1, 0xf881, 0x3840,
+            0x2800, 0xe8c1, 0xe981, 0x2940, 0xeb01, 0x2bc0, 0x2a80, 0xea41,
+            0xee01, 0x2ec0, 0x2f80, 0xef41, 0x2d00, 0xedc1, 0xec81, 0x2c40,
+            0xe401, 0x24c0, 0x2580, 0xe541, 0x2700, 0xe7c1, 0xe681, 0x2640,
+            0x2200, 0xe2c1, 0xe381, 0x2340, 0xe101, 0x21c0, 0x2080, 0xe041,
+            0xa001, 0x60c0, 0x6180, 0xa141, 0x6300, 0xa3c1, 0xa281, 0x6240,
+            0x6600, 0xa6c1, 0xa781, 0x6740, 0xa501, 0x65c0, 0x6480, 0xa441,
+            0x6c00, 0xacc1, 0xad81, 0x6d40, 0xaf01, 0x6fc0, 0x6e80, 0xae41,
+            0xaa01, 0x6ac0, 0x6b80, 0xab41, 0x6900, 0xa9c1, 0xa881, 0x6840,
+            0x7800, 0xb8c1, 0xb981, 0x7940, 0xbb01, 0x7bc0, 0x7a80, 0xba41,
+            0xbe01, 0x7ec0, 0x7f80, 0xbf41, 0x7d00, 0xbdc1, 0xbc81, 0x7c40,
+            0xb401, 0x74c0, 0x7580, 0xb541, 0x7700, 0xb7c1, 0xb681, 0x7640,
+            0x7200, 0xb2c1, 0xb381, 0x7340, 0xb101, 0x71c0, 0x7080, 0xb041,
+            0x5000, 0x90c1, 0x9181, 0x5140, 0x9301, 0x53c0, 0x5280, 0x9241,
+            0x9601, 0x56c0, 0x5780, 0x9741, 0x5500, 0x95c1, 0x9481, 0x5440,
+            0x9c01, 0x5cc0, 0x5d80, 0x9d41, 0x5f00, 0x9fc1, 0x9e81, 0x5e40,
+            0x5a00, 0x9ac1, 0x9b81, 0x5b40, 0x9901, 0x59c0, 0x5880, 0x9841,
+            0x8801, 0x48c0, 0x4980, 0x8941, 0x4b00, 0x8bc1, 0x8a81, 0x4a40,
+            0x4e00, 0x8ec1, 0x8f81, 0x4f40, 0x8d01, 0x4dc0, 0x4c80, 0x8c41,
+            0x4400, 0x84c1, 0x8581, 0x4540, 0x8701, 0x47c0, 0x4680, 0x8641,
+            0x8201, 0x42c0, 0x4380, 0x8341, 0x4100, 0x81c1, 0x8081, 0x4040,
+    };
 
     /** */
     private int updateCrc(int crc, byte[] icp, int count) {
-        crc16.update(crc);
-        crc16.update(icp, 0, count);
-        return (int) crc16.getValue();
-    }
-}
+        int cp = 0;
+        while (count-- != 0)
+            crc = (crc >>> 8) ^ crctab[((crc & ((1 << 8) - 1)) ^ icp[cp++]) & 0xff];
 
-/* */
+        return crc;
+    }
+
+//#endregion
+}

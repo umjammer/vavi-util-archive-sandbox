@@ -6,11 +6,16 @@
 
 package vavi.util.archiveR;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import org.junit.jupiter.api.Test;
+import vavix.util.Checksum;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
 /**
@@ -23,15 +28,17 @@ public class BinaryInputStreamTest {
 
     @Test
     void test1() throws Exception {
-        Path path = Paths.get("src/test/resources/logging.properties");
-        BinaryInputStream in = new BinaryInputStream(Files.newInputStream(path));
-        BinaryOutputStream out = new BinaryOutputStream(System.out);
+        Path in = Paths.get("src/test/resources/aesop.txt");
+        BinaryInputStream bin = new BinaryInputStream(Files.newInputStream(in));
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        BinaryOutputStream bout = new BinaryOutputStream(baos);
         // read one 8-bit char at a time
-        while (!in.isEmpty()) {
-            char c = in.readChar();
-            out.write(c);
+        while (!bin.isEmpty()) {
+            byte b = bin.readByte();
+            bout.write(b);
         }
-        out.flush();
+        bout.flush();
+        assertEquals(Checksum.getChecksum(in), Checksum.getChecksum(new ByteArrayInputStream(baos.toByteArray())));
     }
 
     /**

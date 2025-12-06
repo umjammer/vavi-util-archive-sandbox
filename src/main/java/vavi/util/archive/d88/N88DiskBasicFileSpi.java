@@ -51,5 +51,3 @@ public class N88DiskBasicFileSpi implements ArchiveSpi {
         return new String[] {"d88", "D88"};
     }
 }
-
-/* */

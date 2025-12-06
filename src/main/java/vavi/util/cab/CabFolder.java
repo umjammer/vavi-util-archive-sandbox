@@ -39,9 +39,9 @@ public class CabFolder {
     /** per-folder reserved area */
     private byte[] reservedArea = null;
     /** */
-    private List<CabFile> files = new ArrayList<>();
+    private final List<CabFile> files = new ArrayList<>();
     /** */
-    private int reservedSize;
+    private final int reservedSize;
 
     /** */
     public void addFile(CabFile file) {
@@ -87,19 +87,12 @@ public class CabFolder {
 
     /** */
     private static String compressionName(int type) {
-        switch (type) {
-        case COMPRESSION_NONE:
-            return "NONE";
-        case COMPRESSION_MSZIP:
-            return "MSZIP";
-        case COMPRESSION_QUANTUM:
-            return "QUANTUM";
-        case COMPRESSION_LZX:
-            return "LZX";
-        default:
-            return "<Unknown type " + type + ">";
-        }
+        return switch (type) {
+            case COMPRESSION_NONE -> "NONE";
+            case COMPRESSION_MSZIP -> "MSZIP";
+            case COMPRESSION_QUANTUM -> "QUANTUM";
+            case COMPRESSION_LZX -> "LZX";
+            default -> "<Unknown type " + type + ">";
+        };
     }
 }
-
-/* */

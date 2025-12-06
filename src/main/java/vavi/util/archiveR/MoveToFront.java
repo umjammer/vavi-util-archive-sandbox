@@ -6,23 +6,29 @@
 
 package vavi.util.archiveR;
 
-import java.io.EOFException;
 import java.io.FilterInputStream;
 import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.System.Logger;
+import java.lang.System.Logger.Level;
 
 import vavi.io.InputEngine;
 import vavi.io.InputEngineOutputStream;
 import vavi.io.OutputEngine;
 import vavi.io.OutputEngineInputStream;
+import vavi.util.Debug;
+
+import static java.lang.System.getLogger;
 
 
 /**
  * MoveToFront.
  */
 public class MoveToFront {
+
+    private static final Logger logger = getLogger(MoveToFront.class.getName());
 
     /** alphabet size of extended ASCII */
     private static final int R = 256;
@@ -103,7 +109,9 @@ public class MoveToFront {
                 @Override
                 public void execute() throws IOException {
                     if (in.isEmpty()) {
-                        throw new EOFException();
+                        out.flush();
+                        out.close();
+                        return;
                     }
 
                     char c = in.readChar();
@@ -129,7 +137,6 @@ public class MoveToFront {
 
                 @Override
                 public void finish() throws IOException {
-                    out.flush();
                 }
             }));
         }
@@ -165,12 +172,15 @@ public class MoveToFront {
                 final MoveToFront moveToFront = new MoveToFront();
                 BinaryInputStream in;
                 final BinaryOutputStream out = new BinaryOutputStream(os);
+                char[] input;
+                int ip;
 
                 @Override
                 public void initialize(InputStream inputStream) throws IOException {
                     if (this.in != null) {
                         throw new IOException("Already initialized");
                     } else {
+Debug.println("here0: " + inputStream);
                         this.in = new BinaryInputStream(inputStream);
                         moveToFront.init();
                     }
@@ -178,7 +188,16 @@ public class MoveToFront {
 
                 @Override
                 public void execute() throws IOException {
-                    char c = in.readChar();
+                    if (input == null) {
+                        char[] input = in.readString().toCharArray();
+                    }
+                    if (ip >= input.length) {
+Debug.println("here1");
+                        return;
+                    }
+
+Debug.println("here2");
+                    char c = input[ip++];
                     moveToFront.current = moveToFront.first;
                     char count = c;
                     for (short j = 0; j < count - 1; j++) moveToFront.current = moveToFront.current.n;
@@ -195,7 +214,6 @@ public class MoveToFront {
 
                 @Override
                 public void finish() throws IOException {
-                    out.flush();
                 }
             }));
         }
