@@ -172,12 +172,15 @@ public class MoveToFront {
                 final MoveToFront moveToFront = new MoveToFront();
                 BinaryInputStream in;
                 final BinaryOutputStream out = new BinaryOutputStream(os);
+                char[] input;
+                int ip;
 
                 @Override
                 public void initialize(InputStream inputStream) throws IOException {
                     if (this.in != null) {
                         throw new IOException("Already initialized");
                     } else {
+Debug.println("here0: " + inputStream);
                         this.in = new BinaryInputStream(inputStream);
                         moveToFront.init();
                     }
@@ -185,7 +188,16 @@ public class MoveToFront {
 
                 @Override
                 public void execute() throws IOException {
-                    char c = in.readChar();
+                    if (input == null) {
+                        char[] input = in.readString().toCharArray();
+                    }
+                    if (ip >= input.length) {
+Debug.println("here1");
+                        return;
+                    }
+
+Debug.println("here2");
+                    char c = input[ip++];
                     moveToFront.current = moveToFront.first;
                     char count = c;
                     for (short j = 0; j < count - 1; j++) moveToFront.current = moveToFront.current.n;
