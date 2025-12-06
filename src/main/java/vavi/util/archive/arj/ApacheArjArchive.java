@@ -77,7 +77,7 @@ logger.log(Level.DEBUG, "skip entry: " + entry.getName() + ", " + entry.getSize(
 logger.log(Level.DEBUG, "entry: " + entry.getName() + ", " + entry.getSize());
                 }
                 this.entries = entries.toArray(new ApacheEntry[0]);
-            } catch (ArchiveException | IOException e) {
+            } catch (IOException e) {
                 throw new IllegalStateException(e);
             }
         }
