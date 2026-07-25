@@ -14,7 +14,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import vavi.util.Debug;
@@ -98,7 +97,6 @@ Debug.println("out2: " + Files.size(outPath2));
 
     @Test
     @DisplayName("try input/output-stream")
-    @Disabled("wip")
     void test2() throws Exception {
         String infile = "src/test/resources/aesop.txt";
         String outfile = "tmp/test.out";
@@ -108,32 +106,35 @@ Debug.println("out2: " + Files.size(outPath2));
         Path outPath = Paths.get(outfile);
         Path outPath2 = Paths.get(outfile2);
 
-        InputStream is = Files.newInputStream(inPath);
 Debug.println("in: " + Files.size(inPath));
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
-        BurrowsWheeler.transform(is, baos);
+        OutputStream os = new BurrowsWheeler.TransformOutputStream(baos);
+        Files.copy(inPath, os);
+        os.close();
 Debug.println("middle1: " + baos.size());
         assertEquals(191947, baos.size());
 
-        is = new MoveToFront.EncodeInputStream(new ByteArrayInputStream(baos.toByteArray()));
-        OutputStream os = Files.newOutputStream(outPath);
+        InputStream is = new MoveToFront.EncodeInputStream(new ByteArrayInputStream(baos.toByteArray()));
+        os = Files.newOutputStream(outPath);
 
         Huffman.compress(is, os);
 
         assertTrue(Files.exists(outPath));
 Debug.println("out: " + Files.size(outPath));
-        assertEquals(66026, Files.size(outPath)); // TODO maybe we need DecodeInputStream instead of InputEngineOutputStream
+        assertEquals(66026, Files.size(outPath));
 
         // decode
 
         is = Files.newInputStream(outPath);
         baos.reset();
 
-        Huffman.expand(is, baos);
+        os = new MoveToFront.DecodeOutputStream(baos);
+        Huffman.expand(is, os);
 Debug.println("middle3: " + baos.size());
+
         InputStream pis = new ByteArrayInputStream(baos.toByteArray());
-        os = new MoveToFront.DecodeOutputStream(Files.newOutputStream(outPath2));
+        os = Files.newOutputStream(outPath2);
 
         BurrowsWheeler.inverseTransform(pis, os);
 
