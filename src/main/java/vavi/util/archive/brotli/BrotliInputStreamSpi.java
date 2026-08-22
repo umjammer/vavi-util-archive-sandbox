@@ -11,9 +11,7 @@ import java.io.InputStream;
 import java.lang.System.Logger;
 import java.lang.System.Logger.Level;
 
-import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.brotli.dec.BrotliInputStream;
-import vavi.util.archive.bzip2.BZip2InputStreamSpi;
 import vavi.util.archive.spi.InputStreamSpi;
 
 import static java.lang.System.getLogger;
@@ -27,7 +25,7 @@ import static java.lang.System.getLogger;
  */
 public class BrotliInputStreamSpi implements InputStreamSpi {
 
-    private static final Logger logger = getLogger(BZip2InputStreamSpi.class.getName());
+    private static final Logger logger = getLogger(BrotliInputStreamSpi.class.getName());
 
     /** */
     private Object target;
