@@ -14,7 +14,6 @@ import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import vavi.util.Debug;
 import vavix.util.Checksum;
@@ -43,7 +42,6 @@ public class MoveToFrontTest {
     }
 
     @Test
-    @Disabled("wip")
     void test2() throws Exception {
         Path in = Path.of("src/test/resources/aesop.txt");
         Path out = Path.of("tmp", "mtf.out");

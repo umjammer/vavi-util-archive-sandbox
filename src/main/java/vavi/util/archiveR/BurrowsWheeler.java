@@ -6,10 +6,12 @@
 
 package vavi.util.archiveR;
 
+import java.io.ByteArrayOutputStream;
 import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 
 import edu.princeton.cs.algs4.Queue;
 import vavi.io.InputEngine;
@@ -27,38 +29,55 @@ public class BurrowsWheeler {
     public static void transform(InputStream is, OutputStream os) {
         BinaryInputStream in = new BinaryInputStream(is);
         BinaryOutputStream out = new BinaryOutputStream(os);
-        String s = in.readString();
+        transform(in.readString(), out);
+        out.flush();
+    }
+
+    /**
+     * the transform proper. it needs the whole input at once, because every
+     * rotation of {@code s} takes part in the sort.
+     */
+    private static void transform(String s, BinaryOutputStream out) {
         char[] c = s.toCharArray();
         CircularSuffixArray sufArr = new CircularSuffixArray(s);
         for (int i = 0; i < sufArr.length(); i++) if (sufArr.index(i) == 0) out.write(i);
         for (int i = 0; i < sufArr.length(); i++)
             out.write(c[(sufArr.index(i) + sufArr.length() - 1) % sufArr.length()]);
-        out.flush();
     }
 
     static class TransformOutputStream extends FilterOutputStream {
         TransformOutputStream(OutputStream os) throws IOException {
             super(new InputEngineOutputStream(new InputEngine() {
-                BinaryInputStream in;
+                // don't wrap in BinaryInputStream: the engine stream returns -1
+                // when it's temporarily drained, which is not a real EOF
+                InputStream in;
                 final BinaryOutputStream out = new BinaryOutputStream(os);
+                /** nothing can be written until the last byte is in, see {@link #transform(String, BinaryOutputStream)} */
+                final ByteArrayOutputStream pending = new ByteArrayOutputStream();
+                final byte[] buf = new byte[1024];
 
                 @Override
                 public void initialize(InputStream inputStream) throws IOException {
                     if (this.in != null) {
                         throw new IOException("Already initialized");
                     } else {
-                        this.in = new BinaryInputStream(inputStream);
+                        this.in = inputStream;
                     }
                 }
 
                 @Override
                 public void execute() throws IOException {
-
+                    int r;
+                    while ((r = in.read(buf, 0, buf.length)) > 0) {
+                        pending.write(buf, 0, r);
+                    }
                 }
 
                 @Override
                 public void finish() throws IOException {
-
+                    execute(); // whatever was written since the last flush
+                    transform(pending.toString(StandardCharsets.ISO_8859_1), out);
+                    out.close();
                 }
             }));
         }

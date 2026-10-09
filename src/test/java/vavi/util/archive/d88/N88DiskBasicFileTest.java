@@ -131,6 +131,7 @@ System.err.println(name + " -> " + file);
     }
 
     @Test
+    @DisplayName("extract")
     @EnabledIfSystemProperty(named = "vavi.test", matches = "ide")
     void testX() throws IOException {
         Path p = Paths.get(file);

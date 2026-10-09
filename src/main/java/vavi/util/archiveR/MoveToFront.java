@@ -18,7 +18,6 @@ import vavi.io.InputEngine;
 import vavi.io.InputEngineOutputStream;
 import vavi.io.OutputEngine;
 import vavi.io.OutputEngineInputStream;
-import vavi.util.Debug;
 
 import static java.lang.System.getLogger;
 
@@ -170,50 +169,47 @@ public class MoveToFront {
         DecodeOutputStream(OutputStream os) throws IOException {
             super(new InputEngineOutputStream(new InputEngine() {
                 final MoveToFront moveToFront = new MoveToFront();
-                BinaryInputStream in;
+                // don't wrap in BinaryInputStream: the engine stream returns -1
+                // when it's temporarily drained, which is not a real EOF
+                InputStream in;
                 final BinaryOutputStream out = new BinaryOutputStream(os);
-                char[] input;
-                int ip;
+                final byte[] buf = new byte[1024];
 
                 @Override
                 public void initialize(InputStream inputStream) throws IOException {
                     if (this.in != null) {
                         throw new IOException("Already initialized");
                     } else {
-Debug.println("here0: " + inputStream);
-                        this.in = new BinaryInputStream(inputStream);
+                        this.in = inputStream;
                         moveToFront.init();
                     }
                 }
 
                 @Override
                 public void execute() throws IOException {
-                    if (input == null) {
-                        char[] input = in.readString().toCharArray();
+                    int r;
+                    while ((r = in.read(buf, 0, buf.length)) > 0) {
+                        for (int i = 0; i < r; i++) {
+                            char count = (char) (buf[i] & 0xff);
+                            moveToFront.current = moveToFront.first;
+                            for (short j = 0; j < count - 1; j++) moveToFront.current = moveToFront.current.n;
+                            if ((int) count == 0) {
+                                out.write(moveToFront.current.c);
+                            } else {
+                                out.write(moveToFront.current.n.c);
+                                Node tmp = moveToFront.current.n;
+                                moveToFront.current.n = tmp.n;
+                                tmp.n = moveToFront.first;
+                                moveToFront.first = tmp;
+                            }
+                        }
                     }
-                    if (ip >= input.length) {
-Debug.println("here1");
-                        return;
-                    }
-
-Debug.println("here2");
-                    char c = input[ip++];
-                    moveToFront.current = moveToFront.first;
-                    char count = c;
-                    for (short j = 0; j < count - 1; j++) moveToFront.current = moveToFront.current.n;
-                    if ((int) count == 0) {
-                        out.write(moveToFront.current.c);
-                    } else {
-                        out.write(moveToFront.current.n.c);
-                        Node tmp = moveToFront.current.n;
-                        moveToFront.current.n = tmp.n;
-                        tmp.n = moveToFront.first;
-                        moveToFront.first = tmp;
-                    }
+                    out.flush();
                 }
 
                 @Override
                 public void finish() throws IOException {
+                    out.close();
                 }
             }));
         }
