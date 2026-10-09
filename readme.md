@@ -1,10 +1,12 @@
 [![Release](https://jitpack.io/v/umjammer/vavi-util-archive-sandbox.svg)](https://jitpack.io/#umjammer/vavi-util-archive-sandbox)
 [![Java CI](https://github.com/umjammer/vavi-util-archive-sandbox/actions/workflows/maven.yml/badge.svg)](https://github.com/umjammer/vavi-util-archive-sandbox/actions/workflows/maven.yml)
 [![CodeQL](https://github.com/umjammer/vavi-util-archive-sandbox/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/umjammer/vavi-util-archive-sandbox/actions/workflows/codeql-analysis.yml)
-![Java](https://img.shields.io/badge/Java-17-b07219)
+![Java](https://img.shields.io/badge/Java-25-b07219)
 [![Parent](https://img.shields.io/badge/Parent-vavi--util--archive-pink)](https://github.com/umjammer/vavi-util-archive)
 
 # vavi-util-archive-sandbox
+
+<img alt="logo" src="src/test/resources/duke_trunk2.png" width="160" />
 
 🌏 Extract the world more!
 
@@ -29,7 +31,7 @@ and [vavi-net-fuse](https://github.com/umjammer/vavi-apps-fuse/tree/master/vavi-
 | arj      | archiving | -     | -     | COM                                    | [jacob](https://github.com/freemansoft/jacob-project)                                                                                        |
 | arj      | archiving | 🚧    | -     |                                        | [c](https://github.com/tripsin/unarj)                                                                                                        |
 | arj      | archiving | ✅*    | -     | unsupported files exist                | [commons-compress](https://commons.apache.org/proper/commons-compress/)                                                                      |
-| archiveR | streaming | 🚧    | -     | TODO engine.io-nize                    | [ArchiveR](https://github.com/prog-ai/ArchivR)                                                                                               |
+| archiveR | streaming | 🚧    | -     | ~~TODO engine.io-nize~~                | [ArchiveR](https://github.com/prog-ai/ArchivR)                                                                                               |
 | sevenzip | archiving | ✅     | -     | multi, **arm64 not supported**         | [sevenzipjbinding](https://github.com/borisbrodski/sevenzipjbinding)                                                                         |
 | bortli   | streaming | 🚧    | -     |                                        | [bortli](https://github.com/google/brotli)                                                                                                   |
 
@@ -64,6 +66,10 @@ and [vavi-net-fuse](https://github.com/umjammer/vavi-apps-fuse/tree/master/vavi-
 
  * ~~make it enable to compile~~
  * ~~asar~~
- * https://github.com/prog-ai/ArchivR (wip)
+ * ~~https://github.com/prog-ai/ArchivR (wip)~~
  * https://bitbucket.org/magli143/exomizer/wiki/Home
  * brotli (wip)
+
+---
+
+<sub>image designed by @umjammer, drawn by nano banana</sub>
